@@ -64,7 +64,7 @@ export function CountryPicker({
         <span className="text-gl-muted text-xs">▾</span>
       </button>
       {open && (
-        <div className="absolute z-20 mt-1 w-full rounded border border-gl-border bg-white shadow-lg">
+        <div className="absolute z-40 mt-1 w-full rounded border border-gl-border bg-white shadow-lg">
           <input
             autoFocus
             type="search"

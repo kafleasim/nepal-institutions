@@ -103,9 +103,12 @@ typology <- df %>%
   transmute(
     iso3,
     year         = as.integer(year),
-    # Schulz-Kelsall axes
+    # Schulz-Kelsall axes. We use the additive Power Concentration index
+    # (x_powerconcentration_add = 0.5 * horz_nor + 0.5 * vert) — same
+    # variant that defines x_pcdummy at the CUT_PC = 0.56 threshold below,
+    # so the dummies and the continuous y-axis stay aligned.
     sfs          = round(x_socialfoundationsize, 2),
-    pc           = round(x_powerconcentration_mix, 4),
+    pc           = round(x_powerconcentration_add, 4),
     # Khan axes
     horz         = round(as.numeric(x_horizontalpower), 3),  # 1-5
     vert         = round(x_verticalpower, 4),                # 0-1
@@ -461,7 +464,7 @@ meta <- list(
   countries = country_list,
   typology_sk = list(
     x_var = unbox("x_socialfoundationsize"),
-    y_var = unbox("x_powerconcentration_mix"),
+    y_var = unbox("x_powerconcentration_add"),
     x_label = unbox("Social foundation size"),
     y_label = unbox("Power concentration"),
     x_cut = unbox(CUT_SFS),
@@ -471,9 +474,9 @@ meta <- list(
       "AND co-opted under the leadership (0–100%). Narrow ↔ broad."
     )),
     y_description = unbox(paste(
-      "Composite of horizontal power (governing coalition vs opposition) and",
-      "vertical power (leader within coalition), min-max normalized (0–1).",
-      "Dispersed ↔ concentrated."
+      "Additive Power Concentration Index: 0.5·horizontal + 0.5·vertical",
+      "(min-max normalised, 0–1). Same variant that defines x_pcdummy at its",
+      "sample mean (0.56). Dispersed ↔ concentrated."
     ))
   ),
   typology_khan = list(

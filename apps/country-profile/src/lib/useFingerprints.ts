@@ -1,34 +1,55 @@
 import { useEffect, useState } from "react";
 import { asyncBufferFromUrl, parquetReadObjects } from "hyparquet";
 
-// fingerprints_2025.parquet is long-format (~160 KB): iso3, tag, z — one row
-// per country-indicator z-score in 2025. We fetch the whole file once and
-// build a nested Map<iso3, Map<tag, z>> for O(1) lookup from the peer-anomaly
-// section. Same one-shot pattern as usePCScores.ts.
+// fingerprints_by_year.parquet is long-format: year, iso3, tag, z — one row
+// per (year, country, indicator) z-score. We fetch the whole file once and
+// build a nested index Map<year, Map<iso3, Map<tag, z>>> for O(1) lookup.
+//
+// This drives two consumers:
+//   - PeerSection / usePeers: derives Euclidean-distance peer rankings per
+//     (year, focus country) in-browser.
+//   - PeerAnomaliesSection: pairwise z-score chart for the chosen year.
 
-type FingerprintRow = { iso3: string; tag: string; z: number };
-type Index = Map<string, Map<string, number>>;
+type FingerprintRow = { year: number; iso3: string; tag: string; z: number };
 
-let cache: Index | null = null;
-let inflight: Promise<Index> | null = null;
+export type FingerprintIndex = {
+  years: number[];                                  // sorted asc
+  get: (year: number, iso3: string) => Map<string, number> | undefined;
+  byYear: (year: number) => Map<string, Map<string, number>> | undefined;
+};
 
-async function loadIndex(): Promise<Index> {
+let cache: FingerprintIndex | null = null;
+let inflight: Promise<FingerprintIndex> | null = null;
+
+async function loadIndex(): Promise<FingerprintIndex> {
   if (cache) return cache;
   if (inflight) return inflight;
   inflight = (async () => {
-    const file = await asyncBufferFromUrl({ url: "/fingerprints_2025.parquet" });
+    const file = await asyncBufferFromUrl({
+      url: "/fingerprints_by_year.parquet",
+    });
     const rows = (await parquetReadObjects({ file })) as FingerprintRow[];
-    const idx: Index = new Map();
+    const byYear = new Map<number, Map<string, Map<string, number>>>();
     for (const r of rows) {
-      let row = idx.get(r.iso3);
+      let y = byYear.get(r.year);
+      if (!y) {
+        y = new Map();
+        byYear.set(r.year, y);
+      }
+      let row = y.get(r.iso3);
       if (!row) {
         row = new Map();
-        idx.set(r.iso3, row);
+        y.set(r.iso3, row);
       }
       row.set(r.tag, r.z);
     }
-    cache = idx;
-    return idx;
+    const years = [...byYear.keys()].sort((a, b) => a - b);
+    cache = {
+      years,
+      get: (year, iso3) => byYear.get(year)?.get(iso3),
+      byYear: (year) => byYear.get(year),
+    };
+    return cache;
   })();
   return inflight;
 }
@@ -36,25 +57,25 @@ async function loadIndex(): Promise<Index> {
 export type FingerprintsState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "ready"; get: (iso3: string) => Map<string, number> | undefined }
+  | { status: "ready"; index: FingerprintIndex }
   | { status: "error"; error: Error };
 
 export function useFingerprints(enabled = true): FingerprintsState {
   const [state, setState] = useState<FingerprintsState>(
-    cache ? makeReady(cache) : { status: "idle" },
+    cache ? { status: "ready", index: cache } : { status: "idle" },
   );
 
   useEffect(() => {
     if (!enabled) return;
     if (cache) {
-      setState(makeReady(cache));
+      setState({ status: "ready", index: cache });
       return;
     }
     let alive = true;
     setState({ status: "loading" });
     loadIndex()
       .then((idx) => {
-        if (alive) setState(makeReady(idx));
+        if (alive) setState({ status: "ready", index: idx });
       })
       .catch((err: Error) => {
         if (alive) setState({ status: "error", error: err });
@@ -65,8 +86,4 @@ export function useFingerprints(enabled = true): FingerprintsState {
   }, [enabled]);
 
   return state;
-}
-
-function makeReady(idx: Index): FingerprintsState {
-  return { status: "ready", get: (iso3) => idx.get(iso3) };
 }

@@ -174,13 +174,13 @@
   ],
   "typology_sk": {
     "x_var": "x_socialfoundationsize",
-    "y_var": "x_powerconcentration_mix",
+    "y_var": "x_powerconcentration_add",
     "x_label": "Social foundation size",
     "y_label": "Power concentration",
     "x_cut": 41,
     "y_cut": 0.56,
     "x_description": "Share of the population that is both potentially powerful/disruptive AND co-opted under the leadership (0–100%). Narrow ↔ broad.",
-    "y_description": "Composite of horizontal power (governing coalition vs opposition) and vertical power (leader within coalition), min-max normalized (0–1). Dispersed ↔ concentrated."
+    "y_description": "Additive Power Concentration Index: 0.5·horizontal + 0.5·vertical (min-max normalised, 0–1). Same variant that defines x_pcdummy at its sample mean (0.56). Dispersed ↔ concentrated."
   },
   "typology_khan": {
     "x_var": "x_horizontalpower",

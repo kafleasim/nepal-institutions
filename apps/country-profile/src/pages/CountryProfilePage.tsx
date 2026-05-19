@@ -1,11 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import type {
-  Country,
-  GrowthIndex,
-  HSComponentsMeta,
-  PeersIndex,
-} from "../types";
+import type { Country, GrowthIndex, HSComponentsMeta } from "../types";
 import { CountryPicker } from "../components/CountryPicker";
 import { PeerSection } from "../components/PeerSection";
 import { PeerAnomaliesSection } from "../components/PeerAnomaliesSection";
@@ -19,29 +14,45 @@ import { PCTrajectoriesSection } from "../components/PCTrajectoriesSection";
 import { RelatedIndicatorsSection } from "../components/RelatedIndicatorsSection";
 import { PolSettTypologySection } from "../components/PolSettTypologySection";
 import { PolSettExplorer } from "../components/PolSettExplorer";
+import { SectionNav, type ChapterSpec } from "../components/SectionNav";
+import { useFingerprints } from "../lib/useFingerprints";
+import { derivePeers } from "../lib/derivePeers";
+
+const CHAPTERS: ChapterSpec[] = [
+  { id: "peers", label: "Peers" },
+  { id: "growth-breaks", label: "Growth breaks" },
+  { id: "political-settlement", label: "Political settlement" },
+  { id: "winning-coalition", label: "Winning coalition" },
+  { id: "state-capacity", label: "State capacity" },
+  { id: "institutional-axes", label: "Institutional axes" },
+  { id: "vdem", label: "Varieties of Democracy" },
+];
 
 const DEFAULT_ISO = "PAK";
 const DEFAULT_N_PEERS = 5;
+const TOP_K = 25;
 
 export function CountryProfilePage() {
   const { iso } = useParams<{ iso?: string }>();
   const navigate = useNavigate();
 
   const [countries, setCountries] = useState<Country[] | null>(null);
-  const [peers, setPeers] = useState<PeersIndex | null>(null);
   const [growth, setGrowth] = useState<GrowthIndex | null>(null);
   const [hsMeta, setHsMeta] = useState<HSComponentsMeta | null>(null);
   const [peerIsos, setPeerIsos] = useState<string[]>([]);
+  const [peerYear, setPeerYear] = useState<number | null>(null);
+  // Active comparator for the "Why this peer?" anomaly chart. Lifted here
+  // so clicking a row in PeerSection can update it.
+  const [comparePeerIso, setComparePeerIso] = useState<string | null>(null);
 
-  // Load reference data once.
+  const fps = useFingerprints();
+
   useEffect(() => {
     Promise.all([
       fetch("/countries.json").then((r) => r.json() as Promise<Country[]>),
-      fetch("/peers_2025.json").then((r) => r.json() as Promise<PeersIndex>),
       fetch("/growth_series.json").then((r) => r.json() as Promise<GrowthIndex>),
-    ]).then(([c, p, g]) => {
+    ]).then(([c, g]) => {
       setCountries(c);
-      setPeers(p);
       setGrowth(g);
     });
     fetch("/hs_components_meta.json")
@@ -49,7 +60,6 @@ export function CountryProfilePage() {
       .then(setHsMeta);
   }, []);
 
-  // Normalize the URL — redirect "" → /country/PAK, lowercase → uppercase.
   useEffect(() => {
     if (!iso) {
       navigate(`/country/${DEFAULT_ISO}`, { replace: true });
@@ -66,12 +76,33 @@ export function CountryProfilePage() {
     [countries, focusIso],
   );
 
-  // Whenever the focus country changes, reset the peer set to its top-N.
+  const availableYears = fps.status === "ready" ? fps.index.years : [];
+
+  // Default to the latest year as soon as fingerprints arrive.
   useEffect(() => {
-    if (!peers || !focus) return;
-    const top = (peers[focus.iso3] ?? []).slice(0, DEFAULT_N_PEERS);
-    setPeerIsos(top.map((p) => p.iso3));
-  }, [peers, focus]);
+    if (peerYear === null && availableYears.length > 0) {
+      setPeerYear(availableYears[availableYears.length - 1]);
+    }
+  }, [availableYears, peerYear]);
+
+  // Top-K peer ranking for the current (year, focus).
+  const focusPeers = useMemo(() => {
+    if (fps.status !== "ready" || !focus || peerYear === null) return [];
+    return derivePeers(fps.index, peerYear, focus.iso3, TOP_K);
+  }, [fps, focus, peerYear]);
+
+  // Whenever the focus, year, or fingerprint readiness changes, reset the
+  // displayed peer set to the new top-N.
+  useEffect(() => {
+    const next = focusPeers.slice(0, DEFAULT_N_PEERS).map((p) => p.iso3);
+    setPeerIsos(next);
+    // Default the comparator to the new closest peer (unless the current
+    // comparator still appears in the new list — preserves intent across
+    // year changes).
+    setComparePeerIso((prev) =>
+      prev && next.includes(prev) ? prev : next[0] ?? null,
+    );
+  }, [focusPeers]);
 
   const peerList = useMemo(() => {
     if (!countries) return [];
@@ -81,7 +112,7 @@ export function CountryProfilePage() {
       .map((c) => ({ iso3: c.iso3, name: c.name }));
   }, [peerIsos, countries]);
 
-  if (!countries || !peers || !growth) {
+  if (!countries || !growth) {
     return (
       <div className="flex h-full items-center justify-center text-gl-muted">
         Loading…
@@ -126,50 +157,73 @@ export function CountryProfilePage() {
         </div>
       </div>
 
-      <PeerSection
-        focus={focus}
-        countries={countries}
-        peers={peers}
-        peerIsos={peerIsos}
-        onChange={setPeerIsos}
-      />
+      <SectionNav chapters={CHAPTERS} />
 
-      <PeerAnomaliesSection
-        focus={focus}
-        countries={countries}
-        peerIsos={peerIsos}
-      />
+      <section id="peers" className="scroll-mt-20">
+        <PeerSection
+          focus={focus}
+          countries={countries}
+          focusPeers={focusPeers}
+          peerIsos={peerIsos}
+          onChange={setPeerIsos}
+          selectedIso={comparePeerIso}
+          onSelect={setComparePeerIso}
+          years={availableYears}
+          year={peerYear}
+          onYearChange={setPeerYear}
+          fpsStatus={fps.status}
+          fpsError={fps.status === "error" ? fps.error : null}
+        />
 
-      <GrowthBreaksSection record={growth[focus.iso3] ?? null} />
+        <PeerAnomaliesSection
+          focus={focus}
+          countries={countries}
+          selectedIso={comparePeerIso}
+          onSelect={setComparePeerIso}
+          year={peerYear}
+        />
+      </section>
 
-      <VDemSection
-        focus={focus}
-        peers={peerList}
-        growthRecord={growth[focus.iso3] ?? null}
-      />
+      <section id="growth-breaks" className="scroll-mt-20">
+        <GrowthBreaksSection record={growth[focus.iso3] ?? null} />
+      </section>
 
-      <VDemExplorer
-        focus={focus}
-        peers={peerList}
-        growthRecord={growth[focus.iso3] ?? null}
-      />
+      <section id="political-settlement" className="scroll-mt-20">
+        <PolSettTypologySection
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+        />
 
-      <BdmSection
-        focus={focus}
-        peers={peerList}
-        growthRecord={growth[focus.iso3] ?? null}
-      />
+        <PolSettExplorer
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+          defaultCollapsed
+        />
+      </section>
 
-      <section className="mt-12 space-y-8">
+      <section id="winning-coalition" className="scroll-mt-20">
+        <BdmSection
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+        />
+      </section>
+
+      <section
+        id="state-capacity"
+        className="mt-12 scroll-mt-20 space-y-8"
+      >
         <div>
           <h2 className="text-xl font-semibold">State capacity</h2>
           <p className="mt-1 text-sm text-gl-muted">
             Hanson &amp; Sigman (2021) treat state capacity as three
             interrelated dimensions — extractive, coercive, and administrative —
             which empirically collapse into a single latent factor. Below: the
-            aggregate latent indicator, then each dimension separately, with
-            indicator pickers drawn from the 21 component series H&amp;S
-            assembled. Coverage 1960–2015.
+            aggregate latent indicator, then each dimension separately
+            (collapsed by default), with indicator pickers drawn from the 21
+            component series H&amp;S assembled. Coverage 1960–2015.
           </p>
         </div>
 
@@ -187,6 +241,7 @@ export function CountryProfilePage() {
               focus={focus}
               peers={peerList}
               growthRecord={growth[focus.iso3] ?? null}
+              defaultCollapsed
             />
             <HSDimensionSection
               dimension="coercive"
@@ -194,6 +249,7 @@ export function CountryProfilePage() {
               focus={focus}
               peers={peerList}
               growthRecord={growth[focus.iso3] ?? null}
+              defaultCollapsed
             />
             <HSDimensionSection
               dimension="administrative"
@@ -201,30 +257,40 @@ export function CountryProfilePage() {
               focus={focus}
               peers={peerList}
               growthRecord={growth[focus.iso3] ?? null}
+              defaultCollapsed
             />
           </>
         )}
       </section>
 
-      <PCTrajectoriesSection
-        focus={focus}
-        peers={peerList}
-        growthRecord={growth[focus.iso3] ?? null}
-      />
+      <section id="institutional-axes" className="scroll-mt-20">
+        <PCTrajectoriesSection
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+        />
 
-      <RelatedIndicatorsSection
-        focus={focus}
-        peers={peerList}
-        growthRecord={growth[focus.iso3] ?? null}
-      />
+        <RelatedIndicatorsSection
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+        />
+      </section>
 
-      <PolSettTypologySection focus={focus} peers={peerList} />
+      <section id="vdem" className="scroll-mt-20">
+        <VDemSection
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+        />
 
-      <PolSettExplorer
-        focus={focus}
-        peers={peerList}
-        growthRecord={growth[focus.iso3] ?? null}
-      />
+        <VDemExplorer
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+          defaultCollapsed
+        />
+      </section>
     </div>
   );
 }

@@ -13,33 +13,56 @@ import {
 } from "recharts";
 import type {
   Country,
+  GrowthRecord,
   PolSettMeta,
   PolSettTypologyRow,
   PolSettTypologySpec,
 } from "../types";
 import { GL } from "../lib/glTokens";
 import { usePolSettTypology } from "../lib/usePolSett";
+import {
+  SocialFoundationDecomp,
+  VerticalPowerDecomp,
+} from "./PolSettDecompositions";
+import { PolSettGrowthTimeline } from "./PolSettGrowthTimeline";
 
 type Props = {
   focus: Country;
   peers: { iso3: string; name: string }[];
+  growthRecord: GrowthRecord | null;
 };
 
-// Quadrant labels rendered at the four corners. Keys are
-// (broad|narrow / concentrated|dispersed) for the SK typology and
-// (high|low horizontal / high|low vertical) for the Khan typology.
-const QUADRANTS = {
+// Quadrant labels rendered at the four corners of each chart. The ESID
+// (Schulz & Kelsall) and Khan typologies share axis directions (broad/high
+// to the right, concentrated/high at the top) but use different naming
+// conventions, so each chart gets its own label set.
+type QuadrantLabels = {
+  topLeft: string;
+  topRight: string;
+  bottomLeft: string;
+  bottomRight: string;
+};
+
+const SK_QUADRANTS: QuadrantLabels = {
+  topLeft: "Narrow-Concentrated",
+  topRight: "Broad-Concentrated",
+  bottomLeft: "Narrow-Dispersed",
+  bottomRight: "Broad-Dispersed",
+};
+
+const KHAN_QUADRANTS: QuadrantLabels = {
   topLeft: "Vulnerable-Authoritarian",
   topRight: "Strong-Dominant",
   bottomLeft: "Competitive-Clientelist",
   bottomRight: "Weak-Dominant",
-} as const;
+};
 
 type ChartConfig = {
   spec: PolSettTypologySpec;
   xKey: "sfs" | "horz";
   yKey: "pc" | "vert";
   labelKey: "sk_label" | "khan_label";
+  quadrants: QuadrantLabels;
   xDomain: [number, number];
   yDomain: [number, number];
   xTicks: number[];
@@ -50,7 +73,7 @@ type ChartConfig = {
   yAxisCaption: string;
 };
 
-export function PolSettTypologySection({ focus, peers }: Props) {
+export function PolSettTypologySection({ focus, peers, growthRecord }: Props) {
   const state = usePolSettTypology();
   const [periodKey, setPeriodKey] = useState<string | null>(null);
   const [highlightPeers, setHighlightPeers] = useState(false);
@@ -105,7 +128,7 @@ export function PolSettTypologySection({ focus, peers }: Props) {
     return (
       <section className="mt-12">
         <Header />
-        <p className="text-xs text-gl-muted">Loading PolSett data…</p>
+        <p className="text-xs text-gl-muted">Loading Political Settlement data…</p>
       </section>
     );
   }
@@ -128,6 +151,7 @@ export function PolSettTypologySection({ focus, peers }: Props) {
     xKey: "sfs",
     yKey: "pc",
     labelKey: "sk_label",
+    quadrants: SK_QUADRANTS,
     xDomain: [0, 90],
     yDomain: [0, 1],
     xTicks: [0, 20, 40, 60, 80],
@@ -143,11 +167,14 @@ export function PolSettTypologySection({ focus, peers }: Props) {
     xKey: "horz",
     yKey: "vert",
     labelKey: "khan_label",
+    quadrants: KHAN_QUADRANTS,
     xDomain: [1, 5],
     yDomain: [0, 1],
     xTicks: [1, 2, 3, 4, 5],
     yTicks: [0, 0.25, 0.5, 0.75, 1],
-    xFormat: (v) => v.toFixed(0),
+    // Integer-valued ticks (1..5) render as "3"; data values like 3.397
+    // keep two decimals so the tooltip matches the dot position.
+    xFormat: (v) => (Number.isInteger(v) ? v.toFixed(0) : v.toFixed(2)),
     yFormat: (v) => v.toFixed(2),
     xAxisCaption: "Horizontal power — OB-dominant ← → coalition-dominant",
     yAxisCaption: "Vertical power — dispersed ↓ ↑ leader-dominated",
@@ -167,6 +194,23 @@ export function PolSettTypologySection({ focus, peers }: Props) {
         Global-South countries, {meta.year_range[0]}–{meta.year_range[1]}.
       </p>
 
+      {/* Orientation timeline — GDP + settlements over time. Bands are
+          clickable and drive the period selection below. */}
+      <PolSettGrowthTimeline
+        focus={focus}
+        periods={focusPeriods.map((p) => ({
+          start: p.period_start,
+          end: p.period_end,
+          leader: p.leader,
+          sk_label: p.sk_label,
+          sk_code: p.sk_code,
+          khan_label: p.khan_label,
+        }))}
+        growthRecord={growthRecord}
+        selectedKey={effectivePeriodKey}
+        onSelectPeriod={(key) => setPeriodKey(key)}
+      />
+
       {/* Settlement selector */}
       <div className="flex flex-wrap items-center gap-3 rounded border border-gl-border bg-white px-3 py-2">
         <label className="flex items-center gap-2 text-xs">
@@ -179,7 +223,7 @@ export function PolSettTypologySection({ focus, peers }: Props) {
           >
             {focusPeriods.length === 0 && (
               <option value="">
-                {focus.name} is not in the PolSett sample
+                {focus.name} is not in the Political Settlement sample
               </option>
             )}
             {focusPeriods.map((p) => {
@@ -204,16 +248,16 @@ export function PolSettTypologySection({ focus, peers }: Props) {
         </label>
         {!inPolSett && (
           <span className="text-xs text-red-600">
-            {focus.name} is not in the 42-country PolSett sample.
+            {focus.name} is not in the 42-country Political Settlement sample.
           </span>
         )}
       </div>
 
-      {/* SK typology (book) */}
+      {/* ESID typology (book) */}
       <div className="space-y-2">
         <div>
           <h3 className="text-base font-semibold">
-            Schulz &amp; Kelsall typology: social foundation × power concentration
+            ESID typology: social foundation × power concentration
           </h3>
           <p className="text-xs text-gl-muted">
             {meta.typology_sk.x_label.toLowerCase()} ({meta.typology_sk.x_description.toLowerCase().split(".")[0]})
@@ -230,24 +274,26 @@ export function PolSettTypologySection({ focus, peers }: Props) {
           highlightPeers={highlightPeers}
           countryNameMap={countryNameMap}
         />
+        <ESIDQuadrantNotes />
       </div>
 
       {/* Khan typology */}
-      <div className="space-y-2 pt-4">
+      <div className="space-y-2 pt-6">
         <div>
           <h3 className="text-base font-semibold">
             Khan typology: horizontal × vertical power
           </h3>
           <p className="text-sm text-gl-muted">
-            Mushtaq Khan&rsquo;s classical typology distinguishes settlements
-            by two dimensions of <em>holding power</em>. <b>Horizontal power</b>{" "}
-            is how strong the governing coalition is vis-à-vis the excluded
-            opposition (the LB + CLB versus the OB). <b>Vertical power</b> is
-            how concentrated power is within the coalition itself — i.e.,
-            whether the leader&rsquo;s bloc dominates its allies (LB versus
-            CLB). The four resulting types — Strong-Dominant, Vulnerable-Authoritarian,
-            Weak-Dominant, Competitive-Clientelist — anchor much of the
-            political-settlements literature.{" "}
+            Mushtaq Khan&rsquo;s classical typology decomposes the ESID
+            <em> power concentration</em> axis into two parts.{" "}
+            <b>Horizontal power</b> is how strong the governing coalition is
+            vis-à-vis the excluded opposition (the LB + CLB versus the OB).{" "}
+            <b>Vertical power</b> is how concentrated power is within the
+            coalition itself — i.e., whether the leader&rsquo;s bloc dominates
+            its allies (LB versus CLB). The four resulting types —
+            Strong-Dominant, Vulnerable-Authoritarian, Weak-Dominant,
+            Competitive-Clientelist — anchor much of the political-settlements
+            literature.{" "}
             <em>
               Labels here come from <code>x_khansettlementype</code> in the
               dataset (codebook 4.1.11).
@@ -264,7 +310,75 @@ export function PolSettTypologySection({ focus, peers }: Props) {
           countryNameMap={countryNameMap}
         />
       </div>
+
+      {/* Vertical-power decomposition (Khan's y-axis, broken down further) */}
+      <div className="pt-4">
+        <VerticalPowerDecomp
+          focus={focus}
+          selectedYear={selectedYear}
+          focusLabel={selectedRow?.leader ?? null}
+        />
+      </div>
+
+      {/* Social-foundation decomposition (ESID's x-axis, broken down further) */}
+      <div className="pt-4">
+        <SocialFoundationDecomp
+          focus={focus}
+          selectedYear={selectedYear}
+          focusLabel={selectedRow?.leader ?? null}
+        />
+      </div>
     </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Four-quadrant interpretation cards for the ESID typology. Laid out as a
+// 2x2 grid that mirrors the chart's quadrant positions.
+function ESIDQuadrantNotes() {
+  return (
+    <div className="mt-3 grid grid-cols-1 gap-2 text-xs md:grid-cols-2">
+      <QuadrantNote
+        title="Narrow-Concentrated"
+        position="top-left of chart"
+        body="Only a thin slice of the powerful population is co-opted into the settlement, and one bloc clearly dominates the governing coalition. Capable of decisive action but vulnerable to elite defection and popular pressure — classic personalist or authoritarian patterns."
+      />
+      <QuadrantNote
+        title="Broad-Concentrated"
+        position="top-right of chart"
+        body="A wide cross-section of socially powerful groups is included, and a single bloc dominates. Long-horizon policymaking is possible; the leader's bloc carries heavy expectations from a broad constituency. Includes most developmental and hegemonic-party regimes."
+      />
+      <QuadrantNote
+        title="Narrow-Dispersed"
+        position="bottom-left of chart"
+        body="Narrow social base AND fragmented governing camp. The most volatile quadrant — competitive clientelism, frequent leadership turnover, weak central authority. Reforms tend to be short-horizon and reversible."
+      />
+      <QuadrantNote
+        title="Broad-Dispersed"
+        position="bottom-right of chart"
+        body="A wide social coalition, but power split across competing factions within the governing camp. Compromise-heavy and slow-moving; large pluralist democracies and consociational systems often sit here."
+      />
+    </div>
+  );
+}
+
+function QuadrantNote({
+  title,
+  position,
+  body,
+}: {
+  title: string;
+  position: string;
+  body: string;
+}) {
+  return (
+    <div className="rounded border border-gl-border bg-white p-2.5">
+      <div className="flex items-baseline justify-between">
+        <span className="text-sm font-semibold text-gl-text">{title}</span>
+        <span className="text-[10px] text-gl-muted">{position}</span>
+      </div>
+      <p className="mt-1 text-gl-muted">{body}</p>
+    </div>
   );
 }
 
@@ -273,7 +387,7 @@ function Header() {
   return (
     <div>
       <h2 className="text-xl font-semibold">
-        Political-settlements typology (PolSett)
+        Political Settlement typology
       </h2>
       <p className="mt-0.5 text-xs text-gl-muted">
         Schulz &amp; Kelsall 2020 · ESID Working Paper 165
@@ -406,7 +520,7 @@ function TypologyChart({
               x1={xMin} x2={xCut} y1={yCut} y2={yMax}
               fill="transparent"
               label={{
-                value: QUADRANTS.topLeft,
+                value: cfg.quadrants.topLeft,
                 position: "insideTopLeft",
                 fontSize: 10,
                 fill: GL.muted,
@@ -417,7 +531,7 @@ function TypologyChart({
               x1={xCut} x2={xMax} y1={yCut} y2={yMax}
               fill="transparent"
               label={{
-                value: QUADRANTS.topRight,
+                value: cfg.quadrants.topRight,
                 position: "insideTopRight",
                 fontSize: 10,
                 fill: GL.muted,
@@ -428,7 +542,7 @@ function TypologyChart({
               x1={xMin} x2={xCut} y1={yMin} y2={yCut}
               fill="transparent"
               label={{
-                value: QUADRANTS.bottomLeft,
+                value: cfg.quadrants.bottomLeft,
                 position: "insideBottomLeft",
                 fontSize: 10,
                 fill: GL.muted,
@@ -439,7 +553,7 @@ function TypologyChart({
               x1={xCut} x2={xMax} y1={yMin} y2={yCut}
               fill="transparent"
               label={{
-                value: QUADRANTS.bottomRight,
+                value: cfg.quadrants.bottomRight,
                 position: "insideBottomRight",
                 fontSize: 10,
                 fill: GL.muted,

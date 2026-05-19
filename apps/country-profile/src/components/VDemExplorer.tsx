@@ -26,13 +26,14 @@ type Props = {
   focus: Country;
   peers: { iso3: string; name: string }[];
   growthRecord: GrowthRecord | null;
+  defaultCollapsed?: boolean;
 };
 
 type ChartRow = { year: number } & Record<string, number | null>;
 
 const DEFAULT_DOMAIN: [number, string] = [1940, "dataMax"];
 
-export function VDemExplorer({ focus, peers, growthRecord }: Props) {
+export function VDemExplorer({ focus, peers, growthRecord, defaultCollapsed = false }: Props) {
   const [registry, setRegistry] = useState<VDemIndicatorRegistry | null>(null);
   const [tag, setTag] = useState<string>("");
   const [showPeers, setShowPeers] = useState(false);
@@ -118,17 +119,15 @@ export function VDemExplorer({ focus, peers, growthRecord }: Props) {
     }));
   }, [registry]);
 
-  return (
-    <section className="mt-12 space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">Explore any V-Dem indicator</h2>
-        <p className="mt-0.5 text-xs text-gl-muted">
-          Pick from the full V-Dem codebook (vartype C + D,{" "}
-          {registry ? `${registry.indicators.length} indicators` : "loading…"}).
-        </p>
-      </div>
+  const subtitle = (
+    <>
+      Pick from the full V-Dem codebook (vartype C + D,{" "}
+      {registry ? `${registry.indicators.length} indicators` : "loading…"}).
+    </>
+  );
 
-      <div className="space-y-4">
+  const body = (
+    <div className="space-y-4">
           {/* Controls */}
           <div className="flex flex-wrap items-center gap-3 rounded border border-gl-border bg-white px-3 py-2">
             <label className="flex items-center gap-2 text-xs">
@@ -338,6 +337,32 @@ export function VDemExplorer({ focus, peers, growthRecord }: Props) {
             </div>
           )}
         </div>
+  );
+
+  if (defaultCollapsed) {
+    return (
+      <details className="group mt-12">
+        <summary className="cursor-pointer list-none">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-xl font-semibold">Explore any V-Dem indicator</h2>
+            <span className="text-xs text-gl-muted transition-transform group-open:rotate-90">
+              ▸
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-gl-muted">{subtitle}</p>
+        </summary>
+        <div className="mt-6">{body}</div>
+      </details>
+    );
+  }
+
+  return (
+    <section className="mt-12 space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold">Explore any V-Dem indicator</h2>
+        <p className="mt-0.5 text-xs text-gl-muted">{subtitle}</p>
+      </div>
+      {body}
     </section>
   );
 }

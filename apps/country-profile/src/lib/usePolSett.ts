@@ -127,30 +127,42 @@ async function loadPanel(): Promise<TagIndex> {
   return panelInflight;
 }
 
+// Accessors built on top of the cached panel index.
+export type PolSettPanelAccess = {
+  // Return the full series for a (tag, iso3) — empty array if missing.
+  getSeries: (tag: string, iso3: string) => ScalarPoint[];
+  // Return the value for a (tag, iso3) at a specific year — null if missing.
+  // PolSett values are period-constant, so the "year" lookup is exact.
+  getValue: (tag: string, iso3: string, year: number) => number | null;
+  // Return all {iso3, value} pairs for a given (tag, year) — useful for
+  // computing cross-country medians at a fixed year.
+  getYearSlice: (tag: string, year: number) => Array<{ iso3: string; value: number }>;
+};
+
 export type PolSettPanelState =
   | { status: "idle" }
   | { status: "loading" }
-  | { status: "ready"; getSeries: (tag: string, iso3: string) => ScalarPoint[] }
+  | ({ status: "ready" } & PolSettPanelAccess)
   | { status: "error"; error: Error };
 
 export function usePolSettPanel(enabled: boolean): PolSettPanelState {
   const [state, setState] = useState<PolSettPanelState>(
     panelCache
-      ? { status: "ready", getSeries: makeGetter(panelCache) }
+      ? { status: "ready", ...makeAccess(panelCache) }
       : { status: "idle" },
   );
 
   useEffect(() => {
     if (!enabled) return;
     if (panelCache) {
-      setState({ status: "ready", getSeries: makeGetter(panelCache) });
+      setState({ status: "ready", ...makeAccess(panelCache) });
       return;
     }
     let alive = true;
     setState({ status: "loading" });
     loadPanel()
       .then((idx) => {
-        if (alive) setState({ status: "ready", getSeries: makeGetter(idx) });
+        if (alive) setState({ status: "ready", ...makeAccess(idx) });
       })
       .catch((err: Error) => {
         if (alive) setState({ status: "error", error: err });
@@ -163,6 +175,29 @@ export function usePolSettPanel(enabled: boolean): PolSettPanelState {
   return state;
 }
 
-function makeGetter(idx: TagIndex) {
-  return (tag: string, iso3: string) => idx.get(tag)?.get(iso3) ?? [];
+function makeAccess(idx: TagIndex): PolSettPanelAccess {
+  return {
+    getSeries: (tag, iso3) => idx.get(tag)?.get(iso3) ?? [],
+    getValue: (tag, iso3, year) => {
+      const series = idx.get(tag)?.get(iso3);
+      if (!series) return null;
+      // Series are sorted by year; tiny so linear scan is fine.
+      for (const p of series) if (p.year === year) return p.value;
+      return null;
+    },
+    getYearSlice: (tag, year) => {
+      const byIso = idx.get(tag);
+      if (!byIso) return [];
+      const out: Array<{ iso3: string; value: number }> = [];
+      for (const [iso3, series] of byIso) {
+        for (const p of series) {
+          if (p.year === year) {
+            out.push({ iso3, value: p.value });
+            break;
+          }
+        }
+      }
+      return out;
+    },
+  };
 }

@@ -26,13 +26,14 @@ type Props = {
   focus: Country;
   peers: { iso3: string; name: string }[];
   growthRecord: GrowthRecord | null;
+  defaultCollapsed?: boolean;
 };
 
 type ChartRow = { year: number } & Record<string, number | null>;
 
 const DEFAULT_DOMAIN: [number, string] = [1945, "dataMax"];
 
-export function PolSettExplorer({ focus, peers, growthRecord }: Props) {
+export function PolSettExplorer({ focus, peers, growthRecord, defaultCollapsed = false }: Props) {
   const [registry, setRegistry] = useState<PolSettIndicatorRegistry | null>(
     null,
   );
@@ -122,21 +123,17 @@ export function PolSettExplorer({ focus, peers, growthRecord }: Props) {
     }));
   }, [registry]);
 
-  return (
-    <section className="mt-12 space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold">
-          Explore any PolSett indicator
-        </h2>
-        <p className="mt-0.5 text-xs text-gl-muted">
-          Indicators and indices from Schulz &amp; Kelsall (2020). Values are
-          coded per political period and held constant within periods — line
-          steps are leadership changes.{" "}
-          {registry ? `${registry.indicators.length} indicators` : "loading…"}
-        </p>
-      </div>
+  const subtitle = (
+    <>
+      Indicators and indices from Schulz &amp; Kelsall (2020). Values are coded
+      per political period and held constant within periods — line steps are
+      leadership changes.{" "}
+      {registry ? `${registry.indicators.length} indicators` : "loading…"}
+    </>
+  );
 
-      <div className="space-y-4">
+  const body = (
+    <div className="space-y-4">
         <div className="flex flex-wrap items-center gap-3 rounded border border-gl-border bg-white px-3 py-2">
           <label className="flex items-center gap-2 text-xs">
             <span className="font-medium">Indicator:</span>
@@ -312,7 +309,7 @@ export function PolSettExplorer({ focus, peers, growthRecord }: Props) {
                   No data for {focus.name}
                   {showPeers ? " or overlaid peers" : ""}.{" "}
                   {focus.name === "Pakistan" ? "" : ""}
-                  PolSett covers 42 Global-South countries only.
+                  Political Settlement data covers 42 Global-South countries only.
                 </p>
               )}
             </div>
@@ -365,6 +362,36 @@ export function PolSettExplorer({ focus, peers, growthRecord }: Props) {
           </div>
         )}
       </div>
+  );
+
+  if (defaultCollapsed) {
+    return (
+      <details className="group mt-12">
+        <summary className="cursor-pointer list-none">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-xl font-semibold">
+              Explore any Political Settlement indicator
+            </h2>
+            <span className="text-xs text-gl-muted transition-transform group-open:rotate-90">
+              ▸
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-gl-muted">{subtitle}</p>
+        </summary>
+        <div className="mt-6">{body}</div>
+      </details>
+    );
+  }
+
+  return (
+    <section className="mt-12 space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold">
+          Explore any Political Settlement indicator
+        </h2>
+        <p className="mt-0.5 text-xs text-gl-muted">{subtitle}</p>
+      </div>
+      {body}
     </section>
   );
 }

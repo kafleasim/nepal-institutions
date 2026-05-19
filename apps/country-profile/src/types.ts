@@ -27,12 +27,8 @@ export type Country = {
 
 export type PeerEntry = {
   iso3: string;
-  name: string;
   distance: number;
 };
-
-// Per-country list of nearest peers (top-K) keyed by ISO3.
-export type PeersIndex = Record<string, PeerEntry[]>;
 
 // Growth series (per ISO3, loaded from growth_series.json)
 export type ScalarPoint = { year: number; value: number };

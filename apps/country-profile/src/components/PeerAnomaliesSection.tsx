@@ -7,9 +7,12 @@ import { GL } from "../lib/glTokens";
 type Props = {
   focus: Country;
   countries: Country[];
-  // The institutional peer list, in display order. The default comparator is
-  // peerIsos[0] (the closest peer); user can swap in any other country.
-  peerIsos: string[];
+  // Selected comparator (lifted to the page so a click in PeerSection can
+  // drive it). Null while waiting for the initial peer list.
+  selectedIso: string | null;
+  onSelect: (iso3: string) => void;
+  // Cross-section year for z-score lookup. Null until fingerprints load.
+  year: number | null;
 };
 
 const TOP_N = 10;
@@ -17,17 +20,16 @@ const TOP_N = 10;
 // Top N indicators by z_focus * z_peer — features where both countries are
 // anomalous in the same direction. These are what makes them peers vs. a
 // random pair.
-export function PeerAnomaliesSection({ focus, countries, peerIsos }: Props) {
+export function PeerAnomaliesSection({
+  focus,
+  countries,
+  selectedIso,
+  onSelect,
+  year,
+}: Props) {
   const fps = useFingerprints();
   const [registry, setRegistry] = useState<VDemIndicatorRegistry | null>(null);
-  const [selected, setSelected] = useState<string | null>(null);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
-
-  // Default the comparison country to the top peer whenever the focus
-  // changes. The user can override by picking a different country.
-  useEffect(() => {
-    setSelected(peerIsos[0] ?? null);
-  }, [focus.iso3, peerIsos]);
 
   useEffect(() => {
     fetch("/vdem_indicators.json")
@@ -42,14 +44,14 @@ export function PeerAnomaliesSection({ focus, countries, peerIsos }: Props) {
   }, [registry]);
 
   const compareCountry = useMemo(
-    () => countries.find((c) => c.iso3 === selected) ?? null,
-    [countries, selected],
+    () => countries.find((c) => c.iso3 === selectedIso) ?? null,
+    [countries, selectedIso],
   );
 
   const items = useMemo(() => {
-    if (fps.status !== "ready" || !selected) return null;
-    const f = fps.get(focus.iso3);
-    const p = fps.get(selected);
+    if (fps.status !== "ready" || !selectedIso || year === null) return null;
+    const f = fps.index.get(year, focus.iso3);
+    const p = fps.index.get(year, selectedIso);
     if (!f || !p) return null;
     const rows: AnomalyRow[] = [];
     for (const [tag, zf] of f) {
@@ -59,7 +61,7 @@ export function PeerAnomaliesSection({ focus, countries, peerIsos }: Props) {
     }
     rows.sort((a, b) => b.score - a.score);
     return rows.slice(0, TOP_N);
-  }, [fps, focus.iso3, selected]);
+  }, [fps, focus.iso3, selectedIso, year]);
 
   // Keep the highlighted indicator stable across comparison-country changes
   // if it stays in the top list; otherwise fall back to the new top row.
@@ -86,17 +88,18 @@ export function PeerAnomaliesSection({ focus, countries, peerIsos }: Props) {
             V-Dem indicators where {focus.name} and the selected country are
             both anomalous in the same direction (large |z| on each side, same
             sign). These features pull the pair together in the z-score
-            Euclidean distance that defines institutional peers. 0 = 2025 world
-            average; ±1 = one SD from it. Click a row for the codebook entry.
+            Euclidean distance that defines institutional peers. 0 ={" "}
+            {year ?? "—"} world average; ±1 = one SD from it. Click a row for
+            the codebook entry.
           </p>
         </div>
         <div className="w-64">
           <CountryPicker
             countries={countries}
-            value={selected}
+            value={selectedIso}
             exclude={[focus.iso3]}
             placeholder="Pick country to compare…"
-            onChange={(iso) => setSelected(iso)}
+            onChange={onSelect}
           />
         </div>
       </div>
@@ -111,8 +114,8 @@ export function PeerAnomaliesSection({ focus, countries, peerIsos }: Props) {
         </p>
       ) : !items ? (
         <p className="text-sm text-gl-muted">
-          {focus.name} or {compareCountry.name} is not in the 2025 fingerprint
-          matrix.
+          {focus.name} or {compareCountry.name} is not in the {year ?? "—"}{" "}
+          fingerprint matrix.
         </p>
       ) : (
         <div className="space-y-3">
@@ -123,6 +126,7 @@ export function PeerAnomaliesSection({ focus, countries, peerIsos }: Props) {
             labelByTag={labelByTag}
             selectedTag={selectedTag}
             onSelect={setSelectedTag}
+            year={year}
           />
           <IndicatorPanel indicator={selectedIndicator} />
         </div>
@@ -140,6 +144,7 @@ type ChartProps = {
   labelByTag: Map<string, VDemIndicator>;
   selectedTag: string | null;
   onSelect: (tag: string) => void;
+  year: number | null;
 };
 
 const LABEL_W = 240;
@@ -153,6 +158,7 @@ function AnomalyChart({
   labelByTag,
   selectedTag,
   onSelect,
+  year,
 }: ChartProps) {
   // Symmetric z-axis bounded by the extreme of any row (round up to nearest
   // 0.5), with a floor of ±2.0 so the world-average line never gets crowded
@@ -197,7 +203,7 @@ function AnomalyChart({
           <span className="font-medium">{compare.name}</span>
         </span>
         <span className="text-gl-muted">
-          Z-score on 2025 V-Dem indicator (vs. world average).
+          Z-score on V-Dem indicator (vs. {year ?? "—"} world average).
         </span>
       </div>
 

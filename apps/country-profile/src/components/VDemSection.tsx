@@ -8,9 +8,10 @@ type Props = {
   focus: Country;
   peers: { iso3: string; name: string }[];
   growthRecord: GrowthRecord | null;
+  defaultCollapsed?: boolean;
 };
 
-export function VDemSection({ focus, peers, growthRecord }: Props) {
+export function VDemSection({ focus, peers, growthRecord, defaultCollapsed = false }: Props) {
   const [meta, setMeta] = useState<VDemMeta | null>(null);
   const [showPeers, setShowPeers] = useState(false);
 
@@ -41,7 +42,7 @@ export function VDemSection({ focus, peers, growthRecord }: Props) {
   if (!meta) {
     return (
       <section className="mt-12">
-        <h2 className="text-xl font-semibold">V-Dem indices</h2>
+        <h2 className="text-xl font-semibold">Varieties of Democracy</h2>
         <p className="mt-2 text-sm text-gl-muted">Loading…</p>
       </section>
     );
@@ -52,27 +53,26 @@ export function VDemSection({ focus, peers, growthRecord }: Props) {
     indices: meta.indices.filter((i) => i.group === g),
   }));
 
-  return (
-    <section className="mt-12 space-y-8">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-semibold">V-Dem indices</h2>
-          <p className="mt-0.5 text-xs text-gl-muted">
-            Aggregate (vartype = D) indices, all scaled to [0, 1]. Vertical
-            dashes mark {focus.name}'s growth-break years.
-          </p>
-        </div>
-        <label className="flex cursor-pointer items-center gap-2 text-xs">
-          <input
-            type="checkbox"
-            checked={showPeers}
-            onChange={(e) => setShowPeers(e.target.checked)}
-            className="h-3.5 w-3.5"
-          />
-          <span>Overlay peers</span>
-        </label>
-      </div>
+  const subtitle = (
+    <>
+      Aggregate (vartype = D) indices, all scaled to [0, 1]. Vertical dashes
+      mark {focus.name}'s growth-break years.
+    </>
+  );
+  const overlayToggle = (
+    <label className="flex cursor-pointer items-center gap-2 text-xs">
+      <input
+        type="checkbox"
+        checked={showPeers}
+        onChange={(e) => setShowPeers(e.target.checked)}
+        className="h-3.5 w-3.5"
+      />
+      <span>Overlay peers</span>
+    </label>
+  );
 
+  const body = (
+    <>
       {/* Legend */}
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 rounded border border-gl-border bg-white px-3 py-2 text-xs">
         <span className="flex items-center gap-1.5">
@@ -126,6 +126,39 @@ export function VDemSection({ focus, peers, growthRecord }: Props) {
           </div>
         </div>
       ))}
+    </>
+  );
+
+  if (defaultCollapsed) {
+    return (
+      <details className="group mt-12">
+        <summary className="cursor-pointer list-none">
+          <div className="flex items-baseline gap-2">
+            <h2 className="text-xl font-semibold">Varieties of Democracy</h2>
+            <span className="text-xs text-gl-muted transition-transform group-open:rotate-90">
+              ▸
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-gl-muted">{subtitle}</p>
+        </summary>
+        <div className="mt-6 space-y-8">
+          <div className="flex justify-end">{overlayToggle}</div>
+          {body}
+        </div>
+      </details>
+    );
+  }
+
+  return (
+    <section className="mt-12 space-y-8">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-semibold">Varieties of Democracy</h2>
+          <p className="mt-0.5 text-xs text-gl-muted">{subtitle}</p>
+        </div>
+        {overlayToggle}
+      </div>
+      {body}
     </section>
   );
 }

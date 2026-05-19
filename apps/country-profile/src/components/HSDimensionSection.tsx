@@ -15,6 +15,7 @@ type Props = {
   focus: Country;
   peers: { iso3: string; name: string }[];
   growthRecord: GrowthRecord | null;
+  defaultCollapsed?: boolean;
 };
 
 export function HSDimensionSection({
@@ -23,6 +24,7 @@ export function HSDimensionSection({
   focus,
   peers,
   growthRecord,
+  defaultCollapsed = false,
 }: Props) {
   const dim = meta.dimensions[dimension];
   const [tag, setTag] = useState(dim.default);
@@ -48,24 +50,20 @@ export function HSDimensionSection({
   const selected = dim.indicators.find((i) => i.tag === tag) ?? dim.indicators[0];
   const breakYears = growthRecord?.breaks?.years;
 
-  return (
-    <div className="space-y-4">
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h3 className="text-base font-semibold">{dim.label}</h3>
-          <p className="mt-0.5 text-xs text-gl-muted">{dim.description}</p>
-        </div>
-        <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs">
-          <input
-            type="checkbox"
-            checked={showPeers}
-            onChange={(e) => setShowPeers(e.target.checked)}
-            className="h-3.5 w-3.5"
-          />
-          <span>Overlay peers</span>
-        </label>
-      </div>
+  const overlayToggle = (
+    <label className="flex shrink-0 cursor-pointer items-center gap-2 text-xs">
+      <input
+        type="checkbox"
+        checked={showPeers}
+        onChange={(e) => setShowPeers(e.target.checked)}
+        className="h-3.5 w-3.5"
+      />
+      <span>Overlay peers</span>
+    </label>
+  );
 
+  const body = (
+    <>
       <div className="flex flex-wrap items-center gap-3 rounded border border-gl-border bg-white px-3 py-2 text-xs">
         <label className="flex items-center gap-2">
           <span className="text-gl-muted">Indicator</span>
@@ -129,6 +127,39 @@ export function HSDimensionSection({
         peers={peerSeries}
         breakYears={breakYears}
       />
+    </>
+  );
+
+  if (defaultCollapsed) {
+    return (
+      <details className="group">
+        <summary className="cursor-pointer list-none">
+          <div className="flex items-baseline gap-2">
+            <h3 className="text-base font-semibold">{dim.label}</h3>
+            <span className="text-xs text-gl-muted transition-transform group-open:rotate-90">
+              ▸
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-gl-muted">{dim.description}</p>
+        </summary>
+        <div className="mt-4 space-y-4">
+          <div className="flex justify-end">{overlayToggle}</div>
+          {body}
+        </div>
+      </details>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h3 className="text-base font-semibold">{dim.label}</h3>
+          <p className="mt-0.5 text-xs text-gl-muted">{dim.description}</p>
+        </div>
+        {overlayToggle}
+      </div>
+      {body}
     </div>
   );
 }
