@@ -1,0 +1,192 @@
+{
+  "source": "Reconstructed for this dashboard from: IMF World Revenue Longitudinal Database (fiscal); V-Dem v13 and the Fraser Institute (legal, peace); World Bank WDI, WHO and Penn World Table (collective); and the Besley & Persson Pillars 2 replication archive (civil-war / repression context).",
+  "citation": "Besley, Timothy and Torsten Persson. 2011. Pillars of Prosperity: The Political Economics of Development Clusters. Princeton University Press; and Besley, Persson & Dann (2021), 'Pillars of Prosperity: A Ten-Year Update', CEPR DP16256.",
+  "framework": "Besley & Persson argue prosperity rests on Adam Smith's two drivers — state capacity and peace. State capacity has three dimensions: fiscal (raising revenue), legal (protecting property & contracts) and collective (delivering public goods). With peace, these are the four Pillars of Prosperity shown here.",
+  "normalization": "Each pillar is scored as a WITHIN-YEAR PERCENTILE (0-100): a country's rank, among all countries with data that year, on the pillar's signal. This mirrors B-P's own method — they normalise every component relative to the cross-section of countries in each snapshot year (min-max and rank within year, then per-year PCA). Percentile rank is their Doing Business normalisation, robust to outliers across a long panel. The composite is the average of all four pillar percentiles, drawn only where all four are observed (the full-framework window, ~1980-2016, bounded by fiscal coverage from 1980 and B-P's peace metric to 2016). Native-unit values for every underlying indicator are available beneath each pillar.",
+  "composite_year_range": [
+    1980,
+    2016
+  ],
+  "pillars": [
+    {
+      "key": "fiscal",
+      "label": "Fiscal capacity",
+      "signal": "Income-tax share of total tax revenue",
+      "description": "The state's ability to raise revenue from hard-to-tax bases. Besley & Persson treat the income-tax share of total tax as the signature of fiscal capacity — income taxation requires registries, monitoring and compliance, whereas trade taxes are the 'easy' base a low-capacity state falls back on. Source: IMF World Revenue Longitudinal Database (WoRLD), 1980-2024.",
+      "default": "fis_inctax",
+      "indicators": [
+        {
+          "tag": "fis_inctax",
+          "label": "Income-tax share of total tax",
+          "source": "IMF WoRLD",
+          "unit": "% of total tax",
+          "direction": "positive",
+          "description": "Income, profit & capital-gains taxes as a share of total tax revenue. B-P's fiscal-capacity signal."
+        },
+        {
+          "tag": "fis_taxgdp",
+          "label": "Tax revenue (% of GDP)",
+          "source": "IMF WoRLD",
+          "unit": "% of GDP",
+          "direction": "positive",
+          "description": "Total tax revenue as a share of GDP — the overall reach of the fiscal system."
+        },
+        {
+          "tag": "fis_tradetax",
+          "label": "Trade-tax share of total tax",
+          "source": "IMF WoRLD",
+          "unit": "% of total tax",
+          "direction": "negative",
+          "description": "Taxes on international trade as a share of total tax. The 'easy' base; reliance on it signals LOW fiscal capacity."
+        },
+        {
+          "tag": "fis_bias",
+          "label": "Income − trade tax bias",
+          "source": "IMF WoRLD",
+          "unit": "ppt",
+          "direction": "positive",
+          "description": "Income-tax share minus trade-tax share (B-P's taxshare_bias). Higher = a more capacity-intensive tax mix."
+        }
+      ]
+    },
+    {
+      "key": "legal",
+      "label": "Legal capacity",
+      "signal": "Property rights protection (V-Dem)",
+      "description": "The state's ability to protect property and enforce contracts — the legal infrastructure that lets markets function. B-P's chosen annual measure is V-Dem's property-rights index; we add horizontal constraints on the executive (judicial / legislative) and the Fraser Institute's legal-structure index as convergent context.",
+      "default": "leg_prpty",
+      "indicators": [
+        {
+          "tag": "leg_prpty",
+          "label": "Property rights (V-Dem)",
+          "source": "V-Dem",
+          "unit": "0-1 index",
+          "direction": "positive",
+          "description": "Do citizens enjoy the right to acquire, possess, inherit and sell private property? V-Dem v2xcl_prpty, 0-1. B-P's legal-capacity signal."
+        },
+        {
+          "tag": "leg_jucon",
+          "label": "Judicial constraints on the executive",
+          "source": "V-Dem",
+          "unit": "0-1 index",
+          "direction": "positive",
+          "description": "The extent to which the executive respects the constitution and complies with court rulings (V-Dem v2x_jucon)."
+        },
+        {
+          "tag": "leg_legcon",
+          "label": "Legislative constraints on the executive",
+          "source": "V-Dem",
+          "unit": "0-1 index",
+          "direction": "positive",
+          "description": "The extent to which the legislature and oversight bodies can constrain the executive (V-Dem v2xlg_legcon)."
+        },
+        {
+          "tag": "leg_fraser",
+          "label": "Legal structure & property rights (Fraser)",
+          "source": "Fraser Institute (via QoG)",
+          "unit": "0-10 index",
+          "direction": "positive",
+          "description": "Judicial independence, impartial courts, protection of property, military non-interference and legal integrity. 0 (worst) to 10 (best)."
+        }
+      ]
+    },
+    {
+      "key": "collective",
+      "label": "Collective capacity",
+      "signal": "Health + education standing (mean of life-expectancy & human-capital percentiles)",
+      "description": "The state's capacity to deliver broad public goods — B-P's third, newest dimension, operationalised (after Besley & Persson 2014) as the combination of population health and education. The pillar score averages a country's within-year standing on life expectancy and human capital; schooling, infant mortality and public spending are shipped as context.",
+      "default": "col_lifeexp",
+      "indicators": [
+        {
+          "tag": "col_lifeexp",
+          "label": "Life expectancy at birth",
+          "source": "WDI",
+          "unit": "years",
+          "direction": "positive",
+          "description": "Life expectancy at birth, total (years). WDI. One of the two B-P collective-capacity signals."
+        },
+        {
+          "tag": "col_humancap",
+          "label": "Human capital index",
+          "source": "Penn World Table",
+          "unit": "index",
+          "direction": "positive",
+          "description": "PWT human-capital index built from average years of schooling and returns to education. Annual proxy for B-P's Barro-Lee schooling input."
+        },
+        {
+          "tag": "col_schooling",
+          "label": "Mean years of schooling (15-64)",
+          "source": "Barro-Lee (via QoG)",
+          "unit": "years",
+          "direction": "positive",
+          "description": "Average years of total schooling for the population aged 15-64. B-P's exact education input; five-yearly."
+        },
+        {
+          "tag": "col_infmort",
+          "label": "Infant mortality rate",
+          "source": "WDI",
+          "unit": "per 1,000 births",
+          "direction": "negative",
+          "description": "Infant deaths per 1,000 live births. WDI. A classic inverse marker of public-health delivery."
+        },
+        {
+          "tag": "col_eduexp",
+          "label": "Government education spending",
+          "source": "WDI",
+          "unit": "% of GDP",
+          "direction": "positive",
+          "description": "Government expenditure on education as a share of GDP — investment in collective capacity."
+        },
+        {
+          "tag": "col_healthexp",
+          "label": "Government health spending",
+          "source": "WHO / WDI",
+          "unit": "% of GDP",
+          "direction": "positive",
+          "description": "Domestic general government health expenditure as a share of GDP. WHO Global Health Expenditure DB (2000-)."
+        }
+      ]
+    },
+    {
+      "key": "peace",
+      "label": "Peace",
+      "signal": "Besley-Persson peace metric — freedom from civil war & repression",
+      "description": "Adam Smith's second driver and B-P's fourth pillar: the absence of political violence. This uses B-P's own metric — 0.5 x repression + civil war, scored as the cumulative share of years (from 1975) a country has avoided conflict and repression, so the value at 2016 matches their published index. Built from UCDP/PRIO civil war and their repression dummy; coverage 1975-2016. (V-Dem freedom from political killings and torture are shipped as raw context for a future, higher-coverage peace measure.)",
+      "default": "pea_civilwar",
+      "indicators": [
+        {
+          "tag": "pea_civilwar",
+          "label": "Civil-war incidence (B-P score input)",
+          "source": "UCDP/PRIO (via B-P)",
+          "unit": "0/1",
+          "direction": "negative",
+          "description": "1 if the country was in an internal armed conflict that year (B-P's UCDP-derived war dummy). Weighted 1.0 in the peace score; inverse signal; 1946-2016."
+        },
+        {
+          "tag": "pea_repression",
+          "label": "Repression incidence (B-P score input)",
+          "source": "B-P replication",
+          "unit": "0/1",
+          "direction": "negative",
+          "description": "1 if the country was in a state of political repression that year (B-P repression dummy). Weighted 0.5 in the peace score; inverse signal; through 2016."
+        },
+        {
+          "tag": "pea_kill",
+          "label": "Freedom from political killings (V-Dem, context)",
+          "source": "V-Dem",
+          "unit": "index",
+          "direction": "positive",
+          "description": "Freedom from political killings by the state (V-Dem v2clkill). NOT used in the current B-P peace score — shipped as context for a future, higher-coverage peace measure. Higher = freer; through 2025."
+        },
+        {
+          "tag": "pea_tort",
+          "label": "Freedom from torture (V-Dem, context)",
+          "source": "V-Dem",
+          "unit": "index",
+          "direction": "positive",
+          "description": "Freedom from torture by the state (V-Dem v2cltort). NOT used in the current B-P peace score — shipped as context for a future, higher-coverage peace measure. Higher = freer; through 2025."
+        }
+      ]
+    }
+  ]
+}

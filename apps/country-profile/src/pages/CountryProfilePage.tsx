@@ -9,6 +9,7 @@ import { VDemSection } from "../components/VDemSection";
 import { VDemExplorer } from "../components/VDemExplorer";
 import { BdmSection } from "../components/BdmSection";
 import { StateCapacitySection } from "../components/StateCapacitySection";
+import { PillarsSection } from "../components/PillarsSection";
 import { HSDimensionSection } from "../components/HSDimensionSection";
 import { PCTrajectoriesSection } from "../components/PCTrajectoriesSection";
 import { RelatedIndicatorsSection } from "../components/RelatedIndicatorsSection";
@@ -24,6 +25,7 @@ const CHAPTERS: ChapterSpec[] = [
   { id: "political-settlement", label: "Political settlement" },
   { id: "winning-coalition", label: "Winning coalition" },
   { id: "state-capacity", label: "State capacity" },
+  { id: "pillars", label: "Pillars of Prosperity" },
   { id: "institutional-axes", label: "Institutional axes" },
   { id: "vdem", label: "Varieties of Democracy" },
 ];
@@ -261,6 +263,28 @@ export function CountryProfilePage() {
             />
           </>
         )}
+      </section>
+
+      <section id="pillars" className="mt-12 scroll-mt-20 space-y-8">
+        <div>
+          <h2 className="text-xl font-semibold">Pillars of Prosperity</h2>
+          <p className="mt-1 text-sm text-gl-muted">
+            Besley &amp; Persson argue prosperity rests on Adam Smith's two
+            drivers — <em>state capacity</em> and <em>peace</em> — with state
+            capacity split into fiscal, legal, and collective dimensions. Their
+            own published index is a cross-sectional snapshot; here we
+            reconstruct all four pillars as annual panels and view {focus.name}
+            {" "}through their lens, scoring each pillar as a within-year global
+            percentile so the disparate measures (tax shares, V-Dem indices,
+            life expectancy) sit on one comparable scale.
+          </p>
+        </div>
+
+        <PillarsSection
+          focus={focus}
+          peers={peerList}
+          growthRecord={growth[focus.iso3] ?? null}
+        />
       </section>
 
       <section id="institutional-axes" className="scroll-mt-20">

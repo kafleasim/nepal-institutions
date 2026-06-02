@@ -270,3 +270,47 @@ export type PCMeta = {
   n_features: number;
   components: PCComponent[];
 };
+
+// Besley & Persson "Pillars of Prosperity" — four pillars (fiscal, legal &
+// collective state capacity + peace) reconstructed as annual panels. Each
+// pillar is scored as a within-year percentile (0-100); raw native-unit
+// underlying indicators ship alongside for drilldown.
+export type PillarKey = "fiscal" | "legal" | "collective" | "peace";
+export type PillarPctKey = PillarKey | "composite";
+
+export type PillarIndicator = {
+  tag: string;
+  label: string;
+  source: string;
+  unit: string;
+  direction: RelatedIndicatorDirection;
+  description: string;
+};
+
+export type PillarSpec = {
+  key: PillarKey;
+  label: string;
+  signal: string;
+  description: string;
+  default: string;
+  indicators: PillarIndicator[];
+};
+
+export type PillarsMeta = {
+  source: string;
+  citation: string;
+  framework: string;
+  normalization: string;
+  composite_year_range: [number, number];
+  pillars: PillarSpec[];
+};
+
+// Per-country file. `pillars` holds the percentile (0-100) series per pillar
+// plus the composite; `series` holds raw native-unit underlying indicators in
+// the shared `tag -> ScalarPoint[]` shape (so it is structurally an
+// IndicatorSeriesRecord and reuses HSComponentChart directly).
+export type PillarsRecord = {
+  iso3: string;
+  pillars: Partial<Record<PillarPctKey, ScalarPoint[]>>;
+  series: Record<string, ScalarPoint[]>;
+};
