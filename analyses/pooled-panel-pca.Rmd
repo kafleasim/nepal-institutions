@@ -88,8 +88,10 @@ cat(sprintf("Panel window: %d-%d\n", panel_start, panel_end))
 We mirror the country-space writeup's filter:
 
 - vartype `"C"` only (component-type IRT scores; aggregates would double-count)
-- drop the two discrete-categorical components V-Dem ships (`v2regopploc`,
-  `v2regsuploc`)
+- drop the nominal-scale components — the seven `v2reg*` variables that are modal
+  categories over an unordered list of social groups or locations rather than IRT
+  scores, detected from the data rather than the codebook (see
+  `analyses/vdem-scale-audit.md`)
 - drop the 18 conceptually-redundant indicators flagged in
   `outputs/redundancy_clusters_2025.csv`
 - drop the suffix variants (`_codelow`, `_codehigh`, `_sd`, `_osp`, `_ord`,
@@ -103,7 +105,14 @@ in roughly `r round(100 * (panel_end - 1999) / (panel_end - panel_start + 1))`%
 of years, which is right at the threshold.
 
 ```{r indicator-filter, cache=TRUE}
-discrete_vars <- c("v2regopploc", "v2regsuploc")
+# Nominal-scale detection — see country-space-writeup.Rmd Section 3 and
+# analyses/vdem-scale-audit.md. The codebook's `scale` field is empty for these,
+# so the test is on the data: integer-valued throughout with few distinct levels
+# means a modal category over an unordered list, not an IRT score.
+is_nominal_code <- function(x) {
+  v <- x[!is.na(x)]
+  length(v) > 0 && all(abs(v - round(v)) < 1e-9) && length(unique(v)) <= 25
+}
 
 redundant_drops <- c(
   "v2cldmovew", "v2cldiscw", "v2clslavef", "v2clprptyw", "v2clacjstw",
@@ -118,19 +127,27 @@ all_cols      <- names(vdem_raw)
 is_suffix     <- vapply(all_cols, function(x)
                         any(vapply(suffixes, endsWith, logical(1), x = x)),
                         logical(1))
-is_numbered   <- grepl("_\\d+$", all_cols)
-base_cols     <- all_cols[!is_suffix & !is_numbered]
+# `_0`, `_1`, ... are V-Dem multi-select response columns (share of coders
+# selecting each option), not per-rater codings.
+is_multiselect <- grepl("_\\d+$", all_cols)
+base_cols     <- all_cols[!is_suffix & !is_multiselect]
 
 component_codes <- vdem_codebook %>%
   filter(vartype == "C") %>% pull(tag) %>% unique()
 
 candidate_codes <- intersect(component_codes, base_cols) %>%
-  setdiff(discrete_vars) %>%
   setdiff(redundant_drops)
 
 candidate_codes <- candidate_codes[
   vapply(candidate_codes, function(x) is.numeric(vdem_raw[[x]]), logical(1))
 ]
+
+discrete_vars   <- candidate_codes[
+  vapply(candidate_codes, function(x) is_nominal_code(vdem_raw[[x]]), logical(1))
+]
+candidate_codes <- setdiff(candidate_codes, discrete_vars)
+cat("Nominal-scale components excluded (", length(discrete_vars), "): ",
+    paste(discrete_vars, collapse = ", "), "\n", sep = "")
 
 panel_window <- vdem_raw %>%
   filter(year >= panel_start, year <= panel_end)

@@ -2,12 +2,12 @@
   "source": "outputs/pooled_pca/country_year_pc_scores.csv",
   "panel_window": [1970, 2025],
   "n_country_years": 9389,
-  "n_features": 190,
+  "n_features": 185,
   "components": [
     {
       "key": "pc1",
       "name": "Liberal democracy",
-      "var_explained": 0.4041,
+      "var_explained": 0.4148,
       "short": "Whether political life runs by liberal-democratic norms (rights, free press, rule of law, broad consultation) or by a state-controlled, leader-centric model. The dominant axis V-Dem was built to measure.",
       "positive_pole": "Liberal democracy: free expression and free press, autonomous electoral management, peaceful assembly, no civil-society repression, freedom from torture, transparent laws with predictable enforcement, broad consultation in deliberation.",
       "negative_pole": "Personalist / ideological autocracy with a state-controlled information environment: state-owned media, control of entertainment, person-of-the-leader and ideological executive legitimation, state-administered mass organisations, autocratic mobilisation."
@@ -15,7 +15,7 @@
     {
       "key": "pc2",
       "name": "State encompassment",
-      "var_explained": 0.0705,
+      "var_explained": 0.0718,
       "short": "Where the state-society line sits, holding regime type fixed. Captures whether the state penetrates society uniformly or whether non-state actors carry visible weight.",
       "positive_pole": "State encompasses society: equal delivery of education, health, and public services across income, region, gender, and group; uniform subnational administration; clean everyday politics; *and* state ownership of the broadcast / economic / civil-society sphere (state media, party gating, controlled CSOs). One infrastructural reach, both surfaces.",
       "negative_pole": "Society encompasses the state: private economy, autonomous media, independent universities, dense plural CSOs, judicial review constraining the executive --- alongside political violence by non-state actors and anti-system mobilisation. Unifying thread: non-state actors having weight, whether constitutional or contentious."
@@ -23,7 +23,7 @@
     {
       "key": "pc3",
       "name": "Programmatic vs personalist rule",
-      "var_explained": 0.0337,
+      "var_explained": 0.0342,
       "short": "How politics is organised, holding regime type and stateness fixed. Captures whether rule is conducted through institutions and mobilisational machinery or through a person and their clients. Note: the positive pole is agnostic to regime type --- Scandinavian democracies and one-party mass-mobilisational autocracies sit on the same side.",
       "positive_pole": "Organised programmatic politics: parties with permanent local branches and national organisations, mass mobilisation (whether pro-democratic or state-orchestrated), patriotic / civic socialisation in schools, performance-based regime legitimation, gender inclusion in public life, executive embedded in legislative process.",
       "negative_pole": "Personalist neopatrimonial rule: head of government appoints and dismisses cabinet at will, dissolves the legislature, wields un-overridable veto; pervasive corruption across executive / legislative / judicial / public-sector branches; elections marked by fraud and intimidation."

@@ -153,8 +153,10 @@ component_codes <- vdem_codebook %>%
 suffixes <- c("_codelow", "_codehigh", "_sd", "_osp", "_ord", "_mean", "_nr")
 all_cols <- names(vdem_raw)
 is_suffix <- sapply(all_cols, function(x) any(sapply(suffixes, function(s) endsWith(x, s))))
-is_numbered <- grepl("_\\d+$", all_cols)
-base_cols <- all_cols[!is_suffix & !is_numbered]
+# `_0`, `_1`, ... are V-Dem multi-select response columns (share of coders
+# selecting each option), not per-rater codings.
+is_multiselect <- grepl("_\\d+$", all_cols)
+base_cols <- all_cols[!is_suffix & !is_multiselect]
 
 # Intersect with codebook C-type
 candidate_codes <- intersect(component_codes, base_cols)
@@ -228,31 +230,39 @@ region_labels <- c(
 )
 ```
 
-## Remove discrete variables
+## Remove nominal-scale variables
 
 V-Dem's C-type indicators are produced by a Bayesian IRT measurement model that converts
 ordinal expert codings into continuous latent scores (typically ranging from roughly -4 to +4).
-However, two indicators are discrete integers rather than continuous IRT output:
-
-- **v2regopploc** — "Regime opposition location" (integer-coded)
-- **v2regsuploc** — "Regime support location" (integer-coded)
-
-Since our continuous analysis requires all indicators to sit on comparable continuous scales,
-we drop these two.
+A handful are not IRT output at all: they are modal categories over an unordered response
+list, delivered as integer codes. `v2regimpgroup` ("regime most important support group"),
+for instance, runs 0-13 over a list of social groups from the aristocracy to a foreign
+government, so the arithmetic gap between "military" and "religious group" is not a
+quantity. The codebook's `scale` field is empty for all of them, so we detect them from
+the data: integer-valued throughout the panel with at most 25 distinct values. Across the
+candidate pool this flags exactly seven — the five `v2reg*` group variables plus the two
+`*loc` location variables — with a wide margin to the nearest indicator it keeps.
 
 ```{r remove-discrete}
-discrete_vars <- c("v2regopploc", "v2regsuploc")
+is_nominal_code <- function(x) {
+  v <- x[!is.na(x)]
+  length(v) > 0 && all(abs(v - round(v)) < 1e-9) && length(unique(v)) <= 25
+}
+
+discrete_vars <- indicator_info$code[
+  vapply(indicator_info$code, function(x) is_nominal_code(vdem_raw[[x]]), logical(1))
+]
 
 # Document what we're removing
 indicator_info %>%
   filter(code %in% discrete_vars) %>%
   select(Code = code, Category = category, Description = description) %>%
-  kable(caption = "Discrete variables removed from analysis")
+  kable(caption = "Nominal-scale variables removed from analysis")
 
 indicator_info <- indicator_info %>%
   filter(!code %in% discrete_vars)
 
-cat("Indicators after removing discrete variables:", nrow(indicator_info), "\n")
+cat("Indicators after removing nominal-scale variables:", nrow(indicator_info), "\n")
 ```
 
 ## Indicator catalog
