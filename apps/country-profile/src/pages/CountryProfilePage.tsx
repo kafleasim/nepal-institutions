@@ -4,6 +4,7 @@ import type { Country, GrowthIndex, HSComponentsMeta } from "../types";
 import { CountryPicker } from "../components/CountryPicker";
 import { PeerSection } from "../components/PeerSection";
 import { PeerAnomaliesSection } from "../components/PeerAnomaliesSection";
+import { PeerDistanceTrendSection } from "../components/PeerDistanceTrendSection";
 import { GrowthBreaksSection } from "../components/GrowthBreaksSection";
 import { VDemSection } from "../components/VDemSection";
 import { VDemExplorer } from "../components/VDemExplorer";
@@ -183,6 +184,12 @@ export function CountryProfilePage() {
           selectedIso={comparePeerIso}
           onSelect={setComparePeerIso}
           year={peerYear}
+        />
+
+        <PeerDistanceTrendSection
+          focus={focus}
+          countries={countries}
+          selectedIso={comparePeerIso}
         />
       </section>
 
