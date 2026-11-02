@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ESID typology: proxy vs actual</title>
+<style>
+  :root {
+    --ink:#1a1a1a; --muted:#6b7280; --faint:#9ca3af; --border:#e2e5e9;
+    --bg:#fff; --sub:#f7f8f9;
+    --q1:#2F87C8; --q2:#2f7d55; --q3:#D97706; --q4:#CC4948;
+    --blue:#2F87C8; --blue-dark:#1A5A8E; --red:#CC4948;
+    --sans:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+    --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--sans);font-size:13.5px;color:var(--ink);line-height:1.5;background:var(--bg)}
+  .wrap{max-width:1120px;margin:0 auto;padding:24px 26px 70px}
+  h1,h2,h3{font-family:var(--serif);font-weight:600;margin:0}
+  h1{font-size:23px} h2{font-size:18px;margin-top:34px} h3{font-size:14.5px}
+  code{font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+  p{margin:8px 0}
+  .lede{color:var(--muted);font-size:12.5px;margin-top:4px}
+  .card{border:1px solid var(--border);border-radius:5px;padding:14px 16px;margin-top:14px}
+  .card.sub{background:var(--sub)}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  @media(max-width:900px){.grid2{grid-template-columns:1fr}}
+  select{font:inherit;font-size:12.5px;padding:4px 7px;border:1px solid var(--border);
+         border-radius:3px;background:var(--bg);max-width:100%}
+  .ctl{display:flex;gap:16px;align-items:center;flex-wrap:wrap;font-size:12.5px;
+       border:1px solid var(--border);border-radius:5px;padding:10px 13px;background:var(--sub)}
+  button.seg{font:inherit;font-size:12px;padding:3px 9px;border:1px solid var(--border);
+             border-radius:3px;background:var(--bg);cursor:pointer}
+  button.seg.on{background:var(--blue);border-color:var(--blue);color:#fff}
+  .hero{display:flex;gap:34px;align-items:flex-end;flex-wrap:wrap;margin:6px 0 2px}
+  .hero .big{font-family:var(--serif);font-size:44px;line-height:1;color:var(--blue-dark)}
+  .hero .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .hero .mid{font-family:var(--serif);font-size:26px;line-height:1}
+  table{border-collapse:collapse;font-size:12.5px;width:100%}
+  th,td{text-align:right;padding:5px 8px;border-bottom:1px solid var(--border);white-space:nowrap}
+  th:first-child,td:first-child{text-align:left}
+  th{font-weight:600;font-size:11px;color:var(--muted);border-bottom:1px solid var(--ink)}
+  td.num{font-variant-numeric:tabular-nums}
+  tbody tr.click{cursor:pointer}
+  tbody tr.click:hover{background:#f2f7fb}
+  tbody tr.on{background:#e4f0f9}
+  .cm{width:auto}
+  .cm td,.cm th{border:1px solid var(--border);text-align:center;min-width:62px}
+  .cm td.diag{background:#e4f0f9;font-weight:600}
+  .cm td.zero{color:var(--faint)}
+  .sw{display:inline-block;width:9px;height:9px;border-radius:2px;vertical-align:baseline;margin-right:4px}
+  .key{font-size:11.5px;color:var(--muted);margin:6px 0 0}
+  .key span.it{margin-right:14px;white-space:nowrap}
+  .note{font-size:11.5px;color:var(--muted);max-width:80ch}
+  .flag{color:var(--red);font-weight:600}
+  .ok{color:var(--q2)}
+  .tblwrap{max-height:330px;overflow:auto;border:1px solid var(--border);border-radius:4px;margin-top:10px}
+  .tblwrap th{position:sticky;top:0;background:var(--bg)}
+  svg{display:block;max-width:100%;height:auto}
+  .diag-box{border-left:3px solid var(--red);background:#fef6f6;padding:10px 13px;font-size:12.5px;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>ESID typology from proxies, against the actual coding</h1>
+<p class="lede" id="lede"></p>
+
+<div class="ctl" id="ctl"></div>
+
+<div id="metrics"></div>
+
+<h2>How often the derived typology matches</h2>
+<div id="overview"></div>
+
+<h2>By country</h2>
+<p class="note">Match rate over that country's PolSett periods. Click a row to load it below.</p>
+<div class="tblwrap" id="bycountry"></div>
+
+<h2 id="detail-h">One country over time</h2>
+<div id="detail"></div>
+
+</div>
+
+<script src="proxy_data.js"></script>
+<script>
+"use strict";
+const D = window.PROXY_DATA, P = D.periods;
+const CAND = new Map(D.candidates.map(c => [c.key, c]));
+
+// ESID four-category typology, codebook 4.3.7: x_sfsdummy x x_pcdummy.
+const Q = {
+  1: { name: "Broad–Concentrated",  sf: 1, pc: 1, col: "var(--q1)" },
+  2: { name: "Broad–Dispersed",     sf: 1, pc: 0, col: "var(--q2)" },
+  3: { name: "Narrow–Dispersed",    sf: 0, pc: 0, col: "var(--q3)" },
+  4: { name: "Narrow–Concentrated", sf: 0, pc: 1, col: "var(--q4)" }
+};
+const HEX = { 1: "#2F87C8", 2: "#2f7d55", 3: "#D97706", 4: "#CC4948" };
+const clsOf = (sfHigh, pcHigh) => sfHigh ? (pcHigh ? 1 : 2) : (pcHigh ? 4 : 3);
+
+// The two axes, with the PolSett variable each proxy is standing in for and the
+// codebook cutoff that defines its dummy.
+const AXES = {
+  sf: { key: "sf", target: "x_socialfoundationsize", dummy: "x_sfsdummy",
+        cut: 41, label: "Social foundation size", short: "SF", unit: "% of population" },
+  pc: { key: "pc", target: "x_powerconcentration_add", dummy: "x_pcdummy",
+        cut: 0.56, label: "Power concentration", short: "PC", unit: "0–1 index" }
+};
+
+const isNum = v => typeof v === "number" && isFinite(v);
+const mean = a => a.reduce((s, v) => s + v, 0) / a.length;
+const fmt = (v, d = 3) => isNum(v) ? v.toFixed(d) : "—";
+const pc1 = v => isNum(v) ? (100 * v).toFixed(1) + "%" : "—";
+const pc0 = v => isNum(v) ? (100 * v).toFixed(0) + "%" : "—";
+const esc = s => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+function pearson(x, y) {
+  const n = x.length; if (n < 4) return null;
+  const mx = mean(x), my = mean(y);
+  let sxy = 0, sxx = 0, syy = 0;
+  for (let i = 0; i < n; i++) { const a = x[i] - mx, b = y[i] - my; sxy += a * b; sxx += a * a; syy += b * b; }
+  return sxx > 0 && syy > 0 ? sxy / Math.sqrt(sxx * syy) : null;
+}
+function ranks(a) {
+  const idx = a.map((v, i) => [v, i]).sort((p, q) => p[0] - q[0]);
+  const r = new Array(a.length);
+  let i = 0;
+  while (i < idx.length) {
+    let j = i;
+    while (j + 1 < idx.length && idx[j + 1][0] === idx[i][0]) j++;
+    const av = (i + j) / 2 + 1;
+    for (let k = i; k <= j; k++) r[idx[k][1]] = av;
+    i = j + 1;
+  }
+  return r;
+}
+function auc(score, lab) {
+  const p = lab.reduce((a, v) => a + v, 0), n = lab.length - p;
+  if (!p || !n) return null;
+  const r = ranks(score);
+  let s = 0;
+  for (let i = 0; i < lab.length; i++) if (lab[i]) s += r[i];
+  return (s - p * (p + 1) / 2) / (p * n);
+}
+function quantile(sorted, q) {
+  if (!sorted.length) return null;
+  const i = (sorted.length - 1) * q, lo = Math.floor(i), hi = Math.ceil(i);
+  return sorted[lo] + (sorted[hi] - sorted[lo]) * (i - lo);
+}
+// Least squares slope/intercept, used only to put a proxy on the target's units.
+function ols(x, y) {
+  const mx = mean(x), my = mean(y);
+  let sxy = 0, sxx = 0;
+  for (let i = 0; i < x.length; i++) { sxy += (x[i] - mx) * (y[i] - my); sxx += (x[i] - mx) ** 2; }
+  const b = sxx > 0 ? sxy / sxx : 0;
+  return { b, a: my - b * mx };
+}
+
+// Defaults: the best single proxy for each axis on AUC against its dummy.
+const S = { sf: "v2x_civlib", pc: "v2mecenefm", thr: "base", resid: false, country: null };
+
+// ---------------------------------------------------------------------------
+// Core computation
+// ---------------------------------------------------------------------------
+// Each proxy is oriented so that higher means higher on the PolSett axis, using
+// its empirical AUC against the axis dummy. Then it is dichotomised, and the two
+// dichotomies are crossed to give a predicted quadrant.
+
+function compute() {
+  const kSF = S.sf, kPC = S.pc;
+  const rows = P.filter(r => isNum(r[kSF]) && isNum(r[kPC]) && isNum(r.x_esidettlementype)
+                             && isNum(r.x_sfsdummy) && isNum(r.x_pcdummy));
+  const out = { rows: [], kSF, kPC };
+
+  const orient = (key, dummy) => {
+    const sub = rows.filter(r => isNum(r[dummy]));
+    const a = auc(sub.map(r => r[key]), sub.map(r => r[dummy] === 1 ? 1 : 0));
+    return a !== null && a < 0.5 ? -1 : 1;
+  };
+  const sSF = orient(kSF, "x_sfsdummy"), sPC = orient(kPC, "x_pcdummy");
+  const vSF = r => sSF * r[kSF];
+
+  // Optionally take only the part of the power proxy that is orthogonal to the
+  // social-foundation proxy. The two best proxies correlate about -0.8, and a
+  // collinear pair cannot populate the off-diagonal quadrants at all. See
+  // rotations.R: this roughly doubles off-diagonal recall and raises balanced
+  // accuracy, at the cost of a few points of headline agreement.
+  let vPC;
+  if (S.resid) {
+    const fit = ols(rows.map(vSF), rows.map(r => sPC * r[kPC]));
+    vPC = r => sPC * r[kPC] - (fit.a + fit.b * vSF(r));
+  } else {
+    vPC = r => sPC * r[kPC];
+  }
+
+  // Thresholds. "base" matches the observed base rate of the true dummy, so the
+  // predicted and actual marginals agree and the accuracy reflects the pairing
+  // rather than a base-rate mismatch. "mean" is PolSett's own rule, dichotomise
+  // at the sample mean. "opt" maximises 4-class accuracy on a grid.
+  const xs = rows.map(vSF).sort((a, b) => a - b);
+  const ps = rows.map(vPC).sort((a, b) => a - b);
+  let tSF, tPC;
+  if (S.thr === "mean") { tSF = mean(rows.map(vSF)); tPC = mean(rows.map(vPC)); }
+  else if (S.thr === "base") {
+    tSF = quantile(xs, 1 - rows.filter(r => r.x_sfsdummy === 1).length / rows.length);
+    tPC = quantile(ps, 1 - rows.filter(r => r.x_pcdummy === 1).length / rows.length);
+  } else {
+    let best = null;
+    for (let i = 5; i <= 95; i += 2) for (let j = 5; j <= 95; j += 2) {
+      const a = quantile(xs, i / 100), b = quantile(ps, j / 100);
+      let hit = 0;
+      for (const r of rows) if (clsOf(vSF(r) >= a, vPC(r) >= b) === r.x_esidettlementype) hit++;
+      if (!best || hit > best.hit) best = { hit, a, b };
+    }
+    tSF = best.a; tPC = best.b;
+  }
+
+  // Fits to express each proxy in the target's own units for the time charts.
+  const fSF = ols(rows.map(vSF), rows.map(r => r.x_socialfoundationsize));
+  const fPC = ols(rows.map(vPC), rows.map(r => r.x_powerconcentration_add));
+
+  for (const r of rows) {
+    const sfHigh = vSF(r) >= tSF, pcHigh = vPC(r) >= tPC;
+    const pred = clsOf(sfHigh, pcHigh);
+    out.rows.push({
+      r, pred, truth: r.x_esidettlementype,
+      match: pred === r.x_esidettlementype,
+      sfHigh, pcHigh,
+      sfTrue: r.x_sfsdummy === 1, pcTrue: r.x_pcdummy === 1,
+      vSF: vSF(r), vPC: vPC(r),
+      estSF: fSF.a + fSF.b * vSF(r),
+      estPC: fPC.a + fPC.b * vPC(r)
+    });
+  }
+
+  out.tSF = tSF; out.tPC = tPC; out.sSF = sSF; out.sPC = sPC;
+  out.estCutSF = fSF.a + fSF.b * tSF;   // proxy cutoff, mapped into target units
+  out.estCutPC = fPC.a + fPC.b * tPC;
+  out.acc = mean(out.rows.map(d => d.match ? 1 : 0));
+  out.sfAcc = mean(out.rows.map(d => d.sfHigh === d.sfTrue ? 1 : 0));
+  out.pcAcc = mean(out.rows.map(d => d.pcHigh === d.pcTrue ? 1 : 0));
+  const counts = [1, 2, 3, 4].map(k => out.rows.filter(d => d.truth === k).length);
+  out.baseline = Math.max(...counts) / out.rows.length;
+  out.counts = counts;
+  // Macro-average recall. Plain accuracy is dominated by the two large diagonal
+  // quadrants (59% of cases), so it rewards giving up on the off-diagonal.
+  const recalls = [1, 2, 3, 4].map(k => {
+    const s = out.rows.filter(d => d.truth === k);
+    return s.length ? s.filter(d => d.pred === k).length / s.length : null;
+  }).filter(v => v !== null);
+  out.balAcc = mean(recalls);
+  out.aucSF = auc(out.rows.map(d => d.vSF), out.rows.map(d => d.sfTrue ? 1 : 0));
+  out.aucPC = auc(out.rows.map(d => d.vPC), out.rows.map(d => d.pcTrue ? 1 : 0));
+  // The diagnostic: how correlated the two proxies are, against how correlated
+  // the two PolSett axes actually are.
+  out.corProxy = pearson(out.rows.map(d => d.vSF), out.rows.map(d => d.vPC));
+  out.corTrue = pearson(out.rows.map(d => d.r.x_socialfoundationsize),
+                        out.rows.map(d => d.r.x_powerconcentration_add));
+  out.M = [1, 2, 3, 4].map(() => [0, 0, 0, 0]);
+  for (const d of out.rows) out.M[d.truth - 1][d.pred - 1]++;
+  return out;
+}
+
+// ---------------------------------------------------------------------------
+// Controls + metric cards
+// ---------------------------------------------------------------------------
+
+function poolFor(axis) {
+  const a = AXES[axis];
+  // Anything with usable discrimination on that axis; ranked by AUC.
+  return D.candidates.map(c => {
+    const sub = P.filter(r => isNum(r[c.key]) && isNum(r[a.dummy]));
+    if (sub.length < 200) return null;
+    const v = auc(sub.map(r => r[c.key]), sub.map(r => r[a.dummy] === 1 ? 1 : 0));
+    if (v === null) return null;
+    return { c, auc: Math.max(v, 1 - v) };
+  }).filter(Boolean).sort((x, y) => y.auc - x.auc);
+}
+
+function renderCtl() {
+  const opt = (axis, cur) => poolFor(axis).map(({ c, auc }) =>
+    `<option value="${c.key}" ${c.key === cur ? "selected" : ""}>${esc(c.label)} — AUC ${auc.toFixed(3)}</option>`).join("");
+  document.getElementById("ctl").innerHTML = `
+    <label><b>Social foundation proxy</b><br><select id="sel-sf" style="min-width:330px">${opt("sf", S.sf)}</select></label>
+    <label><b>Power concentration proxy</b><br><select id="sel-pc" style="min-width:330px">${opt("pc", S.pc)}</select></label>
+    <span><b>Cutoffs</b><br>
+      ${[["base", "Match base rate"], ["mean", "Sample mean"], ["opt", "Maximise match"]]
+        .map(([k, l]) => `<button class="seg ${S.thr === k ? "on" : ""}" data-thr="${k}">${l}</button>`).join(" ")}
+    </span>
+    <span><b>Axes</b><br>
+      <button class="seg ${!S.resid ? "on" : ""}" data-resid="0">As is</button>
+      <button class="seg ${S.resid ? "on" : ""}" data-resid="1">Decorrelate</button>
+    </span>`;
+  document.getElementById("sel-sf").onchange = e => { S.sf = e.target.value; render(); };
+  document.getElementById("sel-pc").onchange = e => { S.pc = e.target.value; render(); };
+  document.querySelectorAll("[data-thr]").forEach(b => b.onclick = () => { S.thr = b.dataset.thr; render(); });
+  document.querySelectorAll("[data-resid]").forEach(b => b.onclick = () => {
+    S.resid = b.dataset.resid === "1"; render();
+  });
+}
+
+function metricCard(axis, key, R) {
+  const a = AXES[axis], c = CAND.get(key);
+  const flipped = (axis === "sf" ? R.sSF : R.sPC) < 0;
+  const sub = R.rows.map(d => ({ x: axis === "sf" ? d.vSF : d.vPC,
+                                 y: d.r[a.target] }));
+  const r = pearson(sub.map(s => s.x), sub.map(s => s.y));
+  const desc = c.source === "derived" ? c.note
+    : (c.question || "") + (c.clarification ? " " + c.clarification : "");
+  return `<div class="card">
+    <h3>${esc(a.label)}</h3>
+    <p class="note" style="margin:2px 0 8px">standing in for <code>${a.target}</code>, dichotomised at ${a.cut} to give <code>${a.dummy}</code></p>
+    <p style="margin:0"><b>${esc(c.label)}</b> <code>${key}</code>${flipped ? ` <span class="flag" title="Correlates negatively with the axis, so the scale is reversed before thresholding">(reversed)</span>` : ""}</p>
+    <p class="note" style="margin-top:5px">${esc(String(desc).slice(0, 300))}</p>
+    <p style="margin-top:9px;font-variant-numeric:tabular-nums">
+      r = <b>${fmt(r)}</b> &nbsp;·&nbsp; AUC vs dummy = <b>${fmt(axis === "sf" ? R.aucSF : R.aucPC)}</b>
+      &nbsp;·&nbsp; axis called right <b>${pc1(axis === "sf" ? R.sfAcc : R.pcAcc)}</b> of the time</p>
+  </div>`;
+}
+
+// ---------------------------------------------------------------------------
+// Overview
+// ---------------------------------------------------------------------------
+
+function renderOverview(R) {
+  const cm = `<table class="cm"><thead><tr><th></th>
+    ${[1, 2, 3, 4].map(k => `<th><span class="sw" style="background:${HEX[k]}"></span>${k}</th>`).join("")}
+    <th>n</th><th>recall</th></tr></thead><tbody>
+    ${[1, 2, 3, 4].map(k => {
+      const row = R.M[k - 1], tot = row.reduce((a, b) => a + b, 0);
+      return `<tr><th style="text-align:left"><span class="sw" style="background:${HEX[k]}"></span>${k}. ${esc(Q[k].name)}</th>
+        ${row.map((v, j) => `<td class="${j === k - 1 ? "diag" : (v === 0 ? "zero" : "")}">${v}</td>`).join("")}
+        <td>${tot}</td><td>${tot ? pc0(row[k - 1] / tot) : "—"}</td></tr>`;
+    }).join("")}</tbody></table>`;
+
+  // Where the collapse shows: the two off-diagonal quadrants are the ones a
+  // strongly-correlated proxy pair cannot generate.
+  const offDiag = [1, 3];
+  const offRecall = offDiag.map(k => {
+    const row = R.M[k - 1], tot = row.reduce((a, b) => a + b, 0);
+    return tot ? row[k - 1] / tot : null;
+  });
+
+  document.getElementById("overview").innerHTML = `
+  <div class="hero">
+    <div><div class="big">${pc1(R.acc)}</div><div class="lbl">quadrants matched</div></div>
+    <div><div class="mid">${pc1(R.baseline)}</div><div class="lbl">majority-class baseline</div></div>
+    <div><div class="mid">${pc1(R.balAcc)}</div><div class="lbl">balanced (mean recall)</div></div>
+    <div><div class="mid">${pc1(R.sfAcc)}</div><div class="lbl">social foundation axis</div></div>
+    <div><div class="mid">${pc1(R.pcAcc)}</div><div class="lbl">power concentration axis</div></div>
+    <div><div class="mid">${R.rows.length}</div><div class="lbl">country-periods</div></div>
+  </div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="card">
+      <h3>Confusion matrix</h3>
+      <p class="note" style="margin:2px 0 8px">rows actual, columns predicted</p>
+      ${cm}
+    </div>
+    <div class="card">
+      <h3>Why the misses happen</h3>
+      <p style="margin-top:6px">The two PolSett axes are close to independent — they correlate
+      <b>${fmt(R.corTrue, 2)}</b>. The two proxies correlate <b>${fmt(R.corProxy, 2)}</b>${
+        Math.abs(R.corProxy) > 0.5
+          ? ", so they are close to being the same variable with a sign flip"
+          : ", so they carry separate information"}.</p>
+      <p>${Math.abs(R.corProxy) > 0.5
+        ? "A proxy pair that collinear can only really populate one diagonal of the 2×2. The two off-diagonal cells are recovered least often:"
+        : "With the axes orthogonal, the off-diagonal cells become reachable:"}
+      <b>${esc(Q[1].name)}</b> ${pc0(offRecall[0])} and
+      <b>${esc(Q[3].name)}</b> ${pc0(offRecall[1])}.</p>
+      <p class="note">${S.resid
+        ? `<b>Decorrelate is on:</b> the power proxy has had the social-foundation
+           proxy partialled out, so the two axes are orthogonal by construction and
+           the off-diagonal quadrants become reachable. This raises mean recall but
+           lowers headline agreement, because the two large diagonal quadrants hold
+           59% of cases. A rotation of the whole proxy space does not help further —
+           see rotations.R.`
+        : `Switching <b>Axes</b> to <i>Decorrelate</i> partials the social-foundation
+           proxy out of the power proxy, which roughly doubles off-diagonal recall
+           at the cost of a few points of headline agreement.`}</p>
+      <p class="note">Both axes are proxied by openness/liberties measures because
+      those are the only V-Dem variables that discriminate on either axis at all.
+      Social foundation size is the powerful-population layer times the co-opted
+      layer; the powerful layer is near-unmeasurable, so what a proxy actually
+      picks up is the cooptation layer — which is also what any power-concentration
+      proxy picks up.</p>
+    </div>
+  </div>
+  <div class="grid2" style="margin-top:4px">
+    <div class="card">
+      <h3>Actual axes</h3>
+      ${quadScatter(R, true)}
+    </div>
+    <div class="card">
+      <h3>Proxy axes</h3>
+      ${quadScatter(R, false)}
+    </div>
+  </div>
+  <p class="key">${[1, 2, 3, 4].map(k =>
+    `<span class="it"><span class="sw" style="background:${HEX[k]}"></span>${esc(Q[k].name)}</span>`).join("")}
+    &nbsp; Points are country-periods, coloured by <i>actual</i> quadrant. Lines are the cutoffs.</p>`;
+}
+
+// Scatter of the two axes with quadrant lines. Points coloured by true class, so
+// on the proxy panel the visible mixing is the error.
+function quadScatter(R, actual) {
+  const W = 470, H = 330, M = { t: 10, r: 12, b: 40, l: 50 };
+  const pts = R.rows.map(d => ({
+    x: actual ? d.r.x_socialfoundationsize : d.vSF,
+    y: actual ? d.r.x_powerconcentration_add : d.vPC,
+    c: d.truth, lab: `${d.r.country} ${d.r.y0}–${d.r.y1}`
+  })).filter(p => isNum(p.x) && isNum(p.y));
+  const cx = actual ? AXES.sf.cut : R.tSF, cy = actual ? AXES.pc.cut : R.tPC;
+  const xs = pts.map(p => p.x), ys = pts.map(p => p.y);
+  let x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...ys), y1 = Math.max(...ys);
+  const px = (x1 - x0) * .04 || .5, py = (y1 - y0) * .04 || .5;
+  x0 -= px; x1 += px; y0 -= py; y1 += py;
+  const sx = v => M.l + (v - x0) / (x1 - x0) * (W - M.l - M.r);
+  const sy = v => H - M.b - (v - y0) / (y1 - y0) * (H - M.t - M.b);
+  let g = `<rect x="${M.l}" y="${M.t}" width="${W - M.l - M.r}" height="${H - M.t - M.b}" fill="#fcfcfd"/>`;
+  g += `<line x1="${sx(cx)}" x2="${sx(cx)}" y1="${M.t}" y2="${H - M.b}" stroke="#1a1a1a"/>`;
+  g += `<line x1="${M.l}" x2="${W - M.r}" y1="${sy(cy)}" y2="${sy(cy)}" stroke="#1a1a1a"/>`;
+  for (const p of pts)
+    g += `<circle cx="${sx(p.x)}" cy="${sy(p.y)}" r="2.7" fill="${HEX[p.c]}" fill-opacity="0.6"><title>${esc(p.lab)}</title></circle>`;
+  const tick = (v, d) => Math.abs(v) >= 20 ? v.toFixed(0) : v.toFixed(d);
+  g += `<text x="${M.l}" y="${H - 24}" font-size="10" fill="#6b7280">${tick(x0, 2)}</text>`;
+  g += `<text x="${W - M.r}" y="${H - 24}" font-size="10" fill="#6b7280" text-anchor="end">${tick(x1, 2)}</text>`;
+  g += `<text x="${M.l + (W - M.l - M.r) / 2}" y="${H - 6}" font-size="11" text-anchor="middle">${
+    actual ? "Social foundation size" : "SF proxy"}</text>`;
+  g += `<text transform="translate(13,${M.t + (H - M.t - M.b) / 2}) rotate(-90)" font-size="11" text-anchor="middle">${
+    actual ? "Power concentration" : "PC proxy"}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+}
+
+// ---------------------------------------------------------------------------
+// By country
+// ---------------------------------------------------------------------------
+
+function renderByCountry(R) {
+  const by = new Map();
+  for (const d of R.rows) {
+    let a = by.get(d.r.country);
+    if (!a) { a = { n: 0, hit: 0, sf: 0, pc: 0, iso3: d.r.iso3 }; by.set(d.r.country, a); }
+    a.n++; a.hit += d.match ? 1 : 0;
+    a.sf += d.sfHigh === d.sfTrue ? 1 : 0;
+    a.pc += d.pcHigh === d.pcTrue ? 1 : 0;
+  }
+  const rows = [...by.entries()].map(([k, a]) => ({ country: k, ...a, rate: a.hit / a.n }))
+    .sort((x, y) => y.rate - x.rate);
+  document.getElementById("bycountry").innerHTML = `<table><thead><tr>
+      <th>Country</th><th>periods</th><th>matched</th><th>match rate</th>
+      <th>SF axis</th><th>PC axis</th></tr></thead><tbody>
+    ${rows.map(d => `<tr class="click ${d.country === S.country ? "on" : ""}" data-c="${esc(d.country)}">
+      <td>${esc(d.country)} <code>${d.iso3}</code></td>
+      <td class="num">${d.n}</td><td class="num">${d.hit}</td>
+      <td class="num"><b>${pc0(d.rate)}</b></td>
+      <td class="num">${pc0(d.sf / d.n)}</td><td class="num">${pc0(d.pc / d.n)}</td></tr>`).join("")}
+    </tbody></table>`;
+  document.querySelectorAll("[data-c]").forEach(tr => tr.onclick = () => {
+    S.country = tr.dataset.c; render();
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Country detail
+// ---------------------------------------------------------------------------
+
+function renderDetail(R) {
+  const countries = [...new Set(R.rows.map(d => d.r.country))].sort();
+  if (!S.country || !countries.includes(S.country))
+    S.country = countries.includes("Pakistan") ? "Pakistan" : countries[0];
+  const rows = R.rows.filter(d => d.r.country === S.country).sort((a, b) => a.r.y0 - b.r.y0);
+
+  const sel = `<label style="font-size:12.5px"><b>Country</b>
+    <select id="sel-c">${countries.map(c =>
+      `<option ${c === S.country ? "selected" : ""}>${esc(c)}</option>`).join("")}</select></label>`;
+
+  const hit = rows.filter(d => d.match).length;
+  const bad = rows.filter(d => !d.match);
+  const sfWrong = bad.filter(d => d.sfHigh !== d.sfTrue).length;
+  const pcWrong = bad.filter(d => d.pcHigh !== d.pcTrue).length;
+
+  const tbl = `<table><thead><tr>
+    <th>Period</th><th>Leader</th>
+    <th>SF actual</th><th>SF proxy</th><th>PC actual</th><th>PC proxy</th>
+    <th>Actual</th><th>Predicted</th><th>Wrong axis</th></tr></thead><tbody>
+    ${rows.map(d => `<tr>
+      <td>${d.r.y0}–${d.r.y1}</td><td>${esc(d.r.leader || "—")}</td>
+      <td class="num">${fmt(d.r.x_socialfoundationsize, 1)}</td>
+      <td class="num" style="color:${d.sfHigh === d.sfTrue ? "inherit" : "var(--red)"}">${fmt(d.estSF, 1)}</td>
+      <td class="num">${fmt(d.r.x_powerconcentration_add, 2)}</td>
+      <td class="num" style="color:${d.pcHigh === d.pcTrue ? "inherit" : "var(--red)"}">${fmt(d.estPC, 2)}</td>
+      <td><span class="sw" style="background:${HEX[d.truth]}"></span>${esc(Q[d.truth].name)}</td>
+      <td><span class="sw" style="background:${HEX[d.pred]}"></span>${esc(Q[d.pred].name)}</td>
+      <td>${d.match ? `<span class="ok">match</span>`
+            : `<span class="flag">${[d.sfHigh !== d.sfTrue ? "SF" : null,
+                                    d.pcHigh !== d.pcTrue ? "PC" : null].filter(Boolean).join(" + ")}</span>`}</td>
+    </tr>`).join("")}</tbody></table>`;
+
+  document.getElementById("detail").innerHTML = `
+    <div class="ctl">${sel}
+      <span>${hit} of ${rows.length} periods matched (${pc0(hit / rows.length)})</span>
+      ${bad.length ? `<span class="note">Of the ${bad.length} misses, the social
+        foundation call is wrong in ${sfWrong} and the power concentration call in
+        ${pcWrong}.</span>` : ""}
+    </div>
+    <div class="card">
+      <h3>Quadrant over time</h3>
+      <p class="note" style="margin:2px 0 6px">Upper band actual, lower band predicted. Grey ticks mark periods where they agree.</p>
+      ${timeline(rows)}
+      <p class="key">${[1, 2, 3, 4].map(k =>
+        `<span class="it"><span class="sw" style="background:${HEX[k]}"></span>${esc(Q[k].name)}</span>`).join("")}</p>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3>Social foundation size</h3>${axisChart(rows, "sf", R)}</div>
+      <div class="card"><h3>Power concentration</h3>${axisChart(rows, "pc", R)}</div>
+    </div>
+    <p class="key">Solid actual, dashed proxy rescaled onto the same units by least squares.
+      Horizontal lines are the two cutoffs: the actual cutoff and the proxy's cutoff mapped
+      through the same rescaling. A period is called wrong exactly when the two series sit
+      on opposite sides of their respective lines.</p>
+    <div class="card" style="overflow-x:auto"><h3>Period by period</h3>${tbl}</div>`;
+
+  document.getElementById("sel-c").onchange = e => { S.country = e.target.value; render(); };
+}
+
+function timeline(rows) {
+  if (!rows.length) return "";
+  // Left gutter reserved for the row labels so they cannot sit over the bands.
+  const W = 1040, H = 118, M = { l: 68, r: 8, t: 20, b: 24 };
+  const y0 = Math.min(...rows.map(d => d.r.y0)), y1 = Math.max(...rows.map(d => d.r.y1));
+  const sx = v => M.l + (v - y0) / ((y1 - y0) || 1) * (W - M.l - M.r);
+  const bandH = 26;
+  let g = "";
+  g += `<text x="${M.l - 8}" y="${M.t + 12}" font-size="10.5" fill="#6b7280" text-anchor="end">actual</text>`;
+  g += `<text x="${M.l - 8}" y="${M.t + bandH + 18}" font-size="10.5" fill="#6b7280" text-anchor="end">predicted</text>`;
+  g += `<text x="${M.l - 8}" y="${M.t + 2 * bandH + 20}" font-size="10.5" fill="#9ca3af" text-anchor="end">agree</text>`;
+  for (const d of rows) {
+    const x = sx(d.r.y0), w = Math.max(2, sx(d.r.y1 + 1) - sx(d.r.y0));
+    const tip = `${d.r.y0}–${d.r.y1}${d.r.leader ? " · " + d.r.leader : ""}\nactual: ${Q[d.truth].name}\npredicted: ${Q[d.pred].name}`;
+    g += `<rect x="${x}" y="${M.t - 4}" width="${w - 1}" height="${bandH}" fill="${HEX[d.truth]}" fill-opacity="0.85"><title>${esc(tip)}</title></rect>`;
+    g += `<rect x="${x}" y="${M.t - 4 + bandH + 6}" width="${w - 1}" height="${bandH}" fill="${HEX[d.pred]}" fill-opacity="0.85"><title>${esc(tip)}</title></rect>`;
+    if (d.match)
+      g += `<rect x="${x}" y="${M.t - 4 + 2 * bandH + 13}" width="${w - 1}" height="4" fill="#9ca3af"/>`;
+  }
+  // Decade ticks.
+  for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10)
+    g += `<text x="${sx(y)}" y="${H - 6}" font-size="10" fill="#6b7280" text-anchor="middle">${y}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+}
+
+// Actual vs rescaled proxy over time, with both cutoffs.
+function axisChart(rows, axis, R) {
+  const a = AXES[axis];
+  const W = 470, H = 250, M = { t: 12, r: 12, b: 34, l: 46 };
+  const actual = rows.map(d => ({ x: d.r.y0, x2: d.r.y1, v: d.r[a.target] })).filter(p => isNum(p.v));
+  const est = rows.map(d => ({ x: d.r.y0, x2: d.r.y1, v: axis === "sf" ? d.estSF : d.estPC })).filter(p => isNum(p.v));
+  if (!actual.length) return `<p class="note">No data.</p>`;
+  const cutA = a.cut, cutP = axis === "sf" ? R.estCutSF : R.estCutPC;
+  const all = [...actual.map(p => p.v), ...est.map(p => p.v), cutA, cutP];
+  let lo = Math.min(...all), hi = Math.max(...all);
+  const pad = (hi - lo) * .08 || .1; lo -= pad; hi += pad;
+  const y0 = Math.min(...rows.map(d => d.r.y0)), y1 = Math.max(...rows.map(d => d.r.y1));
+  const sx = v => M.l + (v - y0) / ((y1 - y0) || 1) * (W - M.l - M.r);
+  const sy = v => H - M.b - (v - lo) / (hi - lo) * (H - M.t - M.b);
+
+  // Step series: each period is a flat segment across its own year span.
+  const step = pts => pts.map(p => `M${sx(p.x)},${sy(p.v)} L${sx(p.x2 + 1)},${sy(p.v)}`).join(" ");
+
+  let g = "";
+  const dec = (hi - lo) >= 20 ? 0 : 2;
+  for (const t of [lo + (hi - lo) * .1, (lo + hi) / 2, hi - (hi - lo) * .1])
+    g += `<text x="${M.l - 6}" y="${sy(t) + 3}" font-size="10" fill="#6b7280" text-anchor="end">${t.toFixed(dec)}</text>`;
+  g += `<line x1="${M.l}" x2="${W - M.r}" y1="${sy(cutA)}" y2="${sy(cutA)}" stroke="#1a1a1a" stroke-width="1"/>`;
+  g += `<text x="${W - M.r}" y="${sy(cutA) - 4}" font-size="9.5" fill="#1a1a1a" text-anchor="end">actual cutoff ${cutA}</text>`;
+  g += `<line x1="${M.l}" x2="${W - M.r}" y1="${sy(cutP)}" y2="${sy(cutP)}" stroke="${"#D97706"}" stroke-width="1" stroke-dasharray="3 2"/>`;
+  g += `<text x="${W - M.r}" y="${sy(cutP) + 11}" font-size="9.5" fill="#D97706" text-anchor="end">proxy cutoff ${cutP.toFixed(dec)}</text>`;
+  g += `<path d="${step(est)}" fill="none" stroke="${"#2F87C8"}" stroke-width="1.6" stroke-dasharray="5 3"/>`;
+  g += `<path d="${step(actual)}" fill="none" stroke="#1a1a1a" stroke-width="2"/>`;
+  for (let y = Math.ceil(y0 / 10) * 10; y <= y1; y += 10)
+    g += `<text x="${sx(y)}" y="${H - 8}" font-size="10" fill="#6b7280" text-anchor="middle">${y}</text>`;
+  g += `<text transform="translate(11,${M.t + (H - M.t - M.b) / 2}) rotate(-90)" font-size="10.5" fill="#1a1a1a" text-anchor="middle">${esc(a.unit)}</text>`;
+  return `<svg viewBox="0 0 ${W} ${H}">${g}</svg>`;
+}
+
+// ---------------------------------------------------------------------------
+
+function render() {
+  const R = compute();
+  document.getElementById("lede").innerHTML =
+    `Both ESID axes are estimated from a single public indicator each, dichotomised
+     and crossed to give a predicted quadrant, then compared with
+     <code>x_esidettlementype</code> over PolSett's own country-periods.
+     ${D.meta.n_countries} countries, ${D.meta.year_range[0]}–${D.meta.year_range[1]}.`;
+  renderCtl();
+  document.getElementById("metrics").innerHTML =
+    `<div class="grid2">${metricCard("sf", S.sf, R)}${metricCard("pc", S.pc, R)}</div>`;
+  renderOverview(R);
+  renderByCountry(R);
+  renderDetail(R);
+}
+
+render();
+</script>
+</body>
+</html>

@@ -144,7 +144,13 @@ on the `cloud` SSH host. There is no CI — deploys are manual:
 # 1. Push from laptop
 git push origin master
 
-# 2. Pull + rebuild on the cloud host (ngrok auto-serves dist/)
+# 2. Copy the data folders that are not in git (see .gitignore)
+cd apps/country-profile/public
+rsync -az --delete vdem-codebook research cloud:dev/institutional-complexity/apps/country-profile/public/
+# public/polsett/llm/ is held back on purpose: without its index.json the
+# experimental LLM overlay on the PolSett explorer stays hidden.
+
+# 3. Pull + rebuild on the cloud host (ngrok auto-serves dist/)
 ssh cloud 'cd ~/dev/institutional-complexity/apps/country-profile \
   && git -C ~/dev/institutional-complexity pull --ff-only \
   && npm install --no-audit --no-fund \
@@ -201,3 +207,58 @@ V-Dem itself is loaded from the parquet under `data/shared-data/vdem/`; the
 - Hidalgo, C. A., & Hausmann, R. (2009). The building blocks of economic complexity.
   *PNAS*, 106(26), 10570–10575.
 - Coppedge, M. et al. V-Dem Codebook. Varieties of Democracy (V-Dem) Project.
+
+## Research route (`/research`)
+
+A second page in the same Vite app, deliberately not linked from the shell:
+open `https://institutions.taimur.sh/research` (or `/research#packages` etc.)
+directly. It is set up like the g20 atlas — one page of tabs, each a thread
+of analysis with a folded method note — and leaves the profile/country-space
+routes untouched. Source under `apps/country-profile/src/research/`.
+
+Tabs: Clusters (Ward / k-means / Louvain partitions of the joint country
+space, dendrogram, k diagnostics), Packages (Cohen's d, AUC, category means,
+rpart rules per cluster), Trajectories (cluster membership across the six
+benchmark years), Complexity (ECI/diversity/PCI/COI by cluster, with and
+without income), Product space (basket shares by Atlas community, product-level
+gaps, Jaccard within/between with a permutation test), Diversification (entry
+on density by cluster, expected entries, PCI of entries, co-entry), Outliers
+(countries in a different cluster from their subregion: do their baskets follow
+neighbours or cluster-mates), Mechanisms (institutions x PCI and x Rauch
+differentiation in a fixed-effects entry model, plus a continuous PCI-tilt
+formulation with and without income), Events (annual cluster
+transitions against matched stayers, difference-in-differences paths),
+Indicators (backward screen of all 139 indicators on the complexity of
+entries, with income; the fiscal-revenue-source indicator v2stfisccap is the
+strongest single survivor), Within (annual panel of new exports with country and
+year fixed effects; V-Dem fiscal indicator plus IMF WoRLD tax and resource
+revenue; within-country variation is small and the within estimates are null).
+
+Nunn's (2007) input contract-intensity file is not fetched (his data page is
+behind a browser check); drop it at `data/nunn/contract_intensity_io1997.dta`
+and step 5 will prefer it over the Rauch product classification.
+
+Pipeline (R, run in order; ~3 minutes total):
+
+```bash
+Rscript analyses/research/01_clusters.R     # joint matrix, Ward/k-means/Louvain, diagnostics
+Rscript analyses/research/02_packages.R     # per-cluster profiles, rpart tree for k = 6
+Rscript analyses/research/03_complexity.R   # Atlas joins, entries, pairs
+Rscript analyses/research/04_null_model.R   # BiCM null: validated specialisations, null-adjusted pair overlap
+Rscript analyses/research/05_mechanisms.R   # product traits (PCI, Rauch differentiation) x institutions in the entry model
+Rscript analyses/research/06_events.R       # annual cluster membership (k-NN vote) for the event study; Atlas annual panel
+Rscript analyses/research/07_indicator_screen.R  # every indicator vs the PCI tilt of entries, income held fixed (BH-corrected)
+Rscript analyses/research/08_within.R       # annual new-export panel (sustained/consolidated rules), two-way FE on fiscal measures
+```
+
+Outputs land in `apps/country-profile/public/research/` (parquet + JSON, ~1 MB).
+Step 3 reads the world complexity panel that the g20 project cached from the
+Atlas DB (`~/dev/g20/code/output/cache/cx_*.parquet`) and its product table
+with product-space coordinates and communities
+(`~/dev/g20/app/public/data/products.parquet`); no database connection is
+needed. The k slider works in the browser because every cut k = 2..12 ships
+with the data; hand-written cluster names exist only for Ward k = 6
+(`src/research/names.ts`). Step 4 fits the bipartite configuration model
+(Saracco et al. 2015, as on cities-complexity.jesusd.app) to the 2023 RCA
+matrix and rewrites `cx_pairs.parquet` with expected overlaps and MCC; the
+Product space tab offers raw and null-adjusted readings side by side.

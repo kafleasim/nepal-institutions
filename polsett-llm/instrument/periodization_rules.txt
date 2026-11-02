@@ -1,0 +1,136 @@
+2.1.2.1 Phase 1: Creation and Classification of Political Periods
+In Phase 1 of the survey, we asked experts to corroborate or interrogate a list of political periods
+into which we had provisionally split countries’ political history (since 1946 or independence,
+whichever was later).2 The key goal of this exercise was to create a periodization that closely
+tracks variation in major de facto changes in the political and/or economic rules of the game,
+the configuration of power, and the degree of agreement around the settlement, serving as
+temporal units of coding in the second part of the survey. (Note that for the final dataset periods
+were disaggregated to the country-year level). This process included several iterations of back
+and forth discussions with and between coders, typically taking between one and three months.
+As described in more detail in the following section, at a macro level we divide society into
+three main blocs. Specifically,
+    1. the leader’s bloc: that is, the segment of the population whose political loyalty the
+       current de facto leader perceives s/he can be reasonably assured of, at least in the short-
+       term;
+    2. the contingently loyal bloc: The segment of the population that is currently aligned with
+       the de facto leader but whose political loyalty s/he cannot be assured of; and
+    3. the opposition bloc: the segment of the population that is not currently aligned with
+       either of the above.
+Based on this conceptualization, we decided to use leadership change as a good initial proxy
+for changes in the configuration of powerful groups. Using the Archigos data base of (de facto)
+political leaders (Goemans et al. 2009), each change in the leadership of a country was
+consequently identified as a basic break-point. Note that if multiple leaders ruled in a calendar
+year, only the one that ruled longest in that year is coded. Coders, however, were invited to
+challenge these break points if they felt that a leadership change did not connote a major change
+in the configuration of power, for example because the existing leader was replaced by someone
+from the same group with similar ideas and a similar degree of authority.3
+Thereafter, we used additional data bases and web resources to identify other potential break
+points which might signify major change or evolution in the de facto rules of the game and/or
+the configuration of power, namely:
+    1. the composition and power of the governing coalition;4
+
+
+2
+  The periods identified are in many cases identical to what we would term ‘political settlement periods’ – but not
+always, which is why we simply call them ‘periods’ or ‘political periods’;
+3
+  Although this was rarely done in practice.
+4
+  For example using the Ethnic Power Relations dataset Cederman (et al. 2010).
+
+                                                       16
+    2.   formal political institutions;5
+    3.   the degree of violent contestation and/or the propensity of the government losing a war;6
+    4.   the economic and social ideology of the head of government;7 and/or
+    5.   the degree to which the state can conduct domestic policy autonomously of foreign
+         states or organizations.8
+We then asked coders to question and suggest changes to our initial periodization. Doing so we
+encouraged them to think of other criteria that might be relevant for tracking changes in the
+configuration of power (e.g. changes in informal institutions, movements of very powerful sub-
+groups from one bloc to another) and to overrule de jure changes we have suggested if they
+were not major de facto changes.
+This process resulted in a fine-grained periodization system. The average country in our dataset
+is covered for 61.77 years, had 8.59 distinct leaders, 9.27 continuous leader periods,9 and 14.31
+political periods (resulting in an average period length of 4.31 years). This shows that the
+periodization system is considerably more detailed than relying only on leader transitions as
+breaks. The Cameroonian case further exemplifies this. The nation only had two de facto leaders
+in its post-independence history – Ahmadou Ahidjo and Paul Biya – yet our methodology
+captures ten distinct political periods.
+Finally, we asked coders to assess our database- and research-generated classification of
+whether a country-period was best described as one of the following types:10
+    a. Unsettled: This category is intended to capture those periods in which civil war was so
+       all-encompassing and the possibility of the government losing militarily so serious and
+       tangible, that all it could really engage in was consolidating authority and securing its
+       imminent military survival (rather than also engaging in economic or social policy, etc.).
+       That is, a period similar to that in Syria from 2012-2017, or Libya in 2011. Such all-
+       encompassing warfare is, by our definition, incompatible with there being a
+       political settlement. This is indicated for us by two criteria: 1) a threshold of
+       ‘substantial or prolonged warfare’ (i.e. ≥5) according to the Major Episodes of Political
+       Violence dataset (MEPV) (Marshall 2017);11 and 2) an intrastate war having caused
+       1,000 battle-related deaths per year according to the Uppsala Armed Conflict Dataset
+
+5
+  Here, for example, we used the Polity IV dataset Marshall et al. 2019 to identify changes in political and economic
+institutions. The former would be signified by such things as transitions from autocracy to democracy, changes in
+the electoral system, changes to the separation of powers, transitions from unitary to federal constitutions, and so
+on, although in all cases we asked coders to concentrate on de facto institutional change. We also highlighted the
+importance of informal institutions, such as the nature of patron-client networks, major changes to which might
+also connote a change in the settlement.
+6
+  Here primarily using the Major Episodes of Political Violence dataset (Marshall 2018).
+7
+  For economic institutions, we asked coders to think about major changes to economic policies or systems, such
+as might be proxied by a change in the leadership’s ideology and policy programme, with an emphasis, again, on
+de facto changes.
+8
+  A foreign occupation or peacekeeping mission, for example, would signify, for us, a potential break in the
+settlement.
+9
+  When a leader loses and returns to office the country will have more continuous leader periods than leaders. An
+example would be Bangladesh, where both Sheikh Hasina and Khaleda Zia have alternated in office several times.
+10
+   If multiple periods occur in a calendar year, it is coded according to the one that occupies the greatest duration.
+For example, a calendar year controlled by the same leader, which was first settled for 3 months, then unsettled
+for 5 months, and finally settled again for the remaining 4 months would be classified as ‘unsettled’. If the
+‘unsettled’ period had lasted only for three months, however, the calendar year would be coded as ‘settled’.
+11
+   Please compare the MEPV codebook for more detail (particularly pages 9 to 11).
+
+                                                         17
+       (i.e. deaths that were not the result of one-sided violence by the government or by a
+       formally organized group against civilians). If both of these hold, we provisionally code
+       a period as unsettled, subject to the caveats below;
+
+   b. Challenged: We use this category to capture periods where there are serious and
+      prolonged violent or disorderly challenges to the regime but in which it is not under
+      tangible threat of being militarily overthrown by oppositional groups. For us, this is
+      indicated EITHER by a period in which there was substantial and prolonged warfare
+      [see above] but in which the violence was geographically limited to a particular region
+      with a relatively small population e.g. <25% of the country OR a period in which there
+      was serious political violence or warfare but at a lower intensity than in the above case
+      [i.e. MEPV 3-4 or MEPV ≥ 5, but with less than 1,000 battle-related deaths per year]
+      OR alternatively, a period where there were very regular and very large protests or
+      demonstrations against the ruling group or the political system itself;
+
+   c. Settled: We use this category to capture periods lasting at least two years where there
+      appears to be a substantial agreement or truce among the most powerful groups
+      around the basic rules of the political game, even though there may be extensive
+      repression of less powerful groups, minor insurgencies or sporadic violence and
+      disorder. Coding a period as 'settled' does not imply that it was peaceful, without
+      repression, or democratic. It only means that we did not find the period to meet the
+      ‘challenged’ or ‘unsettled’ thresholds set out above;
+
+   d. Semi-Settled: We use this category to capture short periods in which there is a lack of
+      agreement among the most powerful groups over the basic rules of the political game
+      and/or the general composition of the governing coalition, even if this is not manifested
+      as substantial or prolonged warfare or disorder. For us, this is indicated by a situation in
+      which there was no serious political violence (MEPV<3) but a significant change in
+      leadership, power or institutions occurs after less than two years;
+
+   e. Transitional: We use this category to capture periods in which there is a planned
+      transition from war to peace, autocracy to democracy, or to organize elections. This is
+      indicated by a period in which there was no substantial or prolonged warfare [i.e.
+      MEPV<5] and there was an officially designated transitional period.
+
+
+2.1.2.2 Phase 2: Main Survey Questionnaire

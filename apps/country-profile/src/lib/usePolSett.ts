@@ -175,6 +175,102 @@ export function usePolSettPanel(enabled: boolean): PolSettPanelState {
   return state;
 }
 
+// --- LLM survey data loader --------------------------------------------------
+// Experimental LLM-generated survey responses produced by polsett-llm/.
+// Loaded from /polsett/llm/{iso3}.json when listed in /polsett/llm/index.json.
+
+export type PolSettLLMPoint = {
+  year: number;
+  value: number;
+  sd: number;
+  period: number;
+};
+
+export type PolSettLLMData = {
+  iso3: string;
+  country: string;
+  source: "llm";
+  model: string;
+  n_coders: number;
+  generated: string;
+  warning: string;
+  human_in_sample: boolean;
+  esid_last_year: number | null;
+  periods: Array<{
+    number: number;
+    start: number;
+    end: number;
+    leader: string | null;
+    type: string | null;
+    source: string;
+    summary?: string | null;
+  }>;
+  series: Record<string, PolSettLLMPoint[]>;
+};
+
+let llmIndexCache: Set<string> | null = null;
+let llmIndexInflight: Promise<Set<string>> | null = null;
+const llmDataCache = new Map<string, PolSettLLMData>();
+
+async function loadLLMIndex(): Promise<Set<string>> {
+  if (llmIndexCache) return llmIndexCache;
+  if (llmIndexInflight) return llmIndexInflight;
+  llmIndexInflight = (async () => {
+    try {
+      const r = await fetch("/polsett/llm/index.json");
+      if (!r.ok) throw new Error("no llm index");
+      const idx = (await r.json()) as {
+        countries: Array<{ iso3: string }>;
+      };
+      llmIndexCache = new Set(idx.countries.map((c) => c.iso3));
+    } catch {
+      llmIndexCache = new Set();
+    }
+    return llmIndexCache;
+  })();
+  return llmIndexInflight;
+}
+
+export type PolSettLLMState =
+  | { status: "idle" }
+  | { status: "loading" }
+  | { status: "none" }
+  | { status: "ready"; data: PolSettLLMData }
+  | { status: "error"; error: Error };
+
+export function usePolSettLLM(iso3: string): PolSettLLMState {
+  const [state, setState] = useState<PolSettLLMState>({ status: "idle" });
+
+  useEffect(() => {
+    let alive = true;
+    const cached = llmDataCache.get(iso3);
+    if (cached) {
+      setState({ status: "ready", data: cached });
+      return;
+    }
+    setState({ status: "loading" });
+    (async () => {
+      const index = await loadLLMIndex();
+      if (!index.has(iso3)) {
+        if (alive) setState({ status: "none" });
+        return;
+      }
+      const r = await fetch(`/polsett/llm/${iso3}.json`);
+      if (!r.ok) throw new Error(`failed to load llm/${iso3}.json`);
+      const data = (await r.json()) as PolSettLLMData;
+      llmDataCache.set(iso3, data);
+      if (alive) setState({ status: "ready", data });
+    })().catch((error: Error) => {
+      if (alive) setState({ status: "error", error });
+    });
+    return () => {
+      alive = false;
+    };
+  }, [iso3]);
+
+  return state;
+}
+
 function makeAccess(idx: TagIndex): PolSettPanelAccess {
   return {
     getSeries: (tag, iso3) => idx.get(tag)?.get(iso3) ?? [],

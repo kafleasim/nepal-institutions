@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-02T23:32:30.445Z",
+        "reason": "Growth Lab design system mandates Source Serif 4 + Inter (~/CLAUDE.md ggplot style section and src/lib/glTokens.ts); matches the existing /research page"
+      }
+    ]
+  }
+}

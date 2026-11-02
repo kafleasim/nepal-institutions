@@ -1,5 +1,7 @@
 *.html
 !apps/**/index.html
+# Standalone analysis tools are source, not rendered output.
+!analyses/**/*.html
 *_files/
 *_cache/
 .Rhistory
@@ -13,3 +15,18 @@ data/
 apps/**/node_modules/
 apps/**/dist/
 apps/**/tsconfig.tsbuildinfo
+
+# Data outputs are rebuilt by the scripts that write them, not committed.
+# The app's newer public/ data folders reach the server by rsync (README, Deployment).
+analyses/**/*.rds
+analyses/**/*.log
+analyses/research/cache/
+analyses/polsett-proxies/*_data.js
+analyses/polsett-proxies/khan_vars.js
+apps/country-profile/public/vdem-codebook/
+apps/country-profile/public/research/
+apps/country-profile/public/polsett/llm/
+polsett-llm/esid/
+polsett-llm/**/*.json
+__pycache__/
+/notes

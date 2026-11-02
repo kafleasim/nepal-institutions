@@ -1,0 +1,183 @@
+VARIABLE REFERENCE (answer key -> question item):
+
+Question 1:
+  q1_populationshare_lb: Population share (in %) of LB [0-100 percent]
+  q1_populationshare_clb: Population share (in %) of CLB [0-100 percent]
+  q1_populationshare_ob: Population share (in %) of OB [0-100 percent]
+  q1_confidence: Q1 Coder-Specific Confidence Rating [integer 1-3]
+
+Question 2:
+  q2_power_lb: Relative power of LB [integer 1-5]
+  q2_power_clb: Relative power of CLB [integer 1-5]
+  q2_power_ob: Relative power of OB [integer 1-5]
+  q2_confidence: Q2 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 3:
+  q3_clbsplit: Likelihood CLB splits from government [integer 1-3]
+  q3_confidence: Q3 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 4:
+  q4_objoin: Likelihood OB joins government [integer 1-4]
+  q4_confidence: Q4 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 5:
+  q5_powerfulgroups_lb: Most powerful groups of LB [free text (comma-separated list)]
+  q5_powerfulgroups_clb: Most powerful groups of CLB [free text (comma-separated list)]
+  q5_powerfulgroups_ob: Most powerful groups of OB [free text (comma-separated list)]
+  q5_confidence: Q5 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 6:
+  q6_powerlessgroups_lb: Relatively powerless groups of LB [free text (comma-separated list)]
+  q6_powerlessgroups_clb: Relatively powerless groups of CLB [free text (comma-separated list)]
+  q6_powerlessgroups_ob: Relatively powerless groups of OB [free text (comma-separated list)]
+  q6_confidence: Q6 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 7:
+  q7_powerlesspercentage_lb: Percentage of relatively powerless in LB [0-100 percent]
+  q7_powerlesspercentage_clb: Percentage of relatively powerless in CLB [0-100 percent]
+  q7_powerlesspercentage_ob: Percentage of relatively powerless in OB [0-100 percent]
+  q7_confidence: Q7 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 8:
+  q8_hierarchy_lb: Hierarchical power concentration of LB [integer 1-6]
+  q8_hierarchy_clb: Hierarchical power concentration of CLB [integer 1-6]
+  q8_hierarchy_ob: Hierarchical power concentration of OB [integer 1-6]
+  q8_confidence: Q8 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 9:
+  q9_cohesiveness_lb: Cohesiveness of LB [integer 1-4]
+  q9_cohesiveness_clb: Cohesiveness of CLB [integer 1-4]
+  q9_cohesiveness_ob: Cohesiveness of OB [integer 1-4]
+  q9_confidence: Q9 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 10:
+  q10_violrepresslead_lb: Violent repression for leaders of LB [integer 1-4]
+  q10_nonviolrepresslead_lb: Non-violent repression for leaders of LB [integer 1-4]
+  q10_clientmatcooptlead_lb: Clientelistic material cooptation for leaders of LB [integer 1-4]
+  q10_clientnonmatlead_lb: Clientelistic non-material cooptation for leaders of LB [integer 1-4]
+  q10_progmatlegitlead_lb: Programmatic material legitimation for leaders of LB [integer 1-4]
+  q10_ideologlegitlead_lb: Universalistic ideological legitimation for leaders of LB [integer 1-4]
+  q10_demlegitlead_lb: Procedurally democratic legitimation for leaders of LB [integer 1-4]
+  q10_violrepresslead_clb: Violent repression for leaders of CLB [integer 1-4]
+  q10_nonviolrepresslead_clb: Non-violent repression for leaders of CLB [integer 1-4]
+  q10_clientmatcooptlead_clb: Clientelistic material cooptation for leaders of CLB [integer 1-4]
+  q10_clientnonmatlead_clb: Clientelistic non-material cooptation for leaders of CLB [integer 1-4]
+  q10_progmatlegitlead_clb: Programmatic material legitimation for leaders of CLB [integer 1-4]
+  q10_ideologlegitlead_clb: Universalistic ideological legitimation for leaders of CLB [integer 1-4]
+  q10_demlegitlead_clb: Procedurally democratic legitimation for leaders of CLB [integer 1-4]
+  q10_violrepresslead_ob: Violent repression for leaders of OB [integer 1-4]
+  q10_nonviolrepresslead_ob: Non-violent repression for leaders of OB [integer 1-4]
+  q10_clientmatcooptlead_ob: Clientelistic material cooptation for leaders of OB [integer 1-4]
+  q10_clientnonmatlead_ob: Clientelistic non-material cooptation for leaders of OB [integer 1-4]
+  q10_progmatlegitlead_ob: Programmatic material legitimation for leaders of OB [integer 1-4]
+  q10_ideologlegitlead_ob: Universalistic ideological legitimation for leaders of OB [integer 1-4]
+  q10_demlegitlead_ob: Procedurally democratic legitimation for leaders of OB [integer 1-4]
+  q10_confidence: Q10 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 11:
+  q11_violrepressfoll_lb: Violent repression for followers of LB [integer 1-4]
+  q11_nonviolrepressfoll_lb: Non-violent repression for followers of LB [integer 1-4]
+  q11_clientmatcooptfoll_lb: Clientelistic material cooptation for followers of LB [integer 1-4]
+  q11_clientnonmatfoll_lb: Clientelistic non-material cooptation for followers of LB [integer 1-4]
+  q11_progmatlegitfoll_lb: Programmatic material legitimation for followers of LB [integer 1-4]
+  q11_ideologlegitfoll_lb: Universalistic ideological legitimation for followers of LB [integer 1-4]
+  q11_demlegitfoll_lb: Procedurally democratic legitimation for followers of LB [integer 1-4]
+  q11_violrepressfoll_clb: Violent repression for followers of CLB [integer 1-4]
+  q11_nonviolrepressfoll_clb: Non-violent repression for followers of CLB [integer 1-4]
+  q11_clientmatcooptfoll_clb: Clientelistic material cooptation for followers of CLB [integer 1-4]
+  q11_clientnonmatfoll_clb: Clientelistic non-material cooptation for followers of CLB [integer 1-4]
+  q11_progmatlegitfoll_clb: Programmatic material legitimation for followers of CLB [integer 1-4]
+  q11_ideologlegitfoll_clb: Universalistic ideological legitimation for followers of CLB [integer 1-4]
+  q11_demlegitfoll_clb: Procedurally democratic legitimation for followers of CLB [integer 1-4]
+  q11_violrepressfoll_ob: Violent repression for followers of OB [integer 1-4]
+  q11_nonviolrepressfoll_ob: Non-violent repression for followers of OB [integer 1-4]
+  q11_clientmatcooptfoll_ob: Clientelistic material cooptation for followers of OB [integer 1-4]
+  q11_clientnonmatfoll_ob: Clientelistic non-material cooptation for followers of OB [integer 1-4]
+  q11_progmatlegitfoll_ob: Programmatic material legitimation for followers of OB [integer 1-4]
+  q11_ideologlegitfoll_ob: Universalistic ideological legitimation for followers of OB [integer 1-4]
+  q11_demlegitfoll_ob: Procedurally democratic legitimation for followers of OB [integer 1-4]
+  q11_confidence: Q11 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 12:
+  q12_crossblocdistri_lb: Relative material benefits received by LB [integer 1-4]
+  q12_crossblocdistri_clb: Relative material benefits received by CLB [integer 1-5]
+  q12_crossblocdistri_ob: Relative material benefits received by OB [integer 1-5]
+  q12_confidence: Q12 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 13:
+  q13_withinblocdistri_lb: Within-bloc egalitarian material distribution of LB [integer 1-5]
+  q13_withinblocdistri_clb: Within-bloc egalitarian material distribution of CLB [integer 1-5]
+  q13_withinblocdistri_ob: Within-bloc egalitarian material distribution of OB [integer 1-5]
+  q13_confidence: Q13 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 14:
+  q14_polmakingconcent: Concentration of policy-decision-making power in leader [integer 1-4]
+  q14_confidence: Q14 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 15:
+  q15_polimplemconcent: Concentration of policy-implementation power in leader [integer 1-4]
+  q15_confidence: Q15 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 16:
+  q16_formilsupport: Foreign military support importance [integer 1-4]
+  q16_confidence: Q16 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 17:
+  q17_forfintechsupport: Foreign financial and technical support importance [integer 1-4]
+  q17_confidence: Q17 Coder-Specific Confidence Rating [integer 1-3]
+
+Question 18:
+  q18_polthreat_ruralsub: Political threat by rural subordinate classes [integer 1-4]
+  q18_polthreat_ruraldom: Political threat by rural dominant classes [integer 1-4]
+  q18_polthreat_urbansub: Political threat by urban subordinate classes [integer 1-4]
+  q18_polthreat_urbandom: Political threat by urban dominant classes [integer 1-4]
+  q18_polthreat_ethnoregrel: Political threat by ethnic; regional or religious groups [integer 1-4]
+  q18_polthreat_exileoppos: Political threat by an opposition group in exile [integer 1-4]
+  q18_polthreat_military: Political threat by the military [integer 1-4]
+  q18_polthreat_neighbcntry: Political threat by neighboring country [integer 1-4]
+  q18_polthreat_nonneighbcntry: Political threat by a non-neighboring country [integer 1-4]
+  q18_confidence: Q18 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 19:
+  q19_phythreat_ruralsub: Physical threat by rural subordinate classes [integer 1-4]
+  q19_phythreat_ruraldom: Physical threat by rural dominant classes [integer 1-4]
+  q19_phythreat_urbansub: Physical threat by urban subordinate classes [integer 1-4]
+  q19_phythreat_urbandom: Physical threat by urban dominant classes [integer 1-4]
+  q19_phythreat_ethnoregrel: Physical threat by ethnic; regional or religious groups [integer 1-4]
+  q19_phythreat_exileoppos: Physical threat by an opposition group in exile [integer 1-4]
+  q19_phythreat_military: Physical threat by the military [integer 1-4]
+  q19_phythreat_neighbcntry: Physical threat by neighboring country [integer 1-4]
+  q19_phythreat_nonneighbcntry: Physical threat by a non-neighboring country [integer 1-4]
+  q19_confidence: Q19 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 20:
+  q20_firmcapapilities: Manufacturing firms' capabilities [integer 1-3]
+  q20_confidence: Q20 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 21:
+  q21_firmpower: Manufacturing firms' political power [integer 1-3]
+  q21_confidence: Q21 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 22:
+  q22_industrialpolicy: Industrialization strategy [integer 1-4]
+  q22_confidence: Q22 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 23:
+  q23_fdistrategy: FDI strategy [integer 1-5]
+  q23_confidence: Q23 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 24:
+  q24_stateintervention: Intervention of state in economy [integer 1-3]
+  q24_confidence: Q24 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 25:
+  q25_industryvsagric: Government's industry versus agriculture prioritization [integer 1-5]
+  q25_confidence: Q25 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 26:
+  q26_econdevprio: Government's prioritization of economic development [integer 1-5]
+  q26_confidence: Q26 Coder-Specific Confidence Rating [integer 1-4]
+
+Question 27:
+  q27_socdevprio: Government's prioritization of social development [integer 1-5]
+  q27_confidence: Q27 Coder-Specific Confidence Rating [integer 1-4]

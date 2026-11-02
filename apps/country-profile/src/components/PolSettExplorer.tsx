@@ -19,7 +19,7 @@ import type {
 } from "../types";
 import { GL, GL_PEER_PALETTE } from "../lib/glTokens";
 import { useChartZoom } from "../lib/useChartZoom";
-import { usePolSettPanel } from "../lib/usePolSett";
+import { usePolSettLLM, usePolSettPanel } from "../lib/usePolSett";
 import { ZoomResetButton } from "./charts/ZoomResetButton";
 
 type Props = {
@@ -33,12 +33,28 @@ type ChartRow = { year: number } & Record<string, number | null>;
 
 const DEFAULT_DOMAIN: [number, string] = [1945, "dataMax"];
 
+// Amber — matches the warning banner; distinct from the GL palette.
+const LLM_COLOR = "#D97706";
+
 export function PolSettExplorer({ focus, peers, growthRecord, defaultCollapsed = false }: Props) {
   const [registry, setRegistry] = useState<PolSettIndicatorRegistry | null>(
     null,
   );
   const [tag, setTag] = useState<string>("");
   const [showPeers, setShowPeers] = useState(false);
+
+  // Experimental LLM-generated survey data (if produced for this country).
+  const llm = usePolSettLLM(focus.iso3);
+  const llmData = llm.status === "ready" ? llm.data : null;
+  const [sourceMode, setSourceMode] = useState<"human" | "llm" | "both">(
+    "human",
+  );
+  useEffect(() => {
+    // Countries outside the ESID human sample only have LLM data.
+    if (llmData && !llmData.human_in_sample) setSourceMode("llm");
+  }, [llmData]);
+  const showLLM = llmData !== null && sourceMode !== "human";
+  const showHuman = sourceMode !== "llm";
 
   // Lazy-load the panel parquet on first render of the explorer.
   const panel = usePolSettPanel(true);
@@ -54,47 +70,56 @@ export function PolSettExplorer({ focus, peers, growthRecord, defaultCollapsed =
     [registry, tag],
   );
 
-  const isos = useMemo(
-    () => (showPeers ? [focus.iso3, ...peers.map((p) => p.iso3)] : [focus.iso3]),
-    [showPeers, focus.iso3, peers],
-  );
+
+  // Keys plotted on the chart: focus (human), peers (human), and/or the
+  // LLM-generated series for the focus country.
+  const chartKeys = useMemo(() => {
+    const keys: string[] = [];
+    if (showHuman) keys.push(focus.iso3);
+    if (showPeers) keys.push(...peers.map((p) => p.iso3));
+    if (showLLM) keys.push("__llm");
+    return keys;
+  }, [showHuman, showLLM, showPeers, focus.iso3, peers]);
 
   const rows: ChartRow[] = useMemo(() => {
     if (panel.status !== "ready" || !tag) return [];
-    const series: { iso3: string; points: ScalarPoint[] }[] = isos.map(
-      (iso3) => ({
-        iso3,
-        points: panel.getSeries(tag, iso3),
+    const series: { key: string; points: ScalarPoint[] }[] = chartKeys.map(
+      (key) => ({
+        key,
+        points:
+          key === "__llm"
+            ? (llmData?.series[tag] ?? [])
+            : panel.getSeries(tag, key),
       }),
     );
     const yearSet = new Set<number>();
-    const byIso = new Map<string, Map<number, number>>();
-    for (const { iso3, points } of series) {
+    const byKey = new Map<string, Map<number, number>>();
+    for (const { key, points } of series) {
       const m = new Map<number, number>();
       for (const p of points) {
         m.set(p.year, p.value);
         yearSet.add(p.year);
       }
-      byIso.set(iso3, m);
+      byKey.set(key, m);
     }
     return [...yearSet]
       .sort((a, b) => a - b)
       .map((y) => {
         const row: ChartRow = { year: y };
-        for (const iso3 of isos) {
-          const v = byIso.get(iso3)?.get(y);
-          row[iso3] = v === undefined ? null : v;
+        for (const key of chartKeys) {
+          const v = byKey.get(key)?.get(y);
+          row[key] = v === undefined ? null : v;
         }
         return row;
       });
-  }, [panel, tag, isos]);
+  }, [panel, tag, chartKeys, llmData]);
 
   const yDomain = useMemo<[number, number] | undefined>(() => {
     if (rows.length === 0) return undefined;
     let lo = Infinity;
     let hi = -Infinity;
     for (const r of rows) {
-      for (const iso3 of isos) {
+      for (const iso3 of chartKeys) {
         const v = r[iso3];
         if (typeof v === "number") {
           if (v < lo) lo = v;
@@ -108,7 +133,7 @@ export function PolSettExplorer({ focus, peers, growthRecord, defaultCollapsed =
     if (lo >= 0 && hi <= 100) return [0, 100];
     const pad = (hi - lo) * 0.05 || 0.1;
     return [lo - pad, hi + pad];
-  }, [rows, isos]);
+  }, [rows, chartKeys]);
 
   const zoom = useChartZoom(DEFAULT_DOMAIN);
   const breakYears = growthRecord?.breaks?.years;
@@ -166,6 +191,38 @@ export function PolSettExplorer({ focus, peers, growthRecord, defaultCollapsed =
             />
             <span>Overlay peers ({peers.length})</span>
           </label>
+          {llmData && (
+            <div className="flex items-center gap-1 text-xs">
+              <span className="font-medium">Source:</span>
+              {(
+                [
+                  ["human", "ESID experts"],
+                  ["llm", "LLM survey"],
+                  ["both", "Both"],
+                ] as const
+              ).map(([mode, label]) => {
+                const disabled =
+                  mode !== "llm" && !llmData.human_in_sample;
+                return (
+                  <button
+                    key={mode}
+                    type="button"
+                    disabled={disabled}
+                    onClick={() => setSourceMode(mode)}
+                    className={
+                      "rounded border px-2 py-0.5 " +
+                      (sourceMode === mode
+                        ? "border-yellow-500 bg-yellow-100 font-medium"
+                        : "border-gl-border bg-white") +
+                      (disabled ? " cursor-not-allowed opacity-40" : "")
+                    }
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
           {panel.status === "loading" && (
             <span className="text-xs text-gl-muted">Loading panel…</span>
           )}
@@ -176,15 +233,46 @@ export function PolSettExplorer({ focus, peers, growthRecord, defaultCollapsed =
           )}
         </div>
 
+        {showLLM && llmData && (
+          <div className="flex items-start gap-2 rounded border-2 border-yellow-400 bg-yellow-50 px-3 py-2 text-xs text-yellow-900">
+            <span className="text-lg leading-none">⚠️</span>
+            <div>
+              <p className="font-semibold uppercase tracking-wide">
+                LLM-generated survey data
+              </p>
+              <p className="mt-0.5">
+                {llmData.warning} Model: {llmData.model} ({llmData.n_coders}{" "}
+                simulated coders), generated {llmData.generated}.{" "}
+                {llmData.human_in_sample
+                  ? `Periods after ${llmData.esid_last_year} use an LLM-proposed periodization and have no human counterpart.`
+                  : "This country is not in the ESID human sample; every value shown is LLM-generated."}
+              </p>
+            </div>
+          </div>
+        )}
+
         {tag && (
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1 px-1 text-xs">
-            <span className="flex items-center gap-1.5">
-              <span
-                className="inline-block h-0.5 w-5"
-                style={{ background: GL.blue }}
-              />
-              <span className="font-medium">{focus.name}</span>
-            </span>
+            {showHuman && (
+              <span className="flex items-center gap-1.5">
+                <span
+                  className="inline-block h-0.5 w-5"
+                  style={{ background: GL.blue }}
+                />
+                <span className="font-medium">{focus.name}</span>
+              </span>
+            )}
+            {showLLM && (
+              <span className="flex items-center gap-1.5">
+                <span
+                  className="inline-block h-0.5 w-5 border-b-2 border-dashed"
+                  style={{ borderColor: LLM_COLOR }}
+                />
+                <span className="font-medium" style={{ color: LLM_COLOR }}>
+                  {focus.name} (LLM)
+                </span>
+              </span>
+            )}
             {showPeers &&
               peers.map((p, i) => (
                 <span key={p.iso3} className="flex items-center gap-1.5">
@@ -281,17 +369,33 @@ export function PolSettExplorer({ focus, peers, growthRecord, defaultCollapsed =
                           connectNulls={false}
                         />
                       ))}
-                    <Line
-                      name={focus.name}
-                      type="stepAfter"
-                      dataKey={focus.iso3}
-                      stroke={GL.blue}
-                      strokeWidth={2}
-                      dot={false}
-                      activeDot={{ r: 4 }}
-                      isAnimationActive={false}
-                      connectNulls={false}
-                    />
+                    {showHuman && (
+                      <Line
+                        name={focus.name}
+                        type="stepAfter"
+                        dataKey={focus.iso3}
+                        stroke={GL.blue}
+                        strokeWidth={2}
+                        dot={false}
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                        connectNulls={false}
+                      />
+                    )}
+                    {showLLM && (
+                      <Line
+                        name={`${focus.name} (LLM)`}
+                        type="stepAfter"
+                        dataKey="__llm"
+                        stroke={LLM_COLOR}
+                        strokeWidth={2}
+                        strokeDasharray="6 3"
+                        dot={false}
+                        activeDot={{ r: 4 }}
+                        isAnimationActive={false}
+                        connectNulls={false}
+                      />
+                    )}
                     {zoom.refLeft !== null && zoom.refRight !== null && (
                       <ReferenceArea
                         x1={zoom.refLeft}

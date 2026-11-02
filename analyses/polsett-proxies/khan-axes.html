@@ -1,0 +1,1242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proxying Khan's Axes</title>
+<!-- Open locally in a browser. Needs khan_data.js beside it (regenerate with
+     export_khan_page.R) and a network connection for d3 and the fonts. -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&display=swap">
+<style>
+/* Layout: a working paper. One reading column of prose; figures run the full
+   width of the main column beneath the paragraph that sets them up.
+   Tokens follow the Growth Lab design system (theme_gl.R). */
+:root {
+  --paper: #FFFFFF;
+  --panel: #F7F5F0;
+  --ink: #1A1714;
+  --ink-2: #2C2823;
+  --ink-3: #4F4A42;
+  --ink-4: #8C857A;
+  --rule: #DDDDDD;
+  --grid: #E6E2DA;
+  --accent: #1A5A8E;
+  --pos: #2F87C8;
+  --neg: #CC4948;
+  --muted: #AFB5BE;
+  --sd: #2F87C8;
+  --va: #CC4948;
+  --cc: #2AA584;
+  --wd: #7554A3;
+  --l1: #4F4A42;
+  --l2: #8C857A;
+  --l3: #C9C3B8;
+  --serif: "Source Serif 4", "Source Serif Pro", Georgia, "Times New Roman", serif;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --step--1: 0.8125rem;
+  --step-0: 1.0625rem;
+  --step-1: 1.3rem;
+  --step-2: 1.7rem;
+  --step-3: 2.3rem;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #16181C; --panel: #1E2025; --ink: #ECE8E1; --ink-2: #DAD5CC; --ink-3: #B5AFA5;
+    --ink-4: #7D776E; --rule: #2E3036; --grid: #2A2C31; --accent: #7FB2DB;
+    --pos: #3C8FCC; --neg: #E0625F; --muted: #5F6773;
+    --sd: #3C8FCC; --va: #E0625F; --cc: #2E9E80; --wd: #9576C4;
+    --l1: #B5AFA5; --l2: #7D776E; --l3: #4A4740;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #16181C; --panel: #1E2025; --ink: #ECE8E1; --ink-2: #DAD5CC; --ink-3: #B5AFA5;
+  --ink-4: #7D776E; --rule: #2E3036; --grid: #2A2C31; --accent: #7FB2DB;
+  --pos: #3C8FCC; --neg: #E0625F; --muted: #5F6773;
+  --sd: #3C8FCC; --va: #E0625F; --cc: #2E9E80; --wd: #9576C4;
+  --l1: #B5AFA5; --l2: #7D776E; --l3: #4A4740;
+  color-scheme: dark;
+}
+*, *::before, *::after { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper); color: var(--ink);
+  font-family: var(--serif); font-size: var(--step-0); line-height: 1.6;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+main { max-width: 1080px; margin: 0 auto; padding-block: 48px 96px; display: grid; gap: 56px; }
+section { display: grid; gap: 18px; min-width: 0; }
+.prose { max-width: 68ch; display: grid; gap: 14px; }
+.prose p { margin: 0; }
+h1, h2, h3 { font-family: var(--serif); font-weight: 600; text-wrap: balance; margin: 0; color: var(--ink); }
+h1 { font-size: var(--step-3); line-height: 1.15; letter-spacing: -0.01em; max-width: 24ch; }
+h2 { font-size: var(--step-2); line-height: 1.2; }
+h3 { font-size: var(--step-1); line-height: 1.3; }
+.eyebrow { font-family: var(--sans); font-size: var(--step--1); font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+.byline { font-family: var(--sans); font-size: var(--step--1); color: var(--ink-3); }
+.lede { font-size: 1.2rem; line-height: 1.55; color: var(--ink-2); max-width: 62ch; }
+a { color: var(--accent); }
+code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.85em; background: var(--panel); padding: 0.05em 0.3em; border-radius: 3px; }
+.findings { margin: 0; padding-left: 1.2em; display: grid; gap: 8px; max-width: 68ch; }
+
+figure { margin: 0; display: grid; gap: 12px; min-width: 0; }
+figcaption { font-family: var(--sans); font-size: var(--step--1); color: var(--ink-3); line-height: 1.5; max-width: 80ch; }
+figcaption b { color: var(--ink); font-weight: 600; }
+.fig-label { font-family: var(--sans); font-size: var(--step--1); font-weight: 600; color: var(--accent); letter-spacing: 0.04em; text-transform: uppercase; }
+.chart { width: 100%; min-width: 0; }
+.chart > svg, .decomp-block > svg { display: block; width: 100%; height: auto; overflow: visible; }
+.decomp-cols { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 28px; align-items: start; }
+.decomp-block { min-width: 0; }
+
+/* Khan 2x2. Axis labels sit outside the grid, matching the plane's orientation. */
+.quad-wrap { display: grid; grid-template-columns: 28px 120px minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto auto auto auto; gap: 8px; max-width: 900px; }
+.quad-y { grid-column: 1; grid-row: 1 / 3; display: flex; align-items: center; justify-content: center; }
+.quad-y span { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; color: var(--ink); white-space: nowrap; }
+.quad-ylab { grid-column: 2; font-family: var(--sans); font-size: 0.75rem; color: var(--ink-3); display: flex; align-items: center; text-align: right; justify-content: flex-end; line-height: 1.35; }
+.quad-ylab.hi { grid-row: 1; } .quad-ylab.lo { grid-row: 2; }
+.quad-grid { grid-column: 3 / 5; grid-row: 1 / 3; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; }
+.quad-xlab { grid-row: 3; font-family: var(--sans); font-size: 0.75rem; color: var(--ink-3); text-align: center; }
+.quad-xlab.lo { grid-column: 3; } .quad-xlab.hi { grid-column: 4; }
+.quad-x { grid-column: 3 / 5; grid-row: 4; text-align: center; font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; color: var(--ink); }
+.quad { border-radius: 0 0 6px 6px; padding: 14px 16px; display: grid; gap: 6px; align-content: start; min-width: 0; background: var(--panel); border-top: 4px solid; }
+.quad.q-SD { border-color: var(--sd); } .quad.q-VA { border-color: var(--va); } .quad.q-CC { border-color: var(--cc); } .quad.q-WD { border-color: var(--wd); }
+.quad-name { font-family: var(--serif); font-size: 1.1rem; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.quad-code { font-family: var(--sans); font-size: 0.7rem; font-weight: 600; color: #fff; padding: 1px 6px; border-radius: 3px; }
+.quad-axes { font-family: var(--sans); font-size: 0.75rem; color: var(--ink-4); }
+.quad p { margin: 0; font-size: 0.92rem; line-height: 1.5; color: var(--ink-2); }
+.quad-ex { font-family: var(--sans); font-size: 0.78rem; color: var(--ink-3); }
+@media (max-width: 640px) {
+  .quad-wrap { grid-template-columns: 22px minmax(0, 1fr) minmax(0, 1fr); }
+  .quad-ylab { display: none; }
+  .quad-grid { grid-column: 2 / 4; }
+  .quad-xlab.lo { grid-column: 2; } .quad-xlab.hi { grid-column: 3; }
+  .quad-x { grid-column: 2 / 4; }
+}
+[hidden] { display: none !important; }
+
+/* Breakdown rows: label | bar | value. Bars are positioned in % of a -3..+3 scale. */
+.drows { display: grid; grid-template-columns: minmax(0, 1fr) minmax(110px, 36%) 3.6em; column-gap: 10px; }
+.dlab { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); line-height: 1.35; padding: 3px 0 3px 12px; min-width: 0; }
+.dlab.lens { font-weight: 600; color: var(--ink); padding-left: 0; padding-top: 7px; }
+.bind { font-weight: 600; color: var(--accent); font-size: 0.75rem; white-space: nowrap; }
+.dbar { position: relative; min-height: 22px; background: var(--paper); }
+.dbar i { position: absolute; display: block; }
+.dzero { left: 50%; top: 0; bottom: 0; border-left: 1px solid var(--ink); }
+.dcut { top: 0; bottom: 0; border-left: 1px dashed var(--ink-3); }
+.dfill { top: 50%; height: 8px; transform: translateY(-50%); border-radius: 2px; opacity: 0.55; }
+.dfill.lens { height: 13px; opacity: 1; }
+.dfill.pos { background: var(--pos); } .dfill.neg { background: var(--neg); }
+.dnone { position: absolute; left: calc(50% + 6px); top: 50%; transform: translateY(-50%); font-family: var(--sans); font-size: 0.75rem; color: var(--ink-4); }
+.dval { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); text-align: right; font-variant-numeric: tabular-nums; align-self: center; }
+.dval.lens { font-weight: 600; color: var(--ink); padding-top: 4px; }
+.var-btn {
+  font: inherit; color: inherit; background: none; border: 0; padding: 0; text-align: left; cursor: pointer;
+  text-decoration: underline dotted var(--ink-4); text-underline-offset: 3px;
+}
+.var-btn:hover { color: var(--accent); text-decoration-color: var(--accent); }
+
+/* Indicator popup */
+.modal { position: fixed; inset: 0; z-index: 30; background: rgba(10, 10, 12, 0.5); overflow-y: auto;
+  display: grid; justify-items: center; align-items: start; padding: 40px max(16px, env(safe-area-inset-left, 0px)); }
+.modal-card { position: relative; width: 100%; max-width: 860px; background: var(--paper); color: var(--ink);
+  border-radius: 8px; padding: 28px 28px 24px; display: grid; gap: 20px; box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3); min-width: 0; }
+.modal-close { position: absolute; top: 12px; right: 12px; width: 34px; height: 34px; border-radius: 50%;
+  border: 1px solid var(--rule); background: var(--paper); color: var(--ink); font-size: 1.3rem; line-height: 1; cursor: pointer; }
+.vm-head { display: grid; gap: 6px; padding-right: 40px; }
+.vm-head h2 { font-size: 1.5rem; }
+.vm-meta { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); }
+.vm-now { font-family: var(--sans); font-size: 0.875rem; background: var(--panel); border-radius: 4px; padding: 10px 12px; }
+.vm-sec { display: grid; gap: 8px; }
+.vm-sec h3 { font-size: 1.05rem; }
+.vm-sec p { margin: 0; font-size: 0.95rem; line-height: 1.55; color: var(--ink-2); }
+.vm-entry { display: grid; gap: 8px; }
+.vm-entry.small { border-left: 2px solid var(--rule); padding-left: 12px; }
+.vm-entry.small p, .vm-entry.small li { font-size: 0.875rem; }
+.vm-entry-h { font-family: var(--sans); font-size: 0.875rem; }
+.vm-inputs { display: grid; gap: 12px; }
+.vm-k { display: block; font-family: var(--sans); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 2px; }
+.resp { margin: 0; padding-left: 0; list-style: none; display: grid; gap: 4px; font-size: 0.9rem; color: var(--ink-2); }
+.resp b { font-family: var(--sans); display: inline-block; min-width: 1.4em; color: var(--ink); }
+.vm-stats { display: flex; flex-wrap: wrap; gap: 4px 18px; font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.vm-stats b { color: var(--ink); }
+.vm-stats .full { flex-basis: 100%; color: var(--ink-4); }
+@media (max-width: 760px) { .decomp-cols { grid-template-columns: minmax(0, 1fr); } }
+svg text { font-family: var(--sans); fill: var(--ink-3); font-size: 12px; }
+svg .axis-label { fill: var(--ink-3); font-size: 12px; }
+svg .strong { fill: var(--ink); font-weight: 600; }
+svg .grid line { stroke: var(--grid); }
+svg .zero { stroke: var(--ink); stroke-width: 1; }
+svg .cut { stroke: var(--ink-3); stroke-width: 1; stroke-dasharray: 4 3; }
+.t-SD { fill: var(--sd); } .t-VA { fill: var(--va); } .t-CC { fill: var(--cc); } .t-WD { fill: var(--wd); }
+.s-SD { stroke: var(--sd); } .s-VA { stroke: var(--va); } .s-CC { stroke: var(--cc); } .s-WD { stroke: var(--wd); }
+
+.controls { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; font-family: var(--sans); font-size: var(--step--1); }
+.controls label { color: var(--ink-3); }
+select, input[type="search"] {
+  font-family: var(--sans); font-size: 0.875rem; color: var(--ink); background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 4px; padding: 6px 8px; min-height: 34px;
+}
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip {
+  font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-2); background: var(--paper);
+  border: 1px solid var(--rule); border-radius: 999px; padding: 5px 11px; cursor: pointer;
+}
+.chip:hover { border-color: var(--ink-4); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+button:focus-visible, select:focus-visible, input:focus-visible, .chip:focus-visible, svg [tabindex]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Specification */
+.spec { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 16px; }
+.spec-col { border-top: 2px solid var(--ink); padding-top: 12px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.spec-col h3 { font-size: 1.15rem; }
+.spec-def { font-size: 0.95rem; color: var(--ink-2); line-height: 1.5; margin: 0; }
+.agg { font-family: var(--sans); font-size: 0.75rem; color: var(--ink-3); }
+.agg b { color: var(--ink); font-weight: 600; }
+.lens { display: grid; gap: 4px; }
+.lens-name { font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; color: var(--ink); }
+.comp { display: grid; grid-template-columns: 18px 1fr; gap: 6px; font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); line-height: 1.4; }
+.sign { font-weight: 600; text-align: center; color: var(--ink); }
+.dropped { font-family: var(--sans); font-size: 0.75rem; color: var(--ink-4); text-decoration: line-through; }
+
+.two { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr); gap: 28px; align-items: start; }
+@media (max-width: 760px) { .two { grid-template-columns: 1fr; } }
+.matrices { display: grid; gap: 16px; }
+
+/* Explorer */
+.explorer { background: var(--panel); border-radius: 6px; padding: 18px; display: grid; gap: 16px; min-width: 0; }
+.ex-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr); gap: 20px; align-items: start; }
+@media (max-width: 860px) { .ex-grid { grid-template-columns: 1fr; } }
+.ex-head { display: grid; gap: 4px; }
+.ex-title { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; }
+.ex-sub { font-family: var(--sans); font-size: var(--step--1); color: var(--ink-3); }
+.verdict { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-family: var(--sans); font-size: 0.8125rem; }
+.badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 9px; border-radius: 4px; background: var(--paper); border: 1px solid var(--rule); color: var(--ink-2); }
+.swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.bg-SD { background: var(--sd); } .bg-VA { background: var(--va); } .bg-CC { background: var(--cc); } .bg-WD { background: var(--wd); }
+.why { font-size: 0.97rem; line-height: 1.55; color: var(--ink-2); display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.why li { padding-left: 14px; border-left: 2px solid var(--rule); }
+.note { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); line-height: 1.5; }
+.note b { color: var(--ink); }
+.decomp-block { display: grid; gap: 4px; }
+.decomp-h { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); }
+.decomp-h b { color: var(--ink); font-weight: 600; font-size: 0.875rem; }
+.agree-yes { color: var(--ink-3); }
+.agree-no { color: var(--ink); font-weight: 600; }
+
+details { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); }
+summary { cursor: pointer; color: var(--accent); }
+.tbl-wrap { overflow-x: auto; margin-top: 8px; }
+table { border-collapse: collapse; font-variant-numeric: tabular-nums; min-width: 640px; width: 100%; }
+th, td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--rule); white-space: nowrap; }
+th { color: var(--ink); font-weight: 600; }
+td.num { text-align: right; }
+
+#tip {
+  position: fixed; pointer-events: none; z-index: 40; max-width: 300px;
+  background: var(--ink); color: var(--paper); font-family: var(--sans); font-size: 0.8rem; line-height: 1.45;
+  padding: 8px 10px; border-radius: 4px; opacity: 0; transition: opacity 80ms;
+}
+#tip b { font-weight: 600; }
+#tip .dim { opacity: 0.75; }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); }
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.files { font-family: var(--sans); font-size: 0.875rem; color: var(--ink-3); display: grid; gap: 4px; }
+@media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
+</style>
+</head>
+<body>
+<main>
+  <header class="prose" style="gap:16px">
+    <div class="eyebrow">Political settlements · working note · October 2026</div>
+    <h1>Proxying Khan's axes from public indicators</h1>
+    <p class="lede">Indices for horizontal power, vertical power and the unipolar–multipolar distinction, built from V-Dem and the Growth Lab macro panel from the concepts rather than fitted to PolSett. Agreement with PolSett is reported as a result, and the cases where the two disagree are set out so that their drivers can be inspected.</p>
+    <div class="byline">Institutional complexity project · data built <span id="built"></span> · 179 countries, 1960–2023</div>
+  </header>
+
+  <section>
+    <div class="prose">
+      <h2>Summary</h2>
+      <ul class="findings">
+        <li>Within each lens the indicators agree with one another. Across lenses of the same concept they do not, and the pattern suggests substitution: regimes with no formal veto players usually have an informal body able to remove the leader. Horizontal power and unipolarity are therefore scored by their weakest channel.</li>
+        <li>The horizontal index is close to independent of electoral democracy (r = −0.15), which none of the first-pass power proxies achieved.</li>
+        <li>Agreement with PolSett is modest: r ≈ 0.31 on both axes, against reliability ceilings of 0.69 and 0.82. The Khan typology matches in roughly 40% of country-periods, against 36% for the modal class.</li>
+        <li>The vertical index combines two different ideas. Personal command tracks one leader's dominance of the coalition (PolSett's vertical, and the unipolar idea). Party discipline is closer to Khan's vertical dimension.</li>
+        <li>The largest disagreements (Ethiopia, Vietnam, Uganda, Thailand) have identifiable drivers, which can be examined in the case explorer below.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="spec">
+    <div class="prose">
+      <h2>From concept to indicator</h2>
+      <p>Each concept is split into lenses, meaning distinct channels through which it should be observable. A lens is the equal-weight mean of z-scored indicators whose signs were fixed in advance from the concept. The z-scores are anchored on the global country-year panel for 1960–2019, so an index value of zero means the world's average country-year, not the PolSett sample average. No weight or sign was chosen by fit to PolSett.</p>
+      <p>Khan's vertical dimension is the leadership's power over lower-level factions within its own coalition. It is distinct from the power of elites over non-elites in society. That second reading was also built (from wealth-based power and civil-society participation and consultation), but it correlates −0.84 with electoral democracy and adds nothing beyond it, so it is not carried further here.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 1 · Specification</div>
+      <div class="spec" id="spec-grid"></div>
+      <figcaption>A <b>+</b> sign means a higher value of the indicator raises the index; <b>−</b> means it lowers it. Orientation: high horizontal power means the ruling coalition dominates excluded factions; high vertical power means the leadership dominates lower-level factions; high unipolarity means a single centre of authority.</figcaption>
+    </figure>
+  </section>
+
+  <section id="coherence">
+    <div class="prose">
+      <h2>Lenses substitute for one another</h2>
+      <p>If the lenses were parallel measures of one latent quantity, they would correlate positively. They do not. Electoral dominance is negatively related to weak social opposition, so hegemonic electoral regimes tend to face large opposition constituencies. Formal unipolarity is negatively related to executive unipolarity. Where courts and legislatures do not constrain the leader, a military or ruling-party body that could remove the leader is usually present.</p>
+      <p>This is what one would expect if these were formative concepts with substitutable channels. Excluded factions need only one route to holding power, and authority is divided if any one channel divides it. Horizontal power and unipolarity are therefore aggregated as the minimum across lenses. The party and personal lenses of vertical power are averaged, since both are observations of the top's command.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 2 · Lens intercorrelations and one pair in detail</div>
+      <div class="two">
+        <div class="matrices" id="matrices"></div>
+        <div style="display:grid; gap:10px; min-width:0">
+          <div class="controls">
+            <label for="pair-sel">Lens pair</label>
+            <select id="pair-sel"></select>
+          </div>
+          <div class="chart" id="pair-chart"></div>
+        </div>
+      </div>
+      <figcaption>Left: correlations between lenses over all country-years 1960–2019. Blue cells are positive and red negative, with shading proportional to size. Right: the selected pair for 179 countries, 2015–2019 averages. Hover a point for the country.</figcaption>
+    </figure>
+  </section>
+
+  <section id="discriminant">
+    <div class="prose">
+      <h2>Is it more than democracy?</h2>
+      <p>The first pass failed largely because every V-Dem indicator that predicted a power concept turned out to be a liberties or openness measure. The test here is the correlation with V-Dem's electoral democracy index. Individual lenses are strongly related to democracy, in both directions. The horizontal index ends up close to independent of it because its lenses pull against each other. Unipolarity and vertical power retain a moderate democracy component.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 3 · Correlation with electoral democracy (v2x_polyarchy)</div>
+      <div class="chart" id="disc-chart"></div>
+      <figcaption>Global country-years 1960–2019. Index rows are in bold, with their lenses listed underneath.</figcaption>
+    </figure>
+  </section>
+
+  <section id="agreement">
+    <div class="prose">
+      <h2>Agreement with PolSett</h2>
+      <p>PolSett is a reference point, not ground truth. Its own coders disagree: the reliability of the published horizontal-power value is 0.47, which caps any external correlation at 0.69. Each comparison below is split into a between-country component (country means) and a within-country component (change across a country's periods).</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 4 · Correlation with PolSett measures, country-periods</div>
+      <div class="legend" id="agree-legend"></div>
+      <div class="chart" id="agree-chart"></div>
+      <figcaption>The reliability ceiling is √(inter-coder reliability), from <code>reliability.R</code>. It is shown where it was estimated.</figcaption>
+    </figure>
+    <figure>
+      <div class="fig-label">Figure 5 · Khan typology, ours against PolSett</div>
+      <div class="two">
+        <div class="chart" id="confusion"></div>
+        <div class="prose" id="confusion-text" style="font-size:0.97rem"></div>
+      </div>
+    </figure>
+  </section>
+
+  <section id="typology">
+    <div class="prose">
+      <h2>Reading the quadrants</h2>
+      <p>Khan's typology crosses the two dimensions. Horizontal power is high when excluded factions are weak relative to the ruling coalition. Vertical power is high when the leadership can discipline the lower-level factions inside its own coalition. Throughout this page, each axis is split at the global median of our index, and PolSett splits its own axes at its sample means.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Khan's four settlement types</div>
+      <div class="quad-wrap">
+        <div class="quad-y"><span>Vertical power</span></div>
+        <div class="quad-ylab hi">High: leadership disciplines lower factions</div>
+        <div class="quad-ylab lo">Low: lower-level factions strong</div>
+        <div class="quad-grid" id="quad-grid"></div>
+        <div class="quad-xlab lo">Low: excluded factions strong</div>
+        <div class="quad-xlab hi">High: excluded factions weak</div>
+        <div class="quad-x"><span>Horizontal power</span></div>
+      </div>
+      <figcaption>Examples are countries our indices place in each quadrant on 2015–2019 averages (see the all-countries chart below). Colours match the strip, plane and scatter charts.</figcaption>
+    </figure>
+  </section>
+
+  <section id="explorer">
+    <div class="prose">
+      <h2>Case explorer</h2>
+      <p>Pick a country, or one of the cases flagged as puzzles, then select a period on the strip. The plane shows where each period falls on both systems' axes. The breakdown shows which lens sets each index and which indicators drive that lens. For horizontal power and unipolarity, the lens marked "sets the index" is the weakest channel.</p>
+    </div>
+    <div class="explorer">
+      <div class="controls">
+        <label for="country-sel">Country</label>
+        <select id="country-sel"></select>
+        <span style="color:var(--ink-4)">or a puzzle:</span>
+        <div class="chips" id="puzzles"></div>
+      </div>
+      <div class="note" id="puzzle-note"></div>
+      <figure>
+        <div class="fig-label">Figure 6 · Typology by period</div>
+        <div class="chart" id="strip"></div>
+      </figure>
+      <div class="ex-grid">
+        <figure>
+          <div class="fig-label">Figure 7 · Position on the Khan plane</div>
+          <div class="legend">
+            <span><svg width="14" height="14"><circle cx="7" cy="7" r="5" style="fill:var(--ink)"/></svg>Our indices</span>
+            <span><svg width="14" height="14"><circle cx="7" cy="7" r="4.5" style="fill:var(--paper);stroke:var(--ink);stroke-width:1.5"/></svg>PolSett coding</span>
+            <span><svg width="22" height="10"><line x1="1" y1="5" x2="21" y2="5" style="stroke:var(--ink-4);stroke-width:1"/></svg>Same period</span>
+          </div>
+          <div class="chart" id="plane"></div>
+          <figcaption>Each axis is measured in standard deviations from that system's own cutoff: the global median for our indices, and PolSett's sample means (3.28 and 0.44) for its own. Quadrants therefore line up, but the distances are only roughly comparable. Grey dots are all PolSett-country periods on our indices.</figcaption>
+        </figure>
+        <div style="display:grid; gap:14px; min-width:0">
+          <div class="ex-head">
+            <div class="ex-title" id="per-title"></div>
+            <div class="ex-sub" id="per-sub"></div>
+            <div class="verdict" id="per-verdict"></div>
+          </div>
+          <ul class="why" id="per-why"></ul>
+        </div>
+      </div>
+      <figure>
+        <div class="fig-label">Figure 8 · What drives each index in this period</div>
+        <div id="decomp" class="decomp-cols"></div>
+        <figcaption>Bars are signed z-scores: to the right raises the index, to the left lowers it. Bold rows are lenses and the rows beneath are their indicators. The dashed line is the index cutoff (global median).</figcaption>
+      </figure>
+      <details>
+        <summary>All periods for this country as a table</summary>
+        <div class="tbl-wrap" id="per-table"></div>
+      </details>
+    </div>
+  </section>
+
+  <section id="binding">
+    <div class="prose">
+      <h2>Where the challenge to the coalition comes from</h2>
+      <p>Under weakest-channel aggregation, the binding lens is itself a description of the settlement: it names the channel through which excluded factions come closest to imposing costs. Among the periods PolSett codes as having a weak opposition, almost half are bound by the armed lens. PolSett's coders appear to discount armed challenges, especially peripheral ones, that our index counts in full. The armed lens has no measure of how close a challenge comes to the centre, and that is a possible refinement.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 9 · Binding horizontal lens, by PolSett's horizontal-power coding</div>
+      <div class="chart" id="bind-chart"></div>
+      <figcaption>Share of PolSett country-periods in which each lens is the weakest of the three. The high and low groups are split at PolSett's cutoff of 3.28.</figcaption>
+    </figure>
+  </section>
+
+  <section id="world">
+    <div class="prose">
+      <h2>Beyond PolSett's 42 countries</h2>
+      <p>The indices are defined for every country V-Dem covers, which was the reason for building them. Below are 2015–2019 averages for 179 countries, with the PolSett countries ringed. Click a country to see its breakdown. Indicators from the macro panel end between 2016 and 2018, so later years rest on V-Dem components alone.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 10 · All countries, 2015–2019</div>
+      <div class="controls">
+        <label for="world-search">Find a country</label>
+        <input type="search" id="world-search" list="world-list" placeholder="e.g. Vietnam" autocomplete="off">
+        <datalist id="world-list"></datalist>
+      </div>
+      <div class="chart" id="world-chart"></div>
+      <figcaption>Dashed lines are the global medians that define the four types. Ringed points are PolSett countries.</figcaption>
+      <div class="explorer" style="gap:12px">
+        <div class="ex-head">
+          <div class="ex-title" id="w-title"></div>
+          <div class="ex-sub" id="w-sub"></div>
+        </div>
+        <div id="w-decomp" class="decomp-cols"></div>
+      </div>
+    </figure>
+  </section>
+
+  <section id="decision">
+    <div class="prose">
+      <h2>An open decision: where personal command belongs</h2>
+      <p>The personal-command lens correlates more strongly with PolSett's items on the leader's control of policy-making than with any of its vertical-power items. The party lens tracks the balance between the leader's bloc and the contingent bloc. This suggests the vertical index mixes two concepts: Khan's vertical dimension, where a possibly collective leadership disciplines lower-level factions (closer to party discipline), and the dominance of one leader over the coalition (closer to the unipolar idea). Vietnam and Uganda show the consequence. A collective Leninist leadership scores low on vertical power, and a personally dominant leader of a loosely disciplined movement scores high.</p>
+      <p>The proposed revision is to keep party discipline as the vertical index and move personal command into the unipolarity index. It has not been made yet, because it changes what both indices mean.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 11 · Our lenses against individual PolSett items</div>
+      <div class="chart" id="itemcor"></div>
+      <figcaption>Correlations over PolSett country-periods. The outlined cell is personal command against policy concentration in the leader.</figcaption>
+    </figure>
+  </section>
+
+  <section id="files">
+    <div class="prose">
+      <h2>Method notes and files</h2>
+      <p>Two corrections were made on face validity before any comparison with PolSett. First, the macro panel's UCDP variable for internationalised internal conflict is coded by participant, so Germany, the UK and the US scored as conflict states; only internal conflict is kept, together with V-Dem's measure of political violence by non-state actors. Second, the ruling party's seat share was replaced by the seat gap and electoral turnover. Seat share had placed Ghana and Mexico as weak-dominant, because it measures how large the ruling party is rather than whether the opposition can win.</p>
+      <p>Election variables are coded only in election years and are carried forward for up to ten years. GWF regime codes are not labelled in the macro dictionary and were checked against known cases. The Chisols personalist dummy is used as the main personalism measure.</p>
+    </div>
+    <div class="files">
+      <div><code>analyses/polsett-proxies/khan_build.R</code> assembles the country-year and country-period panels</div>
+      <div><code>khan_indices.R</code> holds the specification, builds the indices and prints the diagnostics</div>
+      <div><code>khan_puzzles.R</code> produces the case tables · <code>export_khan_page.R</code> and <code>export_khan_vars.R</code> write the data for this page</div>
+      <div><code>README.md</code> has the written account (second-pass section)</div>
+    </div>
+  </section>
+</main>
+<div id="var-modal" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="vm-title">
+  <div class="modal-card">
+    <button type="button" id="vm-close" class="modal-close" aria-label="Close">×</button>
+    <div id="vm-body"></div>
+  </div>
+</div>
+<div id="tip" role="tooltip"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+<script src="khan_data.js"></script>
+<script src="khan_vars.js"></script>
+<script>
+(function () {
+"use strict";
+const D = window.KHAN, M = D.meta;
+document.getElementById("built").textContent = M.built;
+
+const TYPES = ["SD", "VA", "CC", "WD"];
+const TYPE_NAME = { SD: "Strong-dominant", VA: "Vulnerable authoritarian", CC: "Competitive clientelist", WD: "Weak-dominant" };
+const LENS = { H: ["electoral", "armed", "social"], V: ["party", "personal"], U: ["formal", "executive", "territorial"] };
+const LENS_LABEL = { electoral: "Electoral", armed: "Armed", social: "Social", party: "Party discipline",
+  personal: "Personal command", formal: "Formal veto players", executive: "Removal and approval", territorial: "Territorial" };
+const IDX_LABEL = { H: "Horizontal power", V: "Vertical power", U: "Unipolarity" };
+const IDX_DEF = {
+  H: "Holding power of the ruling coalition relative to excluded factions: electoral opposition, armed challengers, and organised social opposition.",
+  V: "Power of the coalition's leadership over its own lower-level factions: whether it can discipline the party and its intermediate organisers.",
+  U: "Whether authority has one centre, or several that can block or remove the leadership: formal veto players, bodies with removal power, autonomous regions."
+};
+const AGG = { H: "min", V: "mean", U: "min" };
+const CUT = { H: M.cutH, V: M.cutV };
+
+const fmt = v => v == null || !isFinite(v) ? "–" : (v < 0 ? "−" : "+") + Math.abs(v).toFixed(2);
+const fmt1 = v => v == null || !isFinite(v) ? "–" : v.toFixed(1);
+const esc = s => String(s == null ? "" : s).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const specOf = (ix, lens) => D.spec.map((s, i) => ({ ...s, i })).filter(s => s.index === ix && (!lens || s.lens === lens));
+const bindingLens = (o, ix) => {
+  let best = null, bv = Infinity;
+  for (const l of LENS[ix]) { const v = o[ix + "_" + l]; if (v != null && v < bv) { bv = v; best = l; } }
+  return best;
+};
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById("tip");
+function showTip(html, ev) {
+  tip.innerHTML = html; tip.style.opacity = 1;
+  const pad = 14, r = tip.getBoundingClientRect();
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  if (x + r.width > window.innerWidth - 8) x = ev.clientX - r.width - pad;
+  if (y + r.height > window.innerHeight - 8) y = ev.clientY - r.height - pad;
+  tip.style.left = Math.max(8, x) + "px"; tip.style.top = Math.max(8, y) + "px";
+}
+function hideTip() { tip.style.opacity = 0; }
+
+const widthOf = id => Math.max(280, document.getElementById(id).clientWidth);
+
+/* ---------- Figure 1: specification ---------- */
+(function renderSpec() {
+  const host = document.getElementById("spec-grid");
+  host.innerHTML = ["H", "V", "U"].map(ix => {
+    const lenses = LENS[ix].map(l => {
+      const comps = specOf(ix, l).map(s =>
+        `<div class="comp"><span class="sign">${s.sign > 0 ? "+" : "−"}</span><span>${esc(s.why)}</span></div>`).join("");
+      return `<div class="lens"><div class="lens-name">${LENS_LABEL[l]}</div>${comps}</div>`;
+    }).join("");
+    const agg = AGG[ix] === "min"
+      ? "Aggregated as the <b>minimum</b> across lenses: one channel is enough."
+      : "Aggregated as the <b>mean</b> of lenses: both observe the same command.";
+    const dropped = ix === "V" ? `<div class="dropped">Clientelism (rents) lens, dropped: it measures how loyalty is bought, not who holds bargaining power</div>` : "";
+    return `<div class="spec-col"><h3>${IDX_LABEL[ix]}</h3><p class="spec-def">${IDX_DEF[ix]}</p><div class="agg">${agg}</div>${lenses}${dropped}</div>`;
+  }).join("");
+})();
+
+/* ---------- Figure 2: coherence ---------- */
+function renderMatrices() {
+  const host = document.getElementById("matrices"); host.innerHTML = "";
+  ["H", "V", "U"].forEach(ix => {
+    const C = D.coherence[ix], n = C.lenses.length;
+    const cell = 48, left = 132, top = 26;
+    const W = left + n * cell + 4, H = top + n * cell + 4;
+    const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`)
+      .attr("role", "img").attr("aria-label", `${IDX_LABEL[ix]} lens correlations`)
+      .style("max-width", W + "px");
+    svg.append("text").attr("x", 0).attr("y", 14).attr("class", "strong").text(IDX_LABEL[ix]);
+    C.lenses.forEach((l, i) => {
+      svg.append("text").attr("x", left - 8).attr("y", top + i * cell + cell / 2 + 4).attr("text-anchor", "end").text(LENS_LABEL[l]);
+      C.lenses.forEach((m, j) => {
+        if (j > i) return;
+        const r = C.r[i][j];
+        const g = svg.append("g").attr("transform", `translate(${left + j * cell},${top + i * cell})`);
+        g.append("rect").attr("width", cell - 2).attr("height", cell - 2).attr("rx", 2)
+          .style("fill", i === j ? "var(--grid)" : (r >= 0 ? "var(--pos)" : "var(--neg)"))
+          .style("fill-opacity", i === j ? 0.6 : 0.12 + 0.85 * Math.min(1, Math.abs(r) / 0.5));
+        g.append("text").attr("x", (cell - 2) / 2).attr("y", (cell - 2) / 2 + 4).attr("text-anchor", "middle")
+          .attr("class", "strong").style("fill", "var(--ink)").text(i === j ? "" : fmt(r).replace("+", ""));
+        g.on("mousemove", ev => i !== j && showTip(`<b>${LENS_LABEL[l]} × ${LENS_LABEL[m]}</b><br>r = ${fmt(r)}`, ev)).on("mouseleave", hideTip);
+      });
+    });
+  });
+}
+
+const PAIRS = [
+  { ix: "U", a: "formal", b: "executive", note: "Countries without formal veto players usually have a body able to remove the leader." },
+  { ix: "H", a: "electoral", b: "social", note: "Electoral dominance comes with larger, not smaller, opposition constituencies." },
+  { ix: "H", a: "armed", b: "social", note: "The one positive pair: armed and social challenges tend to occur together." },
+  { ix: "V", a: "party", b: "personal", note: "Weakly related. Disciplined parties and personal rule are different routes to command." }
+];
+const pairSel = document.getElementById("pair-sel");
+PAIRS.forEach((p, i) => pairSel.add(new Option(`${IDX_LABEL[p.ix]}: ${LENS_LABEL[p.a]} × ${LENS_LABEL[p.b]}`, i)));
+pairSel.addEventListener("change", renderPair);
+
+function scatterAxes(svg, x, y, W, H, m, xl, yl) {
+  const gx = svg.append("g").attr("class", "grid");
+  x.ticks(5).forEach(t => gx.append("line").attr("x1", x(t)).attr("x2", x(t)).attr("y1", m.t).attr("y2", H - m.b));
+  y.ticks(5).forEach(t => gx.append("line").attr("y1", y(t)).attr("y2", y(t)).attr("x1", m.l).attr("x2", W - m.r));
+  x.ticks(5).forEach(t => svg.append("text").attr("x", x(t)).attr("y", H - m.b + 16).attr("text-anchor", "middle").text(fmt1(t).replace("-", "−")));
+  y.ticks(5).forEach(t => svg.append("text").attr("x", m.l - 6).attr("y", y(t) + 4).attr("text-anchor", "end").text(fmt1(t).replace("-", "−")));
+  svg.append("text").attr("class", "axis-label").attr("x", W - m.r).attr("y", H - 4).attr("text-anchor", "end").text(xl);
+  svg.append("text").attr("class", "axis-label").attr("x", m.l).attr("y", m.t - 8).text(yl);
+}
+
+function renderPair() {
+  const P = PAIRS[+pairSel.value], host = document.getElementById("pair-chart"); host.innerHTML = "";
+  const ka = P.ix + "_" + P.a, kb = P.ix + "_" + P.b;
+  const pts = D.world.filter(d => d[ka] != null && d[kb] != null);
+  const W = widthOf("pair-chart"), H = Math.min(380, W * 0.78), m = { t: 24, r: 12, b: 36, l: 40 };
+  const ext = v => { const e = d3.extent(pts, d => d[v]); return [Math.min(-2, e[0]), Math.max(2, e[1])]; };
+  const x = d3.scaleLinear().domain(ext(ka)).nice().range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain(ext(kb)).nice().range([H - m.b, m.t]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+    .attr("aria-label", `Scatter of ${LENS_LABEL[P.a]} against ${LENS_LABEL[P.b]} lens`);
+  scatterAxes(svg, x, y, W, H, m, LENS_LABEL[P.a] + " lens (z) →", "↑ " + LENS_LABEL[P.b] + " lens (z)");
+  svg.append("line").attr("class", "zero").attr("x1", x(0)).attr("x2", x(0)).attr("y1", m.t).attr("y2", H - m.b).style("stroke-opacity", 0.35);
+  svg.append("line").attr("class", "zero").attr("y1", y(0)).attr("y2", y(0)).attr("x1", m.l).attr("x2", W - m.r).style("stroke-opacity", 0.35);
+  // least-squares line to make the sign visible
+  const xs = pts.map(d => d[ka]), ys = pts.map(d => d[kb]), mx = d3.mean(xs), my = d3.mean(ys);
+  const b = d3.sum(xs.map((v, i) => (v - mx) * (ys[i] - my))) / d3.sum(xs.map(v => (v - mx) ** 2));
+  const r = b * d3.deviation(xs) / d3.deviation(ys);
+  const [x0, x1] = x.domain();
+  svg.append("line").attr("x1", x(x0)).attr("x2", x(x1)).attr("y1", y(my + b * (x0 - mx))).attr("y2", y(my + b * (x1 - mx)))
+    .style("stroke", r >= 0 ? "var(--pos)" : "var(--neg)").style("stroke-width", 2).style("clip-path", "inset(0)");
+  svg.append("g").selectAll("circle").data(pts).join("circle")
+    .attr("cx", d => x(d[ka])).attr("cy", d => y(clamp(d[kb], y.domain()[0], y.domain()[1]))).attr("r", 4.5)
+    .style("fill", "var(--muted)").style("fill-opacity", 0.8).style("stroke", "var(--paper)").style("stroke-width", 1)
+    .on("mousemove", (ev, d) => showTip(`<b>${esc(d.name)}</b><br>${LENS_LABEL[P.a]} ${fmt(d[ka])} · ${LENS_LABEL[P.b]} ${fmt(d[kb])}`, ev))
+    .on("mouseleave", hideTip);
+  svg.append("text").attr("x", W - m.r).attr("y", m.t + 4).attr("text-anchor", "end").attr("class", "strong")
+    .text(`r = ${fmt(r)} (2015–19)`);
+  const note = document.createElement("div"); note.className = "note"; note.textContent = P.note; host.appendChild(note);
+}
+
+/* ---------- Figure 3: discriminant ---------- */
+function renderDisc() {
+  const host = document.getElementById("disc-chart"); host.innerHTML = "";
+  const rows = [];
+  ["H", "V", "U"].forEach(ix => {
+    rows.push({ key: ix, label: IDX_LABEL[ix], idx: true, r: D.disc.find(d => d.col === ix).r });
+    LENS[ix].forEach(l => rows.push({ key: ix + "_" + l, label: LENS_LABEL[l], idx: false, r: D.disc.find(d => d.col === ix + "_" + l).r }));
+  });
+  rows.push({ key: "E", label: "Elite vs non-elite (dropped)", idx: true, r: D.disc.find(d => d.col === "E").r });
+  const W = widthOf("disc-chart"), rowH = 24, m = { t: 22, r: 44, b: 8, l: Math.min(200, W * 0.38) };
+  const H = m.t + rows.length * rowH + m.b;
+  const x = d3.scaleLinear().domain([-1, 1]).range([m.l, W - m.r]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", "Correlation of each index and lens with electoral democracy");
+  [-1, -0.5, 0.5, 1].forEach(t => {
+    svg.append("line").attr("x1", x(t)).attr("x2", x(t)).attr("y1", m.t - 6).attr("y2", H - m.b).style("stroke", "var(--grid)");
+    svg.append("text").attr("x", x(t)).attr("y", m.t - 10).attr("text-anchor", "middle").text(fmt1(t).replace("-", "−"));
+  });
+  svg.append("text").attr("x", x(0)).attr("y", m.t - 10).attr("text-anchor", "middle").text("0");
+  rows.forEach((d, i) => {
+    const yy = m.t + i * rowH;
+    svg.append("text").attr("x", d.idx ? 0 : 14).attr("y", yy + rowH / 2 + 4).attr("class", d.idx ? "strong" : "").text(d.label);
+    const x0 = x(Math.min(0, d.r)), w = Math.abs(x(d.r) - x(0));
+    svg.append("rect").attr("x", x0).attr("y", yy + (d.idx ? 4 : 7)).attr("height", d.idx ? rowH - 8 : rowH - 14).attr("width", Math.max(1, w)).attr("rx", 2)
+      .style("fill", d.r >= 0 ? "var(--pos)" : "var(--neg)").style("fill-opacity", d.idx ? 1 : 0.55);
+    svg.append("text").attr("x", d.r >= 0 ? x(d.r) + 5 : x(d.r) - 5).attr("y", yy + rowH / 2 + 4)
+      .attr("text-anchor", d.r >= 0 ? "start" : "end").attr("class", d.idx ? "strong" : "").text(fmt(d.r));
+  });
+  svg.append("line").attr("class", "zero").attr("x1", x(0)).attr("x2", x(0)).attr("y1", m.t - 6).attr("y2", H - m.b);
+}
+
+/* ---------- Figure 4: agreement ---------- */
+const MARK = { r: "Pooled", between: "Between countries", within: "Within countries" };
+document.getElementById("agree-legend").innerHTML = `
+  <span><svg width="14" height="14"><circle cx="7" cy="7" r="5.5" style="fill:var(--accent)"/></svg>${MARK.r}</span>
+  <span><svg width="14" height="14"><rect x="2" y="2" width="10" height="10" style="fill:var(--paper);stroke:var(--ink-2);stroke-width:1.5"/></svg>${MARK.between}</span>
+  <span><svg width="14" height="14"><path d="M7 1 L13 12 L1 12 Z" style="fill:var(--ink-4)"/></svg>${MARK.within}</span>
+  <span><svg width="14" height="14"><line x1="7" y1="0" x2="7" y2="14" style="stroke:var(--ink);stroke-width:2"/></svg>Reliability ceiling</span>`;
+function renderAgree() {
+  const host = document.getElementById("agree-chart"); host.innerHTML = "";
+  const groups = d3.groups(D.agree, d => d.ps);
+  const rowH = 22, gapH = 30, W = widthOf("agree-chart"), m = { t: 18, r: 16, b: 10, l: Math.min(210, W * 0.4) };
+  let H = m.t; groups.forEach(([, rs]) => H += gapH + rs.length * rowH); H += m.b;
+  const x = d3.scaleLinear().domain([-0.6, 0.9]).range([m.l, W - m.r]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", "Correlations with PolSett measures");
+  [-0.5, 0, 0.5].forEach(t => {
+    svg.append("line").attr("x1", x(t)).attr("x2", x(t)).attr("y1", m.t).attr("y2", H - m.b).attr("class", t === 0 ? "zero" : "").style("stroke", t === 0 ? null : "var(--grid)");
+    svg.append("text").attr("x", x(t)).attr("y", m.t - 4).attr("text-anchor", "middle").text(t === 0 ? "0" : fmt1(t).replace("-", "−"));
+  });
+  let yy = m.t;
+  groups.forEach(([ps, rs]) => {
+    yy += gapH;
+    svg.append("text").attr("x", 0).attr("y", yy - 8).attr("class", "strong").text("PolSett: " + rs[0].ps_label);
+    if (rs[0].ceiling != null) {
+      svg.append("line").attr("x1", x(rs[0].ceiling)).attr("x2", x(rs[0].ceiling)).attr("y1", yy - 2).attr("y2", yy + rs.length * rowH - 2)
+        .style("stroke", "var(--ink)").style("stroke-width", 2);
+      svg.append("text").attr("x", x(rs[0].ceiling) + 4).attr("y", yy + 9).text("ceiling " + rs[0].ceiling.toFixed(2));
+    }
+    rs.forEach((d, i) => {
+      const cy = yy + i * rowH + rowH / 2 - 2, isIdx = !d.ours.includes("_");
+      const lab = isIdx ? IDX_LABEL[d.ours] : "   " + LENS_LABEL[d.ours.split("_")[1]] + " lens";
+      svg.append("text").attr("x", isIdx ? 8 : 20).attr("y", cy + 4).attr("class", isIdx ? "strong" : "").text(isIdx ? lab : lab.trim());
+      svg.append("line").attr("x1", x(Math.min(d.r, d.between, d.within))).attr("x2", x(Math.max(d.r, d.between, d.within)))
+        .attr("y1", cy).attr("y2", cy).style("stroke", "var(--rule)").style("stroke-width", 2);
+      const g = svg.append("g").on("mousemove", ev => showTip(`<b>${esc(lab.trim())} vs ${esc(d.ps_label)}</b><br>pooled ${fmt(d.r)} · between ${fmt(d.between)} · within ${fmt(d.within)}<br><span class="dim">${d.n} country-periods</span>`, ev)).on("mouseleave", hideTip);
+      g.append("rect").attr("x", x(d.between) - 4.5).attr("y", cy - 4.5).attr("width", 9).attr("height", 9).style("fill", "var(--paper)").style("stroke", "var(--ink-2)").style("stroke-width", 1.5);
+      g.append("path").attr("d", `M${x(d.within)},${cy - 5.5} L${x(d.within) + 5.5},${cy + 4.5} L${x(d.within) - 5.5},${cy + 4.5} Z`).style("fill", "var(--ink-4)");
+      g.append("circle").attr("cx", x(d.r)).attr("cy", cy).attr("r", isIdx ? 6 : 5).style("fill", "var(--accent)").style("stroke", "var(--paper)").style("stroke-width", 1.5);
+    });
+    yy += rs.length * rowH;
+  });
+}
+
+/* ---------- Figure 5: confusion ---------- */
+function renderConfusion() {
+  const host = document.getElementById("confusion"); host.innerHTML = "";
+  const cell = 64, left = 150, top = 56, W = left + 4 * cell + 4, H = top + 4 * cell + 24;
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).style("max-width", W + "px").attr("role", "img").attr("aria-label", "Confusion matrix of Khan types");
+  const n = (ps, o) => (D.confusion.find(d => d.ps === ps && d.ours === o) || { n: 0 }).n;
+  svg.append("text").attr("x", left + 2 * cell).attr("y", 14).attr("text-anchor", "middle").attr("class", "strong").text("Our indices →");
+  svg.append("text").attr("x", 0).attr("y", 14).attr("class", "strong").text("PolSett ↓");
+  TYPES.forEach((t, j) => {
+    svg.append("rect").attr("x", left + j * cell + cell / 2 - 14).attr("y", 28).attr("width", 28).attr("height", 18).attr("rx", 3).attr("class", "t-" + t);
+    svg.append("text").attr("x", left + j * cell + cell / 2).attr("y", 41).attr("text-anchor", "middle").style("fill", "#fff").style("font-weight", 600).text(t);
+  });
+  let tot = 0, diag = 0;
+  TYPES.forEach((ps, i) => {
+    const rowN = d3.sum(TYPES, o => n(ps, o));
+    svg.append("text").attr("x", left - 10).attr("y", top + i * cell + cell / 2 + 4).attr("text-anchor", "end").text(TYPE_NAME[ps]);
+    TYPES.forEach((o, j) => {
+      const v = n(ps, o); tot += v; if (i === j) diag += v;
+      const g = svg.append("g").attr("transform", `translate(${left + j * cell},${top + i * cell})`);
+      g.append("rect").attr("width", cell - 3).attr("height", cell - 3).attr("rx", 3).style("fill", "var(--accent)").style("fill-opacity", 0.06 + 0.8 * v / rowN)
+        .style("stroke", i === j ? "var(--ink)" : "none").style("stroke-width", 1.5);
+      g.append("text").attr("x", (cell - 3) / 2).attr("y", (cell - 3) / 2 + 4).attr("text-anchor", "middle").attr("class", "strong").text(v);
+      g.on("mousemove", ev => showTip(`PolSett <b>${TYPE_NAME[ps]}</b>, ours <b>${TYPE_NAME[o]}</b><br>${v} periods (${Math.round(100 * v / rowN)}% of the row)`, ev)).on("mouseleave", hideTip);
+    });
+  });
+  const rowsPS = TYPES.map(ps => d3.sum(TYPES, o => n(ps, o)));
+  const modal = d3.max(rowsPS) / tot;
+  document.getElementById("confusion-text").innerHTML = `
+    <p>Both axes are cut at the global median of our indices. We agree with PolSett on <b>${Math.round(100 * diag / tot)}%</b> of ${tot} country-periods, against ${Math.round(100 * modal)}% for assigning every period to the most common type.</p>
+    <p>The agreement comes from the two diagonal types, strong-dominant and competitive clientelist, where both axes move together. The off-diagonal types, vulnerable authoritarian and weak-dominant, are where the two systems mostly part. Those are also the types in which Khan's two dimensions point in opposite directions, so they depend most on how each axis is measured.</p>
+    <p class="note">Cell shading is the row share; the diagonal is outlined.</p>`;
+}
+
+/* ---------- Khan 2x2 ---------- */
+(function renderQuadrants() {
+  const Q = {
+    VA: { axes: "Horizontal low · vertical high", text: "The leadership commands its own coalition, but excluded factions are strong enough to threaten it. Khan's vulnerable authoritarian coalition: internally disciplined, externally insecure, with short time horizons and a tendency to rely on repression." },
+    SD: { axes: "Horizontal high · vertical high", text: "Excluded factions are weak and the leadership can discipline its lower-level factions. Khan's potential developmental coalition: secure enough for long horizons and able to enforce conditions on rent recipients." },
+    CC: { axes: "Horizontal low · vertical low", text: "Excluded factions are strong and lower-level factions within the coalition are also strong. Khan's competitive clientelism: coalitions are fragile, rents are spread to hold lower factions, and power turns over." },
+    WD: { axes: "Horizontal high · vertical low", text: "The ruling coalition is secure against excluded factions, but its leadership cannot discipline lower-level factions. Khan's weak dominant party: stable at the top, with rents captured lower down." }
+  };
+  const PREF = ["CHN", "SGP", "RWA", "KHM", "BGD", "RUS", "EGY", "PAK", "TUR", "UGA", "THA", "IND", "GHA", "KEN", "BRA", "MEX", "NGA", "PHL", "IDN",
+    "TZA", "MOZ", "MYS", "ZAF", "VNM", "ETH", "ZWE", "IRN", "COL"];
+  const ex = t => PREF.map(i => D.world.find(w => w.iso === i)).filter(w => w && w.type === t).slice(0, 4).map(w => w.name).join(", ");
+  // Grid order follows the plane: top row high vertical power, left column low horizontal power.
+  document.getElementById("quad-grid").innerHTML = ["VA", "SD", "CC", "WD"].map(t => `
+    <div class="quad q-${t}">
+      <div class="quad-name"><span class="quad-code bg-${t}">${t}</span>${TYPE_NAME[t]}</div>
+      <div class="quad-axes">${Q[t].axes}</div>
+      <p>${Q[t].text}</p>
+      <div class="quad-ex">${ex(t) ? "Examples, 2015–19: " + esc(ex(t)) : ""}</div>
+    </div>`).join("");
+})();
+
+/* ---------- Explorer ---------- */
+const byCountry = d3.group(D.periods, d => d.c);
+const countries = [...byCountry.keys()].sort();
+const yearsByIso = d3.group(D.years, d => d.iso);
+const cSel = document.getElementById("country-sel");
+countries.forEach(c => cSel.add(new Option(c, c)));
+
+const PUZZLES = [
+  { c: "Ethiopia", y0: 2005, note: "<b>Ethiopia under Meles.</b> PolSett codes a strong-dominant settlement with a weak opposition. Our horizontal index is set by the armed lens (Ogaden and Oromo insurgencies), which counts peripheral insurgency in full. The question is whether a challenge confined to the periphery amounts to holding power against the centre." },
+  { c: "Vietnam", y0: 1992, note: "<b>Vietnam.</b> Weak-dominant on our indices throughout, strong-dominant for PolSett in most periods. The difference sits almost entirely in the personal-command lens: collective leadership scores low. Whether the provincial party apparatus constitutes strong lower-level factions is a substantive question in its own right." },
+  { c: "Uganda", y0: 2006, note: "<b>Uganda under Museveni.</b> The two vertical lenses point in opposite directions: party discipline is near the bottom of the scale and personal command near the top. A leader who personally dominates a loosely disciplined movement has no single cell in Khan's 2×2." },
+  { c: "Thailand", y0: 1980, note: "<b>Thailand.</b> Vulnerable authoritarian on our indices in almost every period, where PolSett has weak-dominant or competitive clientelist. The personal-legitimation indicator may be picking up the monarchy, not the prime minister PolSett treats as leader. Palace, army and parties look like separate centres of power." },
+  { c: "Tanzania", y0: 1996, note: "<b>Tanzania.</b> Weak-dominant on our indices (a dominant party with weak central discipline), competitive clientelist for PolSett. The electoral lens shows CCM's margins; PolSett's coders weight the opposition more heavily." },
+  { c: "Egypt", y0: 2014, note: "<b>Egypt under al-Sisi.</b> PolSett codes weak-dominant. We find vulnerable authoritarian: the armed lens (Sinai insurgency) sets horizontal power low, and personal command keeps vertical power high." }
+];
+const pz = document.getElementById("puzzles");
+PUZZLES.forEach((p, i) => {
+  const b = document.createElement("button"); b.className = "chip"; b.type = "button"; b.textContent = p.c;
+  b.setAttribute("aria-pressed", "false"); b.addEventListener("click", () => selectCountry(p.c, p.y0, i)); pz.appendChild(b);
+});
+cSel.addEventListener("change", () => selectCountry(cSel.value, null, -1));
+
+const state = { c: "Ethiopia", sel: 0, puzzle: 0, world: "VNM" };
+
+function selectCountry(c, y0, puzzleIdx) {
+  state.c = c; state.puzzle = puzzleIdx; cSel.value = c;
+  const ps = byCountry.get(c);
+  let k = ps.findIndex(p => p.y0 === y0);
+  if (k < 0) { k = ps.findIndex(p => p.ps && p.ours && p.ps !== p.ours); if (k < 0) k = ps.length - 1; }
+  state.sel = k;
+  [...pz.children].forEach((b, i) => b.setAttribute("aria-pressed", i === puzzleIdx ? "true" : "false"));
+  document.getElementById("puzzle-note").innerHTML = puzzleIdx >= 0 ? PUZZLES[puzzleIdx].note : "";
+  renderExplorer();
+}
+function selectPeriod(k) { state.sel = k; renderExplorer(); }
+
+function renderStrip() {
+  const host = document.getElementById("strip"); host.innerHTML = "";
+  const ps = byCountry.get(state.c);
+  const W = widthOf("strip"), m = { t: 6, r: 8, b: 22, l: 70 }, rowH = 30, H = m.t + 2 * rowH + 8 + m.b;
+  const x = d3.scaleLinear().domain([d3.min(ps, d => d.y0), d3.max(ps, d => d.y1) + 1]).range([m.l, W - m.r]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", "Settlement type by period, PolSett and ours");
+  [["PolSett", "ps"], ["Ours", "ours"]].forEach(([lab, key], r) => {
+    const yy = m.t + r * (rowH + 4);
+    svg.append("text").attr("x", 0).attr("y", yy + rowH / 2 + 4).attr("class", "strong").text(lab);
+    ps.forEach((p, k) => {
+      const x0 = x(p.y0) + 1, w = Math.max(2, x(p.y1 + 1) - x(p.y0) - 2), t = p[key];
+      const g = svg.append("g").style("cursor", "pointer").attr("tabindex", 0).attr("role", "button")
+        .attr("aria-label", `${p.y0}–${p.y1} ${p.leader || ""}: ${lab} ${t ? TYPE_NAME[t] : "not coded"}`)
+        .on("click", () => selectPeriod(k)).on("keydown", ev => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); selectPeriod(k); } })
+        .on("mousemove", ev => showTip(`<b>${p.y0}–${p.y1}</b> · ${esc(p.leader || "")}<br>PolSett: ${p.ps ? TYPE_NAME[p.ps] : "not coded"}<br>Ours: ${p.ours ? TYPE_NAME[p.ours] : "–"}`, ev))
+        .on("mouseleave", hideTip);
+      g.append("rect").attr("x", x0).attr("y", yy).attr("width", w).attr("height", rowH).attr("rx", 2)
+        .attr("class", t ? "t-" + t : "").style("fill", t ? null : "var(--grid)")
+        .style("stroke", k === state.sel ? "var(--ink)" : "none").style("stroke-width", 2.5);
+      if (t && w > 24) g.append("text").attr("x", x0 + w / 2).attr("y", yy + rowH / 2 + 4).attr("text-anchor", "middle").style("fill", "#fff").style("font-weight", 600).text(t);
+    });
+  });
+  // mark disagreement
+  ps.forEach((p, k) => {
+    if (p.ps && p.ours && p.ps !== p.ours) {
+      const cx = (x(p.y0) + x(p.y1 + 1)) / 2;
+      svg.append("circle").attr("cx", cx).attr("cy", m.t + 2 * rowH + 4 + 6).attr("r", 2.5).style("fill", "var(--ink)");
+    }
+  });
+  x.ticks(Math.max(3, Math.floor(W / 90))).forEach(t =>
+    svg.append("text").attr("x", x(t)).attr("y", H - 4).attr("text-anchor", "middle").text(t));
+  const legend = document.createElement("div"); legend.className = "legend"; legend.style.marginTop = "6px";
+  legend.innerHTML = TYPES.map(t => `<span><i class="swatch bg-${t}"></i>${t} ${TYPE_NAME[t]}</span>`).join("") +
+    `<span><svg width="8" height="8"><circle cx="4" cy="4" r="2.5" style="fill:var(--ink)"/></svg>Periods where the two disagree</span>`;
+  host.appendChild(legend);
+}
+
+const pos = {
+  ours: p => [(p.H - M.cutH) / M.sdH, (p.V - M.cutV) / M.sdV],
+  ps: p => [(p.psH - M.psCutH) / M.sdPsH, (p.psV - M.psCutV) / M.sdPsV]
+};
+function renderPlane() {
+  const host = document.getElementById("plane"); host.innerHTML = "";
+  const W = widthOf("plane"), H = Math.min(W, 440), m = { t: 22, r: 10, b: 34, l: 34 }, L = 3.2;
+  const x = d3.scaleLinear().domain([-L, L]).range([m.l, W - m.r]), y = d3.scaleLinear().domain([-L, L]).range([H - m.b, m.t]);
+  const cx = v => x(clamp(v, -L, L)), cy = v => y(clamp(v, -L, L));
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", "Periods on the Khan plane");
+  const quads = [["SD", 0, L, 0, L], ["VA", -L, 0, 0, L], ["CC", -L, 0, -L, 0], ["WD", 0, L, -L, 0]];
+  quads.forEach(([t, x0, x1, y0, y1]) => {
+    svg.append("rect").attr("x", x(x0)).attr("y", y(y1)).attr("width", x(x1) - x(x0)).attr("height", y(y0) - y(y1)).attr("class", "t-" + t).style("fill-opacity", 0.07);
+    svg.append("text").attr("x", x0 < 0 ? x(x0) + 6 : x(x1) - 6).attr("y", y1 > 0 ? y(y1) + 14 : y(y0) - 6)
+      .attr("text-anchor", x0 < 0 ? "start" : "end").attr("class", "strong").style("fill", "var(--ink-3)").text(TYPE_NAME[t]);
+  });
+  svg.append("line").attr("class", "zero").attr("x1", x(0)).attr("x2", x(0)).attr("y1", m.t).attr("y2", H - m.b);
+  svg.append("line").attr("class", "zero").attr("y1", y(0)).attr("y2", y(0)).attr("x1", m.l).attr("x2", W - m.r);
+  [-3, -2, -1, 1, 2, 3].forEach(t => {
+    svg.append("text").attr("x", x(t)).attr("y", H - m.b + 15).attr("text-anchor", "middle").text(t > 0 ? "+" + t : "−" + -t);
+    svg.append("text").attr("x", m.l - 6).attr("y", y(t) + 4).attr("text-anchor", "end").text(t > 0 ? "+" + t : "−" + -t);
+  });
+  svg.append("text").attr("class", "axis-label").attr("x", W - m.r).attr("y", H - 4).attr("text-anchor", "end").text("Horizontal power (SD from cutoff) →");
+  svg.append("text").attr("class", "axis-label").attr("x", m.l).attr("y", m.t - 8).text("↑ Vertical power");
+  // backdrop
+  svg.append("g").selectAll("circle").data(D.periods.filter(p => p.H != null && p.V != null)).join("circle")
+    .attr("cx", p => cx(pos.ours(p)[0])).attr("cy", p => cy(pos.ours(p)[1])).attr("r", 2.2)
+    .style("fill", "var(--muted)").style("fill-opacity", 0.45);
+  const ps = byCountry.get(state.c).filter(p => p.H != null && p.V != null);
+  const coded = ps.filter(p => p.psH != null && p.psV != null);
+  coded.forEach(p => {
+    const a = pos.ours(p), b = pos.ps(p);
+    svg.append("line").attr("x1", cx(a[0])).attr("y1", cy(a[1])).attr("x2", cx(b[0])).attr("y2", cy(b[1])).style("stroke", "var(--ink-4)").style("stroke-width", 1);
+  });
+  const line = d3.line().x(d => cx(d[0])).y(d => cy(d[1]));
+  svg.append("path").attr("d", line(ps.map(pos.ours))).style("fill", "none").style("stroke", "var(--ink)").style("stroke-width", 1.5).style("stroke-opacity", 0.55);
+  svg.append("path").attr("d", line(coded.map(pos.ps))).style("fill", "none").style("stroke", "var(--ink-3)").style("stroke-width", 1.2).style("stroke-dasharray", "3 3");
+  const all = byCountry.get(state.c), selP = all[state.sel];
+  const tipHtml = p => `<b>${p.y0}–${p.y1}</b> · ${esc(p.leader || "")}<br>Ours: ${p.ours ? TYPE_NAME[p.ours] : "–"} (H ${fmt(p.H)}, V ${fmt(p.V)})<br>PolSett: ${p.ps ? TYPE_NAME[p.ps] : "not coded"} (H ${fmt1(p.psH)}, V ${p.psV == null ? "–" : p.psV.toFixed(2)})`;
+  coded.forEach(p => {
+    const b = pos.ps(p), isSel = p === selP;
+    svg.append("circle").attr("cx", cx(b[0])).attr("cy", cy(b[1])).attr("r", isSel ? 7 : 5)
+      .style("fill", "var(--paper)").attr("class", p.ps ? "s-" + p.ps : "").style("stroke-width", isSel ? 3 : 2)
+      .style("cursor", "pointer").on("click", () => selectPeriod(all.indexOf(p)))
+      .on("mousemove", ev => showTip(tipHtml(p), ev)).on("mouseleave", hideTip);
+  });
+  ps.forEach(p => {
+    const a = pos.ours(p), isSel = p === selP;
+    svg.append("circle").attr("cx", cx(a[0])).attr("cy", cy(a[1])).attr("r", isSel ? 7.5 : 5.5)
+      .attr("class", "t-" + p.ours).style("stroke", isSel ? "var(--ink)" : "var(--paper)").style("stroke-width", isSel ? 2.5 : 1.5)
+      .style("cursor", "pointer").on("click", () => selectPeriod(all.indexOf(p)))
+      .on("mousemove", ev => showTip(tipHtml(p), ev)).on("mouseleave", hideTip);
+  });
+  if (selP && selP.H != null) {
+    const a = pos.ours(selP);
+    svg.append("text").attr("x", cx(a[0]) + 10).attr("y", cy(a[1]) - 8).attr("class", "strong").style("fill", "var(--ink)").text(`${selP.y0}–${selP.y1}`);
+  }
+}
+
+/* Decomposition: one block per index, as HTML rows so indicator names wrap in
+   full. `o` carries lens values and a z array aligned to D.spec; `ctx` names the
+   country and years so an indicator can be opened in the popup. */
+const pct = v => (clamp(v, -3, 3) + 3) / 6 * 100;
+function renderDecomp(host, o, withPS, ctx) {
+  ["H", "V", "U"].forEach(ix => {
+    const b = document.createElement("div"); b.className = "decomp-block"; host.appendChild(b);
+    decompBlock(b, o, ix, withPS, ctx);
+  });
+}
+function decompBlock(block, o, ix, withPS, ctx) {
+  const val = o[ix], bind = AGG[ix] === "min" ? bindingLens(o, ix) : null;
+  let head = `<span><b>${IDX_LABEL[ix]}</b> &nbsp;ours ${fmt(val)}`;
+  if (CUT[ix] != null) head += ` (cutoff ${fmt(CUT[ix])}, ${val >= CUT[ix] ? "above" : "below"})`;
+  head += `</span>`;
+  if (withPS && ix === "H" && o.psH != null) {
+    const agree = (val >= M.cutH) === (o.psH >= M.psCutH);
+    head += `<span class="${agree ? "agree-yes" : "agree-no"}">PolSett ${o.psH.toFixed(1)} (cutoff 3.28, ${o.psH >= M.psCutH ? "above" : "below"})${agree ? "" : " · disagree"}</span>`;
+  }
+  if (withPS && ix === "V" && o.psV != null) {
+    const agree = (val >= M.cutV) === (o.psV >= M.psCutV);
+    head += `<span class="${agree ? "agree-yes" : "agree-no"}">PolSett ${o.psV.toFixed(2)} (cutoff 0.44, ${o.psV >= M.psCutV ? "above" : "below"})${agree ? "" : " · disagree"}</span>`;
+  }
+  if (withPS && ix === "U" && o.uni != null) head += `<span class="agree-yes">PolSett policy concentration ${fmt(o.uni)} (z)</span>`;
+  const bar = (v, isLens) => {
+    const cut = CUT[ix] != null ? `<i class="dcut" style="left:${pct(CUT[ix])}%"></i>` : "";
+    if (v == null) return `<div class="dbar">${cut}<i class="dzero"></i><span class="dnone">no data</span></div>`;
+    const a = pct(Math.min(0, v)), w = Math.max(0.6, Math.abs(pct(v) - 50));
+    return `<div class="dbar">${cut}<i class="dzero"></i><i class="dfill ${v >= 0 ? "pos" : "neg"}${isLens ? " lens" : ""}" style="left:${a}%;width:${w}%"></i></div>`;
+  };
+  let rows = "";
+  LENS[ix].forEach(l => {
+    const lv = o[ix + "_" + l];
+    rows += `<div class="dlab lens">${LENS_LABEL[l]}${l === bind ? ` <span class="bind">sets the index</span>` : ""}</div>${bar(lv, true)}<div class="dval lens">${fmt(lv)}</div>`;
+    specOf(ix, l).forEach(s => {
+      const v = o.z[s.i];
+      rows += `<div class="dlab"><button type="button" class="var-btn" data-key="${s.key}">${esc(s.why)}</button></div>${bar(v, false)}<div class="dval">${v == null ? "–" : fmt(v)}</div>`;
+    });
+  });
+  block.innerHTML = `<div class="decomp-h">${head}</div><div class="drows">${rows}</div>`;
+  block.querySelectorAll(".var-btn").forEach(b => b.addEventListener("click", () => openVar(b.dataset.key, ctx, b)));
+}
+
+/* ---------- Indicator popup ---------- */
+const KV = window.KHAN_VARS;
+const NY = KV.years.length, Y0 = KV.years[0];
+const ISO_I = Object.fromEntries(KV.iso.map((c, i) => [c, i]));
+const vAt = (V, iso, y) => { const i = ISO_I[iso]; if (i == null || y < Y0 || y >= Y0 + NY) return null; return V.values[i * NY + (y - Y0)]; };
+const meanOf = a => { const b = a.filter(v => v != null); return b.length ? d3.mean(b) : null; };
+const periodMean = (V, iso, y0, y1) => meanOf(d3.range(y0, Math.min(y1, Y0 + NY - 1) + 1).map(y => vAt(V, iso, y)));
+function fmtRaw(v) {
+  if (v == null || !isFinite(v)) return "–";
+  if (Number.isInteger(v)) return (v < 0 ? "−" : "") + Math.abs(v).toLocaleString();
+  const a = Math.abs(v), s = a >= 100 ? a.toFixed(0) : a >= 10 ? a.toFixed(1) : a.toFixed(2);
+  return (v < 0 ? "−" : "") + s;
+}
+function responsesList(txt) {
+  if (!txt) return "";
+  const parts = txt.split(/\s+(?=\d{1,2}:\s?)/).map(t => t.trim()).filter(Boolean);
+  if (parts.length < 2) return `<p>${esc(txt)}</p>`;
+  return `<ol class="resp">${parts.map(t => { const m = t.match(/^(\d{1,2}):\s*(.*)$/s); return m ? `<li><b>${m[1]}</b> ${esc(m[2])}</li>` : `<li>${esc(t)}</li>`; }).join("")}</ol>`;
+}
+function entryHtml(e, small) {
+  if (!e) return "";
+  return `<div class="vm-entry${small ? " small" : ""}">
+    ${small ? `<div class="vm-entry-h"><b>${esc(e.name)}</b> <code>${esc(e.tag)}</code></div>` : ""}
+    ${e.question ? `<p><span class="vm-k">Question</span>${esc(e.question)}</p>` : ""}
+    ${e.clarification ? `<p><span class="vm-k">Clarification</span>${esc(e.clarification)}</p>` : ""}
+    ${e.responses ? `<div><span class="vm-k">Responses</span>${responsesList(e.responses)}</div>` : ""}
+    ${e.scale ? `<p><span class="vm-k">Scale</span>${esc(e.scale)}${e.years ? ` · coded ${esc(e.years)}` : ""}</p>` : ""}
+  </div>`;
+}
+
+const modal = document.getElementById("var-modal"), vmBody = document.getElementById("vm-body");
+let lastTrigger = null, lastOpen = null;
+function closeVar() { modal.hidden = true; document.body.style.overflow = ""; lastOpen = null; if (lastTrigger) lastTrigger.focus(); }
+modal.addEventListener("click", ev => { if (ev.target === modal) closeVar(); });
+document.getElementById("vm-close").addEventListener("click", closeVar);
+document.addEventListener("keydown", ev => { if (ev.key === "Escape" && !modal.hidden) closeVar(); });
+
+function openVar(key, ctx, trigger) {
+  const V = KV.vars[key]; if (!V) return;
+  lastTrigger = trigger || null; lastOpen = { key, ctx };
+  const s = D.spec.findIndex(r => r.key === key && r.index === V.index);
+  const z = s >= 0 ? ctx.o.z[s] : null;
+  const pm = periodMean(V, ctx.iso, ctx.y0, ctx.y1);
+  const yrs = ctx.y0 === ctx.y1 ? `${ctx.y0}` : `${ctx.y0}–${ctx.y1}`;
+  let doc = "";
+  if (V.kind === "vdem") {
+    doc = entryHtml(V.entry, false);
+    if (/latent/i.test(V.unit || "")) doc += `<p class="note">The values below are V-Dem's measurement-model estimates, not the response codes. They sit on a latent scale centred near 0 (most country-years between about −3 and +3), where higher values correspond to responses further down the list above.</p>`;
+  }
+  else {
+    doc = `<p>${esc(V.construction)}</p>`;
+    if (V.inputs && V.inputs.length) doc += `<div class="vm-inputs"><div class="vm-k">Built from</div>${V.inputs.map(e => entryHtml(e, true)).join("")}</div>`;
+  }
+  vmBody.innerHTML = `
+    <div class="vm-head">
+      <div class="eyebrow">${IDX_LABEL[V.index]} · ${LENS_LABEL[V.lens]} lens · enters with sign ${V.sign > 0 ? "+" : "−"}</div>
+      <h2 id="vm-title">${esc(V.name || V.short)}</h2>
+      <div class="vm-meta"><code>${esc(key === "log_hos_tenure" ? "hos_tenure" : key)}</code> · ${esc(V.source)} · unit: ${esc(V.unit || "–")}</div>
+      <div class="vm-meta">Used in the index as: “${esc(V.short)}”</div>
+    </div>
+    <div class="vm-now"><b>${esc(ctx.name)}, ${yrs}:</b> ${fmtRaw(pm)}${V.unit && !/latent|Interval/i.test(V.unit) ? " " + esc(V.unit) : ""} → contribution to the lens ${z == null ? "–" : fmt(z)} (signed z-score)</div>
+    <section class="vm-sec"><h3>What it measures</h3>${doc}</section>
+    <section class="vm-sec"><h3>${esc(ctx.name)} over time</h3><div class="chart" id="vm-ts"></div><div class="vm-stats" id="vm-ts-s"></div></section>
+    <section class="vm-sec"><h3>Across countries, ${yrs}</h3><div class="chart" id="vm-xc"></div><div class="vm-stats" id="vm-xc-s"></div></section>
+    <section class="vm-sec"><h3>Whole dataset, all country-years 1960–2019</h3><div class="chart" id="vm-gl"></div><div class="vm-stats" id="vm-gl-s"></div></section>`;
+  modal.hidden = false; document.body.style.overflow = "hidden";
+  document.getElementById("vm-close").focus();
+  modal.scrollTop = 0;
+  drawVar(V, ctx, pm);
+}
+
+function drawVar(V, ctx, pm) {
+  const name = ctx.name;
+  // 1. Country over time
+  const ser = KV.years.map(y => ({ y, v: vAt(V, ctx.iso, y) }));
+  const have = ser.filter(d => d.v != null);
+  const tsHost = document.getElementById("vm-ts");
+  if (!have.length) { tsHost.innerHTML = `<p class="note">No data for ${esc(name)}.</p>`; }
+  else {
+    const W = Math.max(280, tsHost.clientWidth), H = 170, m = { t: 12, r: 12, b: 24, l: 46 };
+    const x = d3.scaleLinear().domain([Y0, Y0 + NY - 1]).range([m.l, W - m.r]);
+    const ext = d3.extent(have, d => d.v); if (ext[0] === ext[1]) { ext[0] -= 1; ext[1] += 1; }
+    const y = d3.scaleLinear().domain(ext).nice().range([H - m.b, m.t]);
+    const svg = d3.select(tsHost).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", `${V.name} in ${name} over time`);
+    svg.append("rect").attr("x", x(ctx.y0) - 2).attr("width", Math.max(4, x(Math.min(ctx.y1, Y0 + NY - 1)) - x(ctx.y0) + 4)).attr("y", m.t).attr("height", H - m.t - m.b)
+      .style("fill", "var(--accent)").style("fill-opacity", 0.12);
+    y.ticks(4).forEach(t => { svg.append("line").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(t)).attr("y2", y(t)).style("stroke", "var(--grid)");
+      svg.append("text").attr("x", m.l - 6).attr("y", y(t) + 4).attr("text-anchor", "end").text(fmtRaw(t)); });
+    x.ticks(Math.max(3, Math.floor(W / 90))).forEach(t => svg.append("text").attr("x", x(t)).attr("y", H - 6).attr("text-anchor", "middle").text(t));
+    svg.append("path").attr("d", d3.line().defined(d => d.v != null).x(d => x(d.y)).y(d => y(d.v))(ser))
+      .style("fill", "none").style("stroke", "var(--pos)").style("stroke-width", 2);
+    svg.append("g").selectAll("circle").data(have).join("circle").attr("cx", d => x(d.y)).attr("cy", d => y(d.v)).attr("r", 6)
+      .style("fill", "transparent").on("mousemove", (ev, d) => showTip(`<b>${d.y}</b> · ${fmtRaw(d.v)}`, ev)).on("mouseleave", hideTip);
+    const lo = d3.least(have, d => d.v), hi = d3.greatest(have, d => d.v);
+    document.getElementById("vm-ts-s").innerHTML =
+      `<span>Selected years ${ctx.y0}–${ctx.y1}: <b>${fmtRaw(pm)}</b></span><span>Mean ${KV.years[0]}–2023: <b>${fmtRaw(d3.mean(have, d => d.v))}</b></span>` +
+      `<span>Lowest ${fmtRaw(lo.v)} (${lo.y}) · highest ${fmtRaw(hi.v)} (${hi.y})</span><span>${have.length} of ${NY} years with data</span>`;
+  }
+  // 2. Across countries in the same years
+  const xc = KV.iso.map(c => ({ c, v: periodMean(V, c, ctx.y0, ctx.y1) })).filter(d => d.v != null).sort((a, b) => a.v - b.v);
+  const xcHost = document.getElementById("vm-xc");
+  if (xc.length < 3) xcHost.innerHTML = `<p class="note">Too few countries have data for these years.</p>`;
+  else {
+    histogram(xcHost, xc.map(d => d.v), pm, `${name}`, d => {
+      const inBin = xc.filter(e => e.v >= d.x0 && (e.v < d.x1 || (d.x1 === d.max && e.v <= d.x1)));
+      return `<b>${fmtRaw(d.x0)} to ${fmtRaw(d.x1)}</b>: ${inBin.length} countries<br><span class="dim">${inBin.slice(0, 12).map(e => esc(KV.names[e.c])).join(", ")}${inBin.length > 12 ? "…" : ""}</span>`;
+    });
+    const rank = pm == null ? null : xc.filter(d => d.v > pm).length + 1;
+    const nm = d => `${esc(KV.names[d.c])} ${fmtRaw(d.v)}`;
+    document.getElementById("vm-xc-s").innerHTML =
+      (rank ? `<span>${esc(name)} ranks <b>${rank} of ${xc.length}</b> (1 = highest), above ${Math.round(100 * xc.filter(d => d.v < pm).length / xc.length)}% of countries</span>` : `<span>${esc(name)} has no data for these years</span>`) +
+      `<span>Median ${fmtRaw(d3.median(xc, d => d.v))}</span>` +
+      `<span>Lowest: ${xc.slice(0, 3).map(nm).join(", ")}</span><span>Highest: ${xc.slice(-3).reverse().map(nm).join(", ")}</span>`;
+  }
+  // 3. Whole dataset (the reference panel for the z-scores)
+  const all = [];
+  KV.iso.forEach(c => KV.years.forEach(y => { if (y <= 2019) { const v = vAt(V, c, y); if (v != null) all.push(v); } }));
+  const glHost = document.getElementById("vm-gl");
+  const mu = d3.mean(all), sd = d3.deviation(all);
+  histogram(glHost, all, pm, name, d => `<b>${fmtRaw(d.x0)} to ${fmtRaw(d.x1)}</b>: ${d.length.toLocaleString()} country-years`, { mu, sd });
+  const q = p => d3.quantile(all.slice().sort(d3.ascending), p);
+  const total = KV.iso.length * KV.years.filter(y => y <= 2019).length;
+  document.getElementById("vm-gl-s").innerHTML =
+    `<span>${all.length.toLocaleString()} country-years (${Math.round(100 * all.length / total)}% coverage)</span>` +
+    `<span>Mean <b>${fmtRaw(mu)}</b> · SD <b>${fmtRaw(sd)}</b></span><span>Median ${fmtRaw(q(0.5))} · 10th–90th percentile ${fmtRaw(q(0.1))} to ${fmtRaw(q(0.9))}</span>` +
+    `<span>Range ${fmtRaw(d3.min(all))} to ${fmtRaw(d3.max(all))}</span>` +
+    `<span class="full">The index z-scores this indicator against this mean and SD${V.lens === "personal" && V.short.includes("tenure") ? " (on log(1 + years), so these year-scale figures differ)" : ""}, then applies the sign ${V.sign > 0 ? "+" : "−"}.</span>`;
+}
+
+function histogram(host, vals, marker, markerLabel, tipFn, ref) {
+  host.innerHTML = "";
+  const W = Math.max(280, host.clientWidth), H = 150, m = { t: 18, r: 12, b: 24, l: 40 };
+  let ext = d3.extent(vals); if (ext[0] === ext[1]) { ext = [ext[0] - 0.5, ext[1] + 0.5]; }
+  const distinct = new Set(vals).size;
+  const x = d3.scaleLinear().domain(ext).nice().range([m.l, W - m.r]);
+  const bins = d3.bin().domain(x.domain()).thresholds(distinct <= 12 ? Math.max(distinct * 2, 4) : 28)(vals);
+  bins.forEach(b => b.max = x.domain()[1]);
+  const y = d3.scaleLinear().domain([0, d3.max(bins, b => b.length)]).nice().range([H - m.b, m.t]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", "Distribution");
+  y.ticks(3).forEach(t => { svg.append("line").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(t)).attr("y2", y(t)).style("stroke", "var(--grid)");
+    svg.append("text").attr("x", m.l - 6).attr("y", y(t) + 4).attr("text-anchor", "end").text(t.toLocaleString()); });
+  const hit = b => marker != null && marker >= b.x0 && (marker < b.x1 || (b.x1 === x.domain()[1] && marker <= b.x1));
+  svg.append("g").selectAll("rect").data(bins).join("rect")
+    .attr("x", b => x(b.x0) + 1).attr("width", b => Math.max(1, x(b.x1) - x(b.x0) - 2))
+    .attr("y", b => y(b.length)).attr("height", b => y(0) - y(b.length)).attr("rx", 1.5)
+    .style("fill", b => hit(b) ? "var(--pos)" : "var(--muted)").style("fill-opacity", b => hit(b) ? 1 : 0.75)
+    .on("mousemove", (ev, b) => showTip(tipFn(b), ev)).on("mouseleave", hideTip);
+  x.ticks(Math.max(3, Math.floor(W / 80))).forEach(t => svg.append("text").attr("x", x(t)).attr("y", H - 6).attr("text-anchor", "middle").text(fmtRaw(t)));
+  svg.append("line").attr("class", "zero").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(0)).attr("y2", y(0));
+  if (ref) {
+    [[ref.mu, "mean", "4 0"], [ref.mu - ref.sd, "−1 SD", "4 3"], [ref.mu + ref.sd, "+1 SD", "4 3"]].forEach(([v, lab, dash]) => {
+      if (v < x.domain()[0] || v > x.domain()[1]) return;
+      svg.append("line").attr("x1", x(v)).attr("x2", x(v)).attr("y1", m.t).attr("y2", y(0)).style("stroke", "var(--ink-3)").style("stroke-dasharray", dash);
+      svg.append("text").attr("x", x(v) + 3).attr("y", m.t + 8).style("font-size", "11px").text(lab);
+    });
+  }
+  if (marker != null) {
+    const mx = x(clamp(marker, x.domain()[0], x.domain()[1]));
+    svg.append("line").attr("x1", mx).attr("x2", mx).attr("y1", m.t - 6).attr("y2", y(0)).style("stroke", "var(--ink)").style("stroke-width", 2);
+    svg.append("text").attr("x", mx).attr("y", m.t - 8).attr("text-anchor", mx > W * 0.7 ? "end" : mx < W * 0.3 ? "start" : "middle")
+      .attr("class", "strong").style("fill", "var(--ink)").text(`${markerLabel} ${fmtRaw(marker)}`);
+  }
+}
+
+function topComp(o, ix, lens, dir) {
+  let best = null;
+  specOf(ix, lens).forEach(s => { const v = o.z[s.i]; if (v == null) return; if (!best || (dir < 0 ? v < best.v : v > best.v)) best = { why: s.why, v }; });
+  return best;
+}
+function explain(p) {
+  const out = [];
+  if (p.H != null && p.psH != null) {
+    const oh = p.H >= M.cutH, ph = p.psH >= M.psCutH, b = bindingLens(p, "H"), tc = b && topComp(p, "H", b, -1);
+    if (oh === ph) out.push(`Horizontal: both place the coalition ${oh ? "above" : "below"} the cutoff. Our weakest channel is ${LENS_LABEL[b].toLowerCase()} (${fmt(p["H_" + b])}).`);
+    else if (ph) out.push(`Horizontal: PolSett codes the opposition as weak (${p.psH.toFixed(1)} against a cutoff of 3.28). Our index falls below its cutoff because the <b>${LENS_LABEL[b].toLowerCase()}</b> channel is low (${fmt(p["H_" + b])})${tc ? `, driven mainly by “${esc(tc.why.toLowerCase())}” (${fmt(tc.v)})` : ""}.`);
+    else out.push(`Horizontal: PolSett codes a strong opposition (${p.psH.toFixed(1)}), but none of our channels falls below the cutoff. The weakest is ${LENS_LABEL[b].toLowerCase()} at ${fmt(p["H_" + b])}. The opposition PolSett's coders see is not registering in elections, armed conflict or the organised social opposition V-Dem records.`);
+  }
+  if (p.V != null && p.psV != null) {
+    const ov = p.V >= M.cutV, pv = p.psV >= M.psCutV;
+    const lv = LENS.V.map(l => ({ l, v: p["V_" + l] })).filter(d => d.v != null);
+    if (ov === pv) out.push(`Vertical: both place the leadership ${ov ? "above" : "below"} the cutoff.`);
+    else {
+      const driver = ov ? d3.greatest(lv, d => d.v) : d3.least(lv, d => d.v);
+      const tc = driver && topComp(p, "V", driver.l, ov ? 1 : -1);
+      const other = lv.find(d => d !== driver);
+      out.push(`Vertical: PolSett has the leadership ${pv ? "dominant" : "constrained"} (${p.psV.toFixed(2)} against 0.44). Ours goes the other way, pulled by <b>${LENS_LABEL[driver.l].toLowerCase()}</b> (${fmt(driver.v)})${tc ? `, mainly “${esc(tc.why.toLowerCase())}” (${fmt(tc.v)})` : ""}${other ? `. The ${LENS_LABEL[other.l].toLowerCase()} lens is at ${fmt(other.v)}` : ""}.`);
+    }
+  }
+  if (!out.length) out.push(p.ps ? "Our indices are missing for this period." : "PolSett does not code this period, so only our indices are shown.");
+  return out;
+}
+
+function renderPeriodDetail() {
+  const all = byCountry.get(state.c), p = all[state.sel];
+  document.getElementById("per-title").textContent = `${state.c}, ${p.y0}–${p.y1}`;
+  document.getElementById("per-sub").textContent = p.leader ? `Leader: ${p.leader}` : "";
+  const badge = (lab, t) => `<span class="badge">${lab} ${t ? `<i class="swatch bg-${t}"></i>${TYPE_NAME[t]}` : "not coded"}</span>`;
+  document.getElementById("per-verdict").innerHTML = badge("PolSett:", p.ps) + badge("Ours:", p.ours) +
+    (p.ps && p.ours ? `<span class="${p.ps === p.ours ? "agree-yes" : "agree-no"}">${p.ps === p.ours ? "Agree" : "Disagree"}</span>` : "");
+  document.getElementById("per-why").innerHTML = explain(p).map(s => `<li>${s}</li>`).join("");
+  const host = document.getElementById("decomp"); host.innerHTML = "";
+  renderDecomp(host, p, true, { iso: p.iso, name: state.c, y0: p.y0, y1: p.y1, o: p });
+}
+
+function renderTable() {
+  const all = byCountry.get(state.c);
+  const cols = ["Years", "Leader", "PolSett", "Ours", "H", "PolSett H", "V", "PolSett V", "U", "Binding H lens"];
+  document.getElementById("per-table").innerHTML = `<table><thead><tr>${cols.map(c => `<th>${c}</th>`).join("")}</tr></thead><tbody>${all.map(p => `<tr>
+    <td>${p.y0}–${p.y1}</td><td>${esc(p.leader || "")}</td><td>${p.ps || "–"}</td><td>${p.ours || "–"}</td>
+    <td class="num">${fmt(p.H)}</td><td class="num">${fmt1(p.psH)}</td><td class="num">${fmt(p.V)}</td>
+    <td class="num">${p.psV == null ? "–" : p.psV.toFixed(2)}</td><td class="num">${fmt(p.U)}</td><td>${LENS_LABEL[bindingLens(p, "H")] || "–"}</td></tr>`).join("")}</tbody></table>`;
+}
+
+function renderExplorer() { renderStrip(); renderPlane(); renderPeriodDetail(); renderTable(); }
+
+/* ---------- Figure 9: binding lens ---------- */
+function renderBinding() {
+  const host = document.getElementById("bind-chart"); host.innerHTML = "";
+  const groups = [
+    { label: "PolSett: weak opposition (H ≥ 3.28)", f: p => p.psH != null && p.psH >= M.psCutH },
+    { label: "PolSett: strong opposition (H < 3.28)", f: p => p.psH != null && p.psH < M.psCutH }
+  ].map(g => {
+    const ps = D.periods.filter(p => g.f(p) && p.H != null), n = ps.length;
+    return { ...g, n, parts: LENS.H.map(l => ({ l, share: ps.filter(p => bindingLens(p, "H") === l).length / n })) };
+  });
+  const W = widthOf("bind-chart"), rowH = 46, m = { t: 6, r: 8, b: 6, l: Math.min(260, W * 0.42) };
+  const H = m.t + groups.length * rowH + m.b;
+  const x = d3.scaleLinear().domain([0, 1]).range([m.l, W - m.r]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", "Binding horizontal lens by PolSett coding");
+  const fills = { electoral: "var(--l3)", armed: "var(--l1)", social: "var(--l2)" };
+  const ink = { electoral: "var(--ink)", armed: "var(--paper)", social: "var(--paper)" };
+  groups.forEach((g, i) => {
+    const yy = m.t + i * rowH;
+    svg.append("text").attr("x", 0).attr("y", yy + 18).attr("class", "strong").text(g.label);
+    svg.append("text").attr("x", 0).attr("y", yy + 34).text(`${g.n} periods`);
+    let acc = 0;
+    g.parts.forEach(pt => {
+      const x0 = x(acc), w = x(acc + pt.share) - x0; acc += pt.share;
+      svg.append("rect").attr("x", x0 + 1).attr("y", yy + 6).attr("width", Math.max(0, w - 2)).attr("height", rowH - 14).attr("rx", 2).style("fill", fills[pt.l])
+        .on("mousemove", ev => showTip(`<b>${LENS_LABEL[pt.l]}</b> sets horizontal power<br>${Math.round(100 * pt.share)}% of ${esc(g.label.toLowerCase())}`, ev)).on("mouseleave", hideTip);
+      if (w > 70) svg.append("text").attr("x", x0 + 8).attr("y", yy + rowH / 2 + 2).style("fill", ink[pt.l]).style("font-weight", 600)
+        .text(`${LENS_LABEL[pt.l]} ${Math.round(100 * pt.share)}%`);
+    });
+  });
+}
+
+/* ---------- Figure 10: world ---------- */
+const wSearch = document.getElementById("world-search"), wList = document.getElementById("world-list");
+D.world.slice().sort((a, b) => a.name.localeCompare(b.name)).forEach(w => { const o = document.createElement("option"); o.value = w.name; wList.appendChild(o); });
+wSearch.addEventListener("change", () => { const w = D.world.find(d => d.name.toLowerCase() === wSearch.value.trim().toLowerCase()); if (w) { state.world = w.iso; renderWorld(); } });
+const WORLD_LABELS = ["CHN", "VNM", "RWA", "SGP", "USA", "DEU", "BRA", "IND", "NGA", "ZAF", "TZA", "MYS", "RUS", "TUR", "EGY", "PAK", "SAU", "MEX", "GHA", "ETH", "UGA", "BGD", "KHM", "IRN"];
+function renderWorld() {
+  const host = document.getElementById("world-chart"); host.innerHTML = "";
+  const pts = D.world;
+  const W = widthOf("world-chart"), H = Math.min(W * 0.85, 520), m = { t: 24, r: 14, b: 36, l: 40 };
+  const x = d3.scaleLinear().domain(d3.extent(pts, d => d.H)).nice().range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain(d3.extent(pts, d => d.V)).nice().range([H - m.b, m.t]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img").attr("aria-label", "All countries on horizontal and vertical power, 2015 to 2019");
+  scatterAxes(svg, x, y, W, H, m, "Horizontal power (z) →", "↑ Vertical power (z)");
+  svg.append("line").attr("class", "cut").attr("x1", x(M.cutH)).attr("x2", x(M.cutH)).attr("y1", m.t).attr("y2", H - m.b);
+  svg.append("line").attr("class", "cut").attr("y1", y(M.cutV)).attr("y2", y(M.cutV)).attr("x1", m.l).attr("x2", W - m.r);
+  const [xd0, xd1] = x.domain(), [yd0, yd1] = y.domain();
+  [["SD", xd1, yd1, "end", 14], ["VA", xd0, yd1, "start", 14], ["CC", xd0, yd0, "start", -6], ["WD", xd1, yd0, "end", -6]].forEach(([t, xv, yv, a, dy]) =>
+    svg.append("text").attr("x", x(xv) + (a === "start" ? 6 : -6)).attr("y", y(yv) + dy).attr("text-anchor", a).attr("class", "strong").style("fill", "var(--ink-3)").text(TYPE_NAME[t]));
+  const sel = pts.find(d => d.iso === state.world);
+  svg.append("g").selectAll("circle").data(pts).join("circle")
+    .attr("cx", d => x(d.H)).attr("cy", d => y(d.V)).attr("r", d => d === sel ? 8 : 5)
+    .attr("class", d => "t-" + d.type).style("fill-opacity", d => d === sel ? 1 : 0.8)
+    .style("stroke", d => d === sel ? "var(--ink)" : d.inPS ? "var(--ink-2)" : "var(--paper)").style("stroke-width", d => d === sel ? 2.5 : d.inPS ? 1.5 : 1)
+    .style("cursor", "pointer")
+    .on("click", (ev, d) => { state.world = d.iso; wSearch.value = d.name; renderWorld(); })
+    .on("mousemove", (ev, d) => showTip(`<b>${esc(d.name)}</b>${d.inPS ? " · in PolSett" : ""}<br>${TYPE_NAME[d.type]}<br>H ${fmt(d.H)} · V ${fmt(d.V)} · U ${fmt(d.U)}<br><span class="dim">Horizontal set by ${LENS_LABEL[bindingLens(d, "H")] ? LENS_LABEL[bindingLens(d, "H")].toLowerCase() : "–"} lens</span>`, ev))
+    .on("mouseleave", hideTip);
+  pts.filter(d => WORLD_LABELS.includes(d.iso) || d === sel).forEach(d =>
+    svg.append("text").attr("x", x(d.H) + 7).attr("y", y(d.V) - 6).style("fill", "var(--ink-2)").style("font-size", "11px").style("pointer-events", "none").text(d.iso));
+  if (sel) {
+    document.getElementById("w-title").textContent = sel.name;
+    document.getElementById("w-sub").innerHTML = `${TYPE_NAME[sel.type]} · 2015–2019 average${sel.inPS ? " · coded in PolSett" : ""}`;
+    const dh = document.getElementById("w-decomp"); dh.innerHTML = "";
+    renderDecomp(dh, sel, false, { iso: sel.iso, name: sel.name, y0: 2015, y1: 2019, o: sel });
+  }
+}
+
+/* ---------- Figure 11: item correlations ---------- */
+function renderItemCor() {
+  const host = document.getElementById("itemcor"); host.innerHTML = "";
+  const C = D.itemcor, W = widthOf("itemcor"), left = 150, top = 118;
+  const cell = Math.max(40, Math.min(72, (W - left - 4) / C.cols.length));
+  const Wd = left + C.cols.length * cell + 4, H = top + C.rows.length * cell + 4;
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${Wd} ${H}`).style("max-width", Wd + "px").attr("role", "img").attr("aria-label", "Lens correlations with PolSett items");
+  C.cols.forEach((c, j) => {
+    svg.append("text").attr("transform", `translate(${left + j * cell + cell / 2 + 4},${top - 8}) rotate(-40)`).text(c);
+  });
+  C.rows.forEach((r, i) => {
+    const [ix, l] = r.split("_");
+    svg.append("text").attr("x", left - 8).attr("y", top + i * cell + cell / 2 + 4).attr("text-anchor", "end").attr("class", "strong").text(`${ix} · ${LENS_LABEL[l]}`);
+    C.cols.forEach((c, j) => {
+      const v = C.r[i][j];
+      const g = svg.append("g").attr("transform", `translate(${left + j * cell},${top + i * cell})`);
+      const hi = r === "V_personal" && c === "Policy concentration in leader";
+      g.append("rect").attr("width", cell - 3).attr("height", cell - 3).attr("rx", 2)
+        .style("fill", v >= 0 ? "var(--pos)" : "var(--neg)").style("fill-opacity", 0.08 + 0.85 * Math.min(1, Math.abs(v) / 0.45))
+        .style("stroke", hi ? "var(--ink)" : "none").style("stroke-width", 2.5);
+      g.append("text").attr("x", (cell - 3) / 2).attr("y", (cell - 3) / 2 + 4).attr("text-anchor", "middle").attr("class", "strong").style("fill", "var(--ink)").text(fmt(v).replace("+", ""));
+      g.on("mousemove", ev => showTip(`<b>${LENS_LABEL[l]}</b> vs ${esc(c)}<br>r = ${fmt(v)}`, ev)).on("mouseleave", hideTip);
+    });
+  });
+}
+
+function renderAll() {
+  renderMatrices(); renderPair(); renderDisc(); renderAgree(); renderConfusion(); renderExplorer(); renderBinding(); renderWorld(); renderItemCor();
+}
+selectCountry("Ethiopia", 2005, 0);
+renderAll();
+let rt; let lastW = window.innerWidth;
+window.addEventListener("resize", () => { if (window.innerWidth === lastW) return; lastW = window.innerWidth; clearTimeout(rt); rt = setTimeout(renderAll, 150); });
+})();
+</script>
+</body>
+</html>

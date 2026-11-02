@@ -6,8 +6,13 @@ import {
 import { AppShell } from "./components/AppShell";
 import { CountryProfilePage } from "./pages/CountryProfilePage";
 import { CountrySpacePage } from "./pages/CountrySpacePage";
+import { ResearchPage } from "./research/ResearchPage";
+import { VdemPage } from "./vdem/VdemPage";
 
 const router = createBrowserRouter([
+  // Not linked from the shell on purpose: reachable only by URL.
+  { path: "/research", element: <ResearchPage /> },
+  { path: "/vdem", element: <VdemPage /> },
   {
     element: <AppShell />,
     children: [

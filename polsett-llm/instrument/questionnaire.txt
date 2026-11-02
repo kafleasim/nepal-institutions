@@ -1,0 +1,614 @@
+
+                                            82
+    APPENDIX: PHASE 2: MAIN SURVEY QUESTIONNAIRE
+
+
+5.1 SECTION I: THE SETTLEMENT’S CONFIGURATION OF POWER
+
+Notes: Political settlements analysis is based on the idea that peace reigns when there is a basic
+agreement or equilibrium among the most powerful groups in society around political
+institutions and the distribution of benefits they are expected to yield. Thus, our survey attempts
+to capture those powerful groups, their internal relations, and their relations with each other.
+We do so by dividing society into three basic political groups or population blocs:
+
+
+(A) The Leader’s bloc (LB). That is, the segment of the population whose political loyalty the
+current de facto leader is likely to believe s/he can count on, at least in the short-term. In other
+words, the Leader is likely to feel that this segment will continue to support him/her, even in the
+event of a moderate or temporary fall in his/her repressive or distributional capabilities. (By
+political loyalty, we mean a determination to defend the Leader against challenges and/or to
+not defect from or make serious political trouble for him/her, where serious political trouble
+refers to deliberate actions that might directly or indirectly threaten the Leader’s political
+survival);
+
+
+(B) The contingently loyal bloc (CLB). The segment of the population that is currently aligned
+with the de facto leader (evidenced by either some meaningful representation in the highest
+levels of government or a formal or informal agreement/pact to conditionally support the
+Leader's Bloc) but whose political loyalty s/he cannot be assured of (in other words, the Leader
+is likely to believe there is a realistic possibility that it could defect and/or make serious political
+trouble for him/her should the opportunity arise – e.g. a temporary or moderate fall in the
+Leader’s repressive or distributional capabilities, an election, etc.);
+
+
+(C) The opposition bloc (OB). The segment of the population that is not currently aligned with
+the LB or the CLB and does not feel represented by government. Note that this will include both
+members of the official and outlawed political opposition, including those in exile. For
+convenience, it is also where we place individuals who have no political alignment, no interest
+in politics and no prospect of being mobilized into national politics.
+
+
+
+        1. For each political period please estimate roughly which percentage of the total
+           adult-aged population each bloc represented (Please ensure that the percentages
+           should add up to 100% and that there are no empty cells, unless you provide an
+           explanation in the comment box to Section I below and/or via email).
+
+
+
+                                                  83
+   Obviously, this requires some educated guesswork on the part of coders. Firstly,
+   because affiliations are not entirely transparent and secondly because allegiances
+   shift over time. On the first problem, we ask coders to make rough guesstimates
+   based on such evidence as internal party, leadership and general elections;
+   putsches, coups and attempted coups; reports of purges, political factionalism and
+   infighting; the breadth and depth of political repression, etc. On the second
+   problem, and because it would be too cumbersome to ask for data month by month
+   or year by year, we ask coders to make a judgement about the average or ‘typical’
+   alignment of the population with these blocs for each period. For example, if the
+   leader was tremendously popular in his first year in office, but then extremely
+   unpopular for the remainder of a ten-year period, we would expect coders to enter
+   a low percentage for the LB.
+
+2. Given the repressive capabilities of the Leader’s Bloc, please estimate how
+   powerful each bloc would likely have appeared to the Leader to be.
+   Note we ask about perceptions because one of the things we will test is the
+   relationship between leadership perceptions and policy commitment. As such,
+   power that was not perceptible to the Leader or that was only perceived ex post is
+   not of interest to us. Granted, this creates some methodological difficulties as the
+   perceptions of the Leader are not entirely transparent. However, we ask you to
+   consider as evidence speeches, statements or policy documents by the
+   Leader/governing coalition; commentaries by contemporary observers identifying
+   the relative size and strength of the blocs; convincing historical accounts of the
+   Leader/governing coalition’s mindset; etc.
+       a. Extremely powerful: it could single-handedly change the settlement or
+           prevent it from being changed by others.
+       b. Quite powerful: it could not single-handedly change the settlement or
+           prevent it from being changed, but would likely make a big difference in
+           struggles over the settlement.
+       c. Somewhat powerful: it could not single-handedly change the settlement or
+           prevent it from being changed, but would likely make a significant
+           difference in struggles over the settlement.
+       d. Somewhat powerless: it would likely make only a small difference in
+           struggles over the settlement.
+       e. Powerless: it would likely make virtually no difference in struggles over the
+           settlement.
+
+
+3. How high was the (perceptible) likelihood that the CLB (or a majority of it)
+   would split or withdraw support from the LB?
+   Where withdrawing support could, for example, play out as the CLB not backing the
+   Leader in an internal party election, or not defending the Leader in the event of a
+   violent or other challenge from the OB.
+       a. Low: there was a possibility that the CLB would split or withdraw support
+           from the LB but only a low one;
+
+
+
+                                      84
+       b. Medium: there was a moderate likelihood that the CLB would split or
+          withdraw support from the LB;
+       c. High: there was a high likelihood that the CLB would split or withdraw
+          support from the LB.
+
+4. How high was the (perceptible) likelihood that the OB (or a majority of it)
+   would join the LB in the governing coalition?
+      a. None: there was virtually no possibility that the OB would join the LB in
+         the governing coalition;
+      b. Low: there was a possibility that the OB would join the LB in the governing
+         coalition, but a low one;
+      c. Medium: there was a moderate likelihood that the OB would join the LB in
+         the governing coalition;
+      d. High: there was a high likelihood that the OB would join the LB in the
+         governing coalition.
+
+5. For each period, please list each bloc’s most powerful political sub-groups and
+   indicate whether they were ‘extremely powerful’, ‘quite powerful’, or only
+   ‘somewhat powerful’ (as per the options in Question 2 above and detailed in
+   the notes). Please make sure not to leave any cell empty, unless you explicitly write
+   ‘No groups’ in the cell and provide an explanation for this (in the comments, cell,
+   or email).
+   By a politically powerful sub-group we mean an organisationally distinct, somewhat
+   politically self-conscious group within the bloc – it could be a political party (which
+   may act as an umbrella), an ideological, personalistic or ethnic faction, a pressure
+   group, an economic, class, or occupational group, a section of the military, a militia
+   or terrorist group, a foreign backer, a demographic category, or fractions of any of
+   the above. The threshold for inclusion is whether it could, without too big a stretch
+   of the imagination, make a significant difference to power struggles either within or
+   between blocs (where by ‘too big a stretch of the imagination’ means this could only
+   be imagined as the outcome of a highly improbable sequence of events, and by
+   ‘political struggles’ we mean struggles over the key issues that determine the
+   cohesion of the bloc and or relations between blocs). Here, we ask coders to make
+   educated guesstimates based on such phenomena as ideological or sociological
+   affinities between the blocs and different groups in society, the blocs‘ political
+   messaging, evidence of voting behavior (where it exists), evidence of direct or
+   indirect political action on the part of certain groups, evidence of internal party,
+   leadership and general elections, putsches, coups and attempted coups, reports of
+   purges, political factionalism and infighting, etc. On this definition the number of
+   groups that could be included is potentially very large, so we ask coders to list a
+   maximum of twenty per bloc, thus perhaps aggregating certain groups where
+   necessary and sensible. Again, we are looking for the ‘typical’ affiliation for the
+   period – so if ethnic group A was aligned with the Leader’s Bloc for six of the seven
+   years of a period before drifting away from it, it should be coded with the Leader.
+   Alternatively, if a group’s loyalty was genuinely split and it seems inappropriate to
+   code it one way or another, coders can make a note of this. And as before, we expect
+
+
+                                       85
+   these power attributes to have been perceptible or foreseeable to the Leader. To be
+   more specific, sometimes leaders are brought down by unexpected and
+   uncoordinated acts of individual passive resistance or the unexpected emergence of
+   a social or political movement that appears out of nowhere. We are not interested
+   in such phenomena in this question.
+
+   Apart from indicating the power of each sub-group, please also indicate how
+   power within the sub-group was balanced between genders, choosing from M
+   (male dominated), F (female dominated), and N (power was balanced between the
+   genders). For example, if trade unions were an ‘extremely powerful’ sub-group
+   with power balanced between the two genders, you would write ‘trade unions (EP
+   N)’. If traditional leaders, for example, were ‘quite powerful’ and male-
+   dominated, you would write ‘traditional leaders (QP M). And if teachers, for
+   example, were ‘somewhat powerful’ and female-dominated, you would write
+   ‘teachers (SP F)’.
+
+6. For each period and bloc, please list any relatively powerless groups and code
+   these sub-groups according to gender. Please make sure not to leave any cell
+   empty, unless you explicitly write ‘No groups’ in the cell and provide an
+   explanation for this (in the comments, cell, or email).
+   Examples of such groups might be women, youth, poor people, specific ethnic
+   minorities, or other political, economic or sociological categories which may be
+   noteworthy on account of their marginalization; such groups need not be either
+   organised or self-conscious. The threshold for inclusion is that it would require a
+   big stretch to imagine the group making a significant difference in political
+   struggles both within or between blocs. To provide an example, coders may feel that
+   under the LB are a certain percentage of poor women, but that, without the benefit
+   of hindsight, it would be hard to imagine this group making a significant difference
+   in struggles both within the bloc or between the bloc and others. As such, ‘poor
+   women’ should be listed as a group under ‘LB’. Again, we ask coders to list a
+   maximum of twenty groups per bloc. And as before, we expect these power attributes
+   to have been perceptible to bloc leaders.
+   As in the previous question, please code these sub-groups according to gender,
+   e.g. ‘Poor Women (F)’.
+
+7. For each period and bloc, please estimate what percentage of the bloc falls into
+   this ‘relatively powerless’ category. If there are really bloc-periods (cells)
+   without powerless groups, indicate this by writing ‘0’. Also make sure this is
+   consistent with your answer to Q6.
+   Following the example above, poor women, when added to other relatively
+   powerless groups in the bloc, might constitute 50% of the LB. As such, coders should
+   enter ‘50’ under ‘LB’. Unlike Q1, rows should not add up to 100. They are
+   independent from each other.
+
+
+
+
+                                      86
+8. For each period and bloc, please state, on average, how powerful high-level
+   leaders were vis a vis intermediate-level leaders and ordinary members/
+   followers.
+   Note, to be powerful here implies an ability to dictate terms to other actors, thanks
+   to the unlikelihood of being removed, abandoned, or otherwise sanctioned by other
+   actors. Note further that high level leaders are likely, as individuals, to have a
+   national, or in federal states, state-level sphere of influence by virtue of their official
+   or unofficial positions in the bloc’s most powerful sub-groups. Intermediate level
+   leaders are likely as individuals, to have a regional or sub-regional sphere of
+   influence by virtue of their official or unofficial positions in the bloc’s most powerful
+   sub-groups, or perhaps a national sphere of influence but only in the bloc’s less
+   powerful sub-groups. Ordinary members or followers do not occupy
+   disproportionately influential official or unofficial positions in the bloc’s sub-
+   groups and are not disproportionately influential as individuals.
+       a. De facto power rested with high-level leaders
+       b. De facto power was shared by high-level leaders and intermediate level
+           leaders
+       c. De facto power rested with intermediate level leaders
+       d. De facto power rested with intermediate level leaders and ordinary
+           members/followers
+       e. De facto power was shared relatively equally across leaders and ordinary
+           members/followers.
+       f. De facto power rested with ordinary members/followers
+
+9. For each period and bloc, please state how cohesive/fragmented the bloc was.
+      a. The bloc was very cohesive and had no major competing factions.
+      b. The bloc was fairly cohesive: it had different factions or fractions, which
+          were moderately competitive.
+      c. The bloc was fairly incohesive: it had different factions or fractions, which
+          were very competitive.
+      d. The bloc was very incohesive, with extreme competition among different
+          factions or fractions.
+
+
+
+
+                                         87
+5.2 SECTION II: BLOCS’ RELATIONSHIP TO THE SETTLEMENT
+
+    10. For each period and bloc, please estimate, on average, how important the
+        following methods were as a strategy by the country’s de facto leader to
+        incorporate his and other blocs’ leaders into or under the settlement, on a scale
+        of 1-4, where 1 = not important, 2 = slightly important, 3 = fairly important,
+        and 4 = very important (irrespective of whether the strategy was ultimately
+        successful).
+
+       In our understanding, for there to be a political settlement, powerful groups (which
+       for analytical purposes we assemble under blocs) must be incorporated into it (via
+       some form of legitimation or co-optation strategy) or under it (via some form of
+       coercion or repression strategy), or by some mix of the two. The principal architect
+       or avatar of these strategies is likely to be the country’s de facto leader, who is also
+       the leader of the LB, and to whom Qs 10 and 11 refer. Note that we are aware this
+       simplifies a complex situation (the de facto leader may take advice or instruction
+       from others or merely be following tradition, there may not be a complete consensus
+       even among the governing coalition, s/he will depend on others to implement the
+       strategies, etc). Given this, we refer to the country’s de facto leader as a kind of
+       shorthand for the key decision-makers in the settlement, and we ask for general
+       estimates of the relative importance of the different strategies used by him/them to
+       incorporate blocs.
+       The country’s de facto leader is likely to apply different strategies to different blocs,
+       and perhaps to leaders and followers within those blocs. The country’s de facto
+       leader herself must also have some reason for trying to uphold the settlement, that
+       is, s/he must also be incorporated or self-incorporated. Qs10 and 11 attempt to
+       capture this.
+       Logically, if the strategies are successful, the settlement will persist. If not, it will
+       experience a serious challenge, and either change or collapse. Please note,
+       however, that for these questions, we are interested in what the country de facto
+       leader tried to do, rather than in how successful s/he was.
+       Finally, in some countries, there may be a distinction between strategies designed
+       to uphold the settlement itself and strategies designed merely to ensure the political
+       survival of the governing coalition. However, for the purposes of this survey, we
+       regard these differences as immaterial. Please just focus on the key strategies that
+       governed the country’s de facto leader’s relationship to his own and other blocs.
+
+           a. Violent repression: This refers to the containment of challenges to the
+              settlement by means such as: murders, disappearances, political arrests,
+              public intimidation and incarceration, deliberate impoverishment,
+              destruction of property, forced relocation, violent dispersion of public events
+              and demonstrations, etc.;
+           b. Non-violent repression: This refers to the containment of challenges to the
+              settlement by means such as: legal confinement, surveillance, infiltration,
+              tax audits, interference in the ability to gain employment or business,
+
+
+                                            88
+           restrictions on fund raising, negative propaganda or scapegoating,
+           censorship, restrictions on access to the media, outlawing assembly, etc.;
+      c.   Clientelistic material cooptation: This refers to the creation of support for
+           or acquiescence to the settlement through the targeted provision of private
+           (e.g. money, jobs, rents) or club (eg schools, roads) goods to individuals or
+           communities as a conditional exchange for political support or loyalty;
+      d.   Clientelistic non-material cooptation: This refers to the creation of support
+           for or acquiescence to the settlement through the targeted provision of
+           political or status goods such as leadership positions (in either higher or
+           lower level political organs) or symbolic benefits (eg language recognition,
+           special group status) to individuals or communities, as a conditional
+           exchange for political support or loyalty; Note that in situations where
+           leadership positions are valued solely for the access to income/rents they
+           provide, we would expect you, other things being equal, to code a higher
+           value for c. clientelistic material cooptation than d. clientelistic non-
+           material cooptation;
+      e.   Programmatic material legitimation: This refers to the creation of support
+           for or acquiescence to the settlement through the provision of club or public
+           goods (e.g. universal health care, a sound investment climate) to individuals
+           or communities, irrespective of their political loyalty or support;
+      f.   Universalistic ideological legitimation: This refers to the creation of
+           support for or acquiescence to the settlement through the inculcation or
+           articulation of ideological beliefs such as socialism, liberalism, nationalism,
+           or national or world religions, in or for individuals or communities,
+           irrespective of political loyalty or support;
+      g.   Procedurally democratic legitimation: This refers to the creation of
+           support for or acquiescence to the settlement through the provision of
+           opportunities to individuals or communities to vote and/or stand in formally
+           free elections to form a government.
+
+
+11. For each period and bloc, please estimate, on average, how important the
+    following methods were as a strategy by the country’s de facto leader to
+    incorporate his and other blocs’ followers into or under the settlement, on a
+    scale of 1-4, where 1 = not important, 2 = slightly important, 3 = fairly
+    important, and 4 = very important (irrespective of whether the strategy was
+    ultimately successful).
+        a. Violent repression
+        b. Non-violent repression
+        c. Clientelistic material cooptation
+        d. Clientelistic non-material cooptation
+        e. Programmatic material legitimation
+        f. Universalistic ideological legitimation
+        g. Procedurally democratic legitimation
+
+
+
+
+                                       89
+12. For each bloc, please provide an opinion on the scale, on average, of any
+    settlement-generated material benefits (eg salaries, rents, public spending) it
+    received relative to its size:
+        a. Very High: It received a level of material benefits very disproportionately
+           high relative to its size;
+        b. High: It received a level of material benefits disproportionately high relative
+           to its size;
+        c. Proportionate: It received a level of material benefits about proportionate
+           to its size;
+        d. Low: It received a level of material benefits disproportionately low relative
+           to its size.
+        e. Very Low: It received a level of material benefits very disproportionately
+           low relative to its size.
+
+13. For each bloc, please provide an opinion on how any settlement-generated
+    material benefits (eg salaries, rents, public spending) enjoyed by this bloc were,
+    on average, distributed between leaders and followers (where Mobutu’s Zaire
+    might be an example of a ‘massively inegalitarian distribution’ and
+    contemporary Denmark an ‘egalitarian’ distribution):
+       a. Massively inegalitarian: Leaders captured a massively disproportionate
+           share of material benefits.
+       b. Highly inegalitarian: Leaders captured a highly disproportionate share of
+           material benefits.
+       c. Moderately inegalitarian: Leaders captured a moderately disproportionate
+           share of material benefits.
+       d. Slightly inegalitarian: Leaders captured a slightly disproportionate share of
+           material benefits.
+       e. Egalitarian: Leaders and followers received a more or less proportionate
+           share of material benefits.
+
+
+
+
+                                       90
+5.3 SECTION III: DECISION-MAKING AND IMPLEMENTING POWER
+    OF THE LEADERSHIP
+  Note: Extant political settlements theory has hypothesized certain relationships between the
+  balance or configuration of power in society and the capabilities of the political leadership,
+  and these questions are intended to help us explore these.
+
+     14. To what extent was power concentrated in the de facto Leader of the country,
+         in the sense that s/he could make major policy decisions, e.g. on economic
+         policy, fiscal policy, social policy, national security?
+         By ‘make’ a policy decision, we mean formulate an authoritative course of policy
+         action and present it to lower level political organs, if appropriate, for successful
+         ratification. Thus, a settlement with a Prime Minister who was able, after
+         consultation with Cabinet, to formulate major bills which were then passed
+         smoothly into legislation by Parliament with minimal dilution of the bills’ original
+         intentions, would have a moderate degree of decision-making power concentration.
+         By contrast, a settlement which had a Prime Minister whose major bills were
+         routinely pulled apart and changed very significantly by Parliament, would have
+         moderately dispersed power.
+          a. Power was highly concentrated in the Leader, in the sense that s/he could
+               make major policy decisions with minimal consultation or bargaining with
+               other powerful actors;
+          b. Power was moderately concentrated in the Leader, in the sense that s/he could
+               make major policy decisions but only after meaningful consultation or
+               bargaining with other powerful actors;
+          c. Power was moderately dispersed, in the sense that the Leader could make
+               major policy decisions but only after extensive consultation or bargaining with
+               other powerful actors;
+          d. Power was highly dispersed, in the sense that the Leader struggled to make
+               major policy decisions, even after extensive consultation or bargaining.
+
+
+     15. To what extent was implementing power concentrated in the political
+         leadership, in the sense that its major de facto policy decisions were
+         implemented without intentional resistance or dilution?
+         For this question, political leadership refers to the political individual, group or
+         organ that has ratified a policy decision and passed it to the bureaucracy or non-
+         governmental partner for implementation. Note that with this question we are
+         interested in implementation problems that stem from political resistance or
+         subversion; we are not interested in implementation problems that may stem from
+         shortages in financial or human resources, nor in the ultimate wisdom or success of
+         policy decisions.
+         a. Implementing power was highly concentrated in the political leadership, in the
+             sense that its major policy decisions were implemented with minimal resistance
+             or dilution;
+         b. Implementing power was moderately concentrated in the political leadership,
+             in the sense that its major policy decisions were implemented but with some
+             resistance or dilution;
+
+
+
+                                             91
+      c. Implementing power was moderately dispersed, in the sense that the
+         leadership’s policy decisions were implemented, but only with significant
+         resistance or dilution;
+      d. Implementing power was highly dispersed, in the sense that the political
+         leadership’s policy decisions were subject to extensive resistance or dilution.
+
+
+
+5.4 SECTION IV: FOREIGN INFLUENCE AND INTERNAL AND
+    EXTERNAL THREATS
+   16. For each period, how important to the maintenance of the settlement was
+       military support by a foreign power?
+       a. Not important: The government could maintain the settlement wholly through
+          its own military means.
+       b. Marginally important: The government received some foreign military
+          support which was helpful; however, the government would probably have
+          managed to maintain the settlement without it.
+       c. Important: Without foreign military support, the settlement would probably
+          have collapsed sooner.
+       d. Very important: Without foreign military support, the settlement would almost
+          certainly have collapsed much sooner.
+
+   17. For each period, how important to the maintenance of the settlement was
+       financial or technical assistance by a foreign power?
+       a. Not important: The government could maintain the settlement wholly through
+           its own financial and technical means.
+       b. Marginally important: The government received some foreign financial and
+           technical support which was helpful; however, the government would probably
+           have managed to maintain the settlement without it.
+       c. Important: Without foreign financial and technical support, the settlement
+           would probably have collapsed sooner.
+       d. Very important: Without foreign financial and technical support, the settlement
+           would almost certainly have collapsed much sooner.
+
+   18. For each period, was there a (perceptible) threat to the political survival of high
+       level LB leaders from one or more of the following domestic or international
+       groups, where political survival refers to the ability to stay in office, and
+       ‘perceptible threat’ means ‘perceptible to those leaders? For each group code
+       from 1-4 where “1” = No threat; “2” = Low threat; “3” = Moderate threat; and
+       “4” = High threat.
+       a. Rural subordinate classes
+       b. Rural dominant classes
+       c. Urban subordinate classes
+       d. Urban dominant classes
+       e. Ethnic, regional or religious groups
+       f. An opposition group in exile
+       g. The military
+       h. A neighboring country
+       i. A non-neighboring country
+
+                                         92
+19. For each period, was there a (perceptible) threat to the physical survival of high
+    or intermediate-level LB leaders from one or more of the following domestic or
+    international groups, where physical survival refers to the ability to live
+    without fear of being killed, imprisoned or driven into exile? For each group
+    code from 1-4 where “1” = No threat; “2” = Low threat; “3” = Moderate threat;
+    and “4” = High threat.
+
+       a.   Rural subordinate classes
+       b.   Rural dominant classes
+       c.   Urban subordinate classes
+       d.   Urban dominant classes
+       e.   Ethnic, regional or religious groups
+       f.   An opposition group in exile
+       g.   The military
+       h.   A neighboring country
+       i.   A non-neighboring country
+
+
+
+
+                                       93
+5.5 SECTION V: ECONOMIC ORGANIZATIONS
+  Notes: In addition to the configuration of the political settlement, a prominent strand of
+  political settlements theory treats manufacturing firms’ economic capabilities and political
+  power as an important additional variable in explaining state capacity and development
+  outcomes. Our aim is to generate data that will allow us to test hypotheses associated with
+  this position.
+
+
+     20. By developing country standards and for each period, please specify the
+         average level of technological and entrepreneurial capabilities of domestically
+         owned firms in the formal manufacturing sector.
+            a. Low: On average, firms could successfully adopt only simple technologies.
+            b. Medium: On average, firms could successfully adopt moderately-complex
+               technologies.
+            c. High: On average, firms could successfully adopt complex technologies.
+
+     21. Please specify the average level of political power of domestically owned firms
+         in the formal manufacturing sector.
+             a. Low: The government found it easy to dictate terms to firms.
+             b. Medium: The government found it neither easy nor hard to dictate terms to
+                 firms.
+             c. High: The government found it hard to dictate terms to firms.
+
+
+
+
+                                            94
+5.6 SECTION VI: ECONOMIC AND SOCIAL POLICY
+  Notes: In this section we ask experts to describe the character of key economic policies in
+  the country. We do so with a view to exploring relationships between political settlements,
+  policies, and development outcomes.
+
+
+     22. Please describe the government’s industrialization strategy for each period.
+         Choose from the options below.
+            a. A strong emphasis on import-substituting industrialization.
+            b. A similar emphasis on import-substituting and export-oriented
+                industrialization.
+            c. A strong emphasis on export-oriented industrialization.
+            d. The state had no industrialization strategy.
+
+     23. Please specify how the government treated Foreign Direct Investment (FDI).
+            a. The government discouraged the inflow of FDI;
+            b. The government permitted FDI, but placed strong conditions on it and/or
+                provided little support;
+            c. The government encouraged FDI, placing moderate conditions on it and/or
+                providing moderate support;
+            d. The government strongly encouraged FDI, placing few conditions on it
+                and/or providing a high level of support;
+            e. The government did not have an FDI strategy
+
+     24. Please specify how vigorously the state intervened in the economy.
+            a. Strong: The state controlled most industries and heavily regulated and
+                coordinated private companies, or at least it attempted to.
+            b. Medium: The state controlled only a few key industries, yet strongly
+                regulated and coordinated private companies, or at least it attempted to.
+            c. Light: The state controlled only a few key industries if any, and otherwise
+                did not intervene strongly in the business of private enterprises.
+
+     25. Please specify whether de facto state policy prioritized the agricultural over the
+         industrial sector.
+            a. Agriculture was strongly prioritized over the industrial sector.
+            b. Agriculture was prioritized over the industrial sector.
+            c. Agriculture and industry were treated equally.
+            d. Industry was prioritized over agriculture.
+            e. Industry was strongly prioritized over agriculture.
+
+     26. Was economic development a priority for the top leadership, beyond their
+         statements? Please code on a scale from 1-5, where
+             a. Very low priority
+             b. Low priority
+             c. Medium priority
+             d. High priority
+             e. Very high priority
+
+
+
+
+                                            95
+27. Was social development, for example spending on education, health, potable
+    water, social insurance, etc, a priority for the top leadership, beyond their
+    statements? Please code on a scale from 1-5, where
+        a. Very low priority
+        b. Low priority
+        c. Medium priority
+        d. High priority
+        e. Very high priority
+
+
+
+
+                                   96
+    Publication bibliography
+Cederman, Lars-Erik; Wimmer, Andreas; Min, Brian (2010): Why Do Ethnic Groups Rebel?
+New Data and Analysis. In World Politics 62 (1), pp. 87–119. DOI:
+10.1017/S0043887109990219.
+Coppedge, Michael; Gerring, John; Knutsen, Carl Henrik; Lindberg, Staffan I.; Teorell, Jan;
+Marquardt, Kyle L. et al. (2020): V-Dem Methodology V10. In SSRN Electronic Journal.
+DOI: 10.2139/ssrn.3441063.
+Goemans, Henk E.; Gleditsch, Kristian Skrede; Chiozza, Giacomo (2009): Introducing
+Archigos: A Dataset of Political Leaders. In Journal of Peace Research 46 (2), pp. 269–283.
+DOI: 10.1177/0022343308100719.
+Kelsall, Tim; Schulz, Nicolai; Ferguson, William D.; Vom Hau, Matthias; Hickey, Sam;
+Levy, Brian D. (forthcoming): Understanding Development. The Promise of Political
+Settlements Analysis. Oxford, United Kingdom: Oxford University Press.
+Khan, Mushtaq H. (2010): Political Settlements and the Governance of Growth-Enhancing
+Institutions. (Research Paper Series on 'Growth-Enhancing Governance'). Available online at
+https://eprints.soas.ac.uk/9968/, checked on 9/2/2020.
+King, Gary; Wand, Jonathan (2007): Comparing Incomparable Survey Responses: Evaluating
+and Selecting Anchoring Vignettes. In Polit. anal. 15 (1), pp. 46–66. DOI:
+10.1093/pan/mpl011.
+Knutsen, Carl Henrik; Teorell, Jan; Wig, Tore; Cornell, Agnes; Gerring, John; Gjerløw,
+Haakon et al. (2019): Introducing the Historical Varieties of Democracy dataset: Political
+institutions in the long 19th century. In Journal of Peace Research 56 (3), pp. 440–451. DOI:
+10.1177/0022343318823866.
+Marshall, Monty; Gurr, Ted; Jaggers, Keith (2019): Polity iv project, political regime
+characteristics and transitions, 1800-2017. Center for Systemic Peace. Available online at
+http://www.systemicpeace.org/inscrdata.html, checked on 9/2/2020.
+Routley, Laura (2012): Annotated bibliography on developmental states, political settlements
+and citizenship formation. Towards increased state capacity and legitimacy? The Effective
+States and Inclusive Development (ESID) Research Centre (Working paper, 4). Available
+online at http://www.effective-states.org/working-paper-4/, checked on 10/28/2020.
+
+
+
+
+                                              97
+
