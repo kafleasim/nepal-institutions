@@ -167,15 +167,15 @@ function renderTime() {
   const from = Math.max(st.from, c.y0), to = c.y0 + c.rows.length - 1;
   const rows = c.rows.filter(r => r.y >= from);
   const regs = c.regimes.filter(r => r.y1 >= from);
-  const W = widthOf("rg-time"), m = { l: 104, r: 12 };
+  const W = widthOf("rg-time"), m = { l: 140, r: 12 };
   const regH = 34, hosH = 22, gap = 8, chartT = regH + hosH + gap * 2 + 4, chartH = 190, H = chartT + chartH + 30;
   const x = d3.scaleLinear().domain([from, to + 1]).range([m.l, W - m.r]);
   const y = d3.scaleLinear().domain([0, 4]).range([chartT + chartH, chartT + 6]);
   const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
-    .attr("aria-label", `${c.name}: regimes, heads of state, and the size of regime support and opposition groups`);
+    .attr("aria-label", `${c.name}: regimes, heads of government, and the size of regime support and opposition groups`);
 
   // row labels
-  [["Regime", regH / 2], ["Head of state", regH + gap + hosH / 2]].forEach(([t, yy]) =>
+  [["Regime", regH / 2], ["Head of government", regH + gap + hosH / 2]].forEach(([t, yy]) =>
     svg.append("text").attr("x", m.l - 8).attr("y", yy + 4).attr("text-anchor", "end").attr("class", "strong").text(t));
 
   // regimes band
@@ -196,13 +196,15 @@ function renderTime() {
   });
 
   // heads of state
-  const hr = runs(rows, r => r.hos || null).filter(h => h.v);
+  const hr = runs(rows, r => govHead(r) || null).filter(h => h.v);
   const gH = svg.append("g").attr("transform", `translate(0,${regH + gap})`);
   hr.forEach((h, i) => {
     const x0 = x(h.y0), x1 = x(h.y1 + 1), r0 = rows.find(r => r.y === h.y0);
     gH.append("rect").attr("x", x0 + 0.5).attr("width", Math.max(1, x1 - x0 - 1)).attr("height", hosH).attr("rx", 2)
       .style("fill", i % 2 ? "var(--rg-reg-b)" : "var(--rg-reg-a)")
-      .on("mousemove", ev => showTip(`<b>${esc(h.v)}</b><br>${h.y0}–${h.y1}${r0 && r0.hosp ? "<br>" + esc(r0.hosp) : ""}${r0 && r0.path != null ? `<br><span class="dim">Reached office by ${PATH[r0.path]}</span>` : ""}`, ev))
+      .on("mousemove", ev => showTip(r0 && r0.hog
+        ? `<b>${esc(h.v)}</b><br>Head of government, ${h.y0}–${h.y1}${r0.hos ? `<br><span class="dim">Head of state: ${esc(r0.hos)}</span>` : ""}`
+        : `<b>${esc(h.v)}</b><br>Head of state and government, ${h.y0}–${h.y1}${r0 && r0.hosp ? "<br>" + esc(r0.hosp) : ""}${r0 && r0.path != null ? `<br><span class="dim">Reached office by ${PATH[r0.path]}</span>` : ""}`, ev))
       .on("mouseleave", hideTip);
     const label = fitText(surname(h.v), x1 - x0 - 6, 11);
     if (label) gH.append("text").attr("x", x0 + 4).attr("y", hosH / 2 + 4).style("font-size", "11px").style("fill", "var(--ink-2)").style("pointer-events", "none").text(label);
@@ -240,7 +242,7 @@ function renderTime() {
       const yr = Math.floor(x.invert(d3.pointer(ev)[0])), r = rows.find(q => q.y === yr); if (!r) return;
       cross.attr("x1", x(yr + 0.5)).attr("x2", x(yr + 0.5)).style("opacity", 1);
       const reg = c.regimes.find(q => q.id === r.rid && yr >= q.y0 && yr <= q.y1);
-      showTip(`<b>${yr}</b>${reg ? " · " + esc(reg.name) : ""}${r.hos ? "<br>" + esc(r.hos) : ""}` +
+      showTip(`<b>${yr}</b>${reg ? " · " + esc(reg.name) : ""}${govHead(r) ? "<br>" + esc(govHead(r)) + (r.hog ? " (head of government)" : "") : ""}` +
         (r.int === 0 ? "<br>Interregnum: no identifiable regime" :
         `<br>Support groups: ${r.sup == null ? "–" : SIZE_BAND[band(r.sup)]} <span class="dim">(${r.sup == null ? "–" : r.sup.toFixed(2)})</span>` +
         `<br>Opposition groups: ${r.opp == null ? "–" : SIZE_BAND[band(r.opp)]} <span class="dim">(${r.opp == null ? "–" : r.opp.toFixed(2)})</span>` +
@@ -253,6 +255,9 @@ function renderTime() {
       const reg = c.regimes.find(q => q.id === r.rid && yr >= q.y0 && yr <= q.y1); if (reg) selectRegime(reg, yr);
     });
 }
+// V-Dem leaves the head-of-government name empty when the head of state also
+// heads the government (v2exhoshog = 1), so the head of state stands in.
+const govHead = r => r.hog || r.hos;
 function surname(n) { const p = n.split(/\s+/); return p.length > 2 ? p[0] + " " + p[p.length - 1] : n; }
 const measure = (() => { const cv = document.createElement("canvas").getContext("2d"); return (t, px) => { cv.font = `${px}px Inter, Helvetica, Arial, sans-serif`; return cv.measureText(t).width; }; })();
 function fitText(t, w, px = 12) {
@@ -311,13 +316,17 @@ function narrative(c, reg, s) {
 
 function inCharge(c, reg) {
   const rows = rowsOf(c, reg);
-  const hos = runs(rows, r => r.hos || null).filter(h => h.v);
-  const hog = runs(rows, r => r.hog || null).filter(h => h.v && !hos.some(x => x.v === h.v));
-  const li = (h, kind) => {
-    const r0 = rows.find(r => r.y === h.y0);
-    return `<li><b>${esc(h.v)}</b> <span class="rg-yrs">${h.y0 === h.y1 ? h.y0 : h.y0 + "–" + h.y1}</span>
-      <div class="rg-sub">${kind}${kind === "Head of state" && r0 && r0.hosp ? " · " + esc(r0.hosp) : ""}${kind === "Head of state" && r0 && r0.path != null ? " · reached office by " + PATH[r0.path] : ""}</div></li>`;
+  // Heads of government first (the head of state where they are the same
+  // person), then separate heads of state.
+  const gov = runs(rows, r => govHead(r) ? govHead(r) + "|" + (r.hog ? "g" : "sg") : null).filter(h => h.v);
+  const hos = runs(rows.filter(r => r.hog), r => r.hos || null).filter(h => h.v);
+  const li = (h, name, kind) => {
+    const r0 = rows.find(r => r.y === h.y0), isHos = kind !== "Head of government";
+    return `<li><b>${esc(name)}</b> <span class="rg-yrs">${h.y0 === h.y1 ? h.y0 : h.y0 + "–" + h.y1}</span>
+      <div class="rg-sub">${kind}${isHos && r0 && r0.hosp ? " · " + esc(r0.hosp) : ""}${isHos && r0 && r0.path != null ? " · reached office by " + PATH[r0.path] : ""}</div></li>`;
   };
+  const people = gov.map(h => { const [n, k] = h.v.split("|"); return li(h, n, k === "g" ? "Head of government" : "Head of state and government"); }).join("") +
+    hos.map(h => li(h, h.v, "Head of state")).join("");
   const parties = c.parties.filter(p => p.y >= reg.y0 && p.y <= reg.y1);
   const meter = (v, scale) => v == null ? "–" : `<span class="rg-meter" title="${esc(VP_SCALE[scale][band(v)])}">${[0, 1, 2, 3].map(i => `<i class="${v >= i + 0.5 ? "on" : ""}"></i>`).join("")}</span><span class="rg-mval">${v.toFixed(1)}</span>`;
   const ptable = parties.length ? `
@@ -332,7 +341,7 @@ function inCharge(c, reg) {
     </table></div>
     <p class="note">V-Party, elections to 2019, parties above 5% of the vote. Scales run 0–4. Cohesion: 4 = virtually no visible disagreement among party elites, 0 = almost complete disagreement with many elites leaving. Personalisation: 4 = the party is solely a vehicle for one leader. Local presence: permanent activity of party activists in local communities. Hover over a party for the social groups V-Party records as its core supporters.</p>` :
     `<p class="note">V-Party records no governing party for an election in these years. It covers elections to 2019 and parties with more than 5% of the vote.</p>`;
-  return [`<ul class="rg-people">${hos.map(h => li(h, "Head of state")).join("")}${hog.map(h => li(h, "Head of government")).join("")}</ul>`, ptable];
+  return [`<ul class="rg-people">${people}</ul>`, ptable];
 }
 
 function rolesHtml(c, reg, s) {

@@ -107,6 +107,9 @@ function surname(n: string) {
   const p = n.split(/\s+/);
   return p.length > 2 ? `${p[0]} ${p[p.length - 1]}` : n;
 }
+// V-Dem leaves the head-of-government name empty when the head of state also
+// heads the government (v2exhoshog = 1), so the head of state stands in.
+const govHead = (r: RegimeYear) => r.hog ?? r.hos;
 let ctx2d: CanvasRenderingContext2D | null = null;
 function fitText(t: string, w: number, px = 11) {
   if (w < 24) return "";
@@ -272,7 +275,7 @@ function RegimesInner({ focus }: Props) {
 
           <TimeChart data={data} reg={reg} year={year} from={from} onPick={pick} show={show} hide={hide} />
           <p className="text-xs text-gl-muted">
-            Top band: regimes as V-Dem names them; click one to open it below. Middle band: heads of state. Chart:
+            Top band: regimes as V-Dem names them; click one to open it below. Middle band: heads of government (the head of state where one person holds both offices). Chart:
             estimated size of the regime's support and opposition groups as a share of adults; click a year to show
             that year alone. Regimes that began and ended within one calendar year do not appear in V-Dem's
             country-year data.
@@ -400,13 +403,13 @@ function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
   const to = data.y0 + data.rows.length - 1;
   const rows = data.rows.filter((r) => r.y >= from);
   const regs = data.regimes.filter((r) => r.y1 >= from);
-  const m = { l: 104, r: 12 };
+  const m = { l: 140, r: 12 };
   const regH = 32, hosH = 22, gap = 6, chartT = regH + hosH + gap * 2 + 6, chartH = 180, H = chartT + chartH + 26;
   const x = (y: number) => m.l + ((y - from) / (to + 1 - from)) * (W - m.l - m.r);
   const xInv = (px: number) => from + ((px - m.l) / (W - m.l - m.r)) * (to + 1 - from);
   const y = (v: number) => chartT + chartH - (v / 4) * (chartH - 8);
   const isSel = (r: Regime) => r.id === reg.id && r.y0 === reg.y0;
-  const hos = runs(rows, (r) => r.hos).filter((h) => h.v);
+  const hos = runs(rows, govHead).filter((h) => h.v);
   const step = Math.max(5, Math.ceil((to - from) / Math.max(3, Math.floor((W - m.l) / 60)) / 5) * 5);
   const ticks: number[] = [];
   for (let t = Math.ceil(from / step) * step; t <= to; t += step) ticks.push(t);
@@ -442,10 +445,10 @@ function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
   return (
     <div ref={ref} className="w-full">
       <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className="block" role="img"
-        aria-label={`${data.name}: regimes, heads of state, and the size of regime support and opposition groups`}>
+        aria-label={`${data.name}: regimes, heads of government, and the size of regime support and opposition groups`}>
         <g fontSize={12} fill={GL.text}>
           <text x={m.l - 8} y={regH / 2 + 4} textAnchor="end" fontWeight={600}>Regime</text>
-          <text x={m.l - 8} y={regH + gap + hosH / 2 + 4} textAnchor="end" fontWeight={600}>Head of state</text>
+          <text x={m.l - 8} y={regH + gap + hosH / 2 + 4} textAnchor="end" fontWeight={600}>Head of government</text>
         </g>
         {regs.map((r, i) => {
           const x0 = x(Math.max(r.y0, from)), x1 = x(r.y1 + 1), sel = isSel(r);
@@ -467,7 +470,11 @@ function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
             const label = fitText(surname(h.v!), x1 - x0 - 6, 11);
             return (
               <g key={`${h.y0}`} onMouseLeave={hide}
-                onMouseMove={(e) => show(e, <><b>{h.v}</b><br />{yrs(h.y0, h.y1)}{r0?.hosp && <><br />{r0.hosp}</>}{r0?.path != null && <><br /><span className="opacity-75">Reached office by {PATH[r0.path]}</span></>}</>)}>
+                onMouseMove={(e) => show(e, r0?.hog ? (
+                  <><b>{h.v}</b><br />Head of government, {yrs(h.y0, h.y1)}{r0.hos && <><br /><span className="opacity-75">Head of state: {r0.hos}</span></>}</>
+                ) : (
+                  <><b>{h.v}</b><br />Head of state and government, {yrs(h.y0, h.y1)}{r0?.hosp && <><br />{r0.hosp}</>}{r0?.path != null && <><br /><span className="opacity-75">Reached office by {PATH[r0.path]}</span></>}</>
+                ))}>
                 <rect x={x0 + 0.5} width={Math.max(1, x1 - x0 - 1)} height={hosH} rx={2} fill={REG_FILL[i % 2]} />
                 {label && <text x={x0 + 4} y={hosH / 2 + 4} fontSize={11} fill={GL.text} pointerEvents="none">{label}</text>}
               </g>
@@ -501,7 +508,7 @@ function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
             const rg = regOf(r);
             show(e, (
               <>
-                <b>{r.y}</b>{rg && ` · ${rg.name}`}{r.hos && <><br />{r.hos}</>}
+                <b>{r.y}</b>{rg && ` · ${rg.name}`}{govHead(r) && <><br />{govHead(r)}{r.hog ? " (head of government)" : ""}</>}
                 {r.int === 0 ? <><br />Interregnum: no identifiable regime</> : (
                   <>
                     <br />Support groups: {r.sup == null ? "–" : SIZE_BAND[band(r.sup)]} <span className="opacity-75">({r.sup?.toFixed(2) ?? "–"})</span>
@@ -598,26 +605,32 @@ function Narrative({ s, reg, year }: { s: Summary; reg: Regime; year: number | n
 
 function People({ data, reg }: { data: RegimeCountry; reg: Regime }) {
   const rows = data.rows.filter((r) => r.y >= reg.y0 && r.y <= reg.y1);
-  const hos = runs(rows, (r) => r.hos).filter((h) => h.v);
-  const hog = runs(rows, (r) => r.hog).filter((h) => h.v && !hos.some((x) => x.v === h.v));
-  const Item = ({ h, kind }: { h: Run<string | null>; kind: string }) => {
+  // Heads of government first (the head of state where they are the same
+  // person), then separate heads of state.
+  const gov = runs(rows, (r) => (govHead(r) ? `${govHead(r)}|${r.hog ? "g" : "sg"}` : null)).filter((h) => h.v);
+  const hos = runs(rows.filter((r) => r.hog), (r) => r.hos).filter((h) => h.v);
+  const Item = ({ h, name, kind }: { h: Run<string | null>; name: string; kind: string }) => {
     const r0 = rows.find((r) => r.y === h.y0);
+    const isHos = kind !== "Head of government";
     return (
       <li className="border-l-2 border-gl-border pl-2.5">
-        <span className="font-semibold">{h.v}</span> <span className="text-xs text-gl-muted">{yrs(h.y0, h.y1)}</span>
+        <span className="font-semibold">{name}</span> <span className="text-xs text-gl-muted">{yrs(h.y0, h.y1)}</span>
         <div className="text-xs text-gl-muted">
           {kind}
-          {kind === "Head of state" && r0?.hosp && ` · ${r0.hosp}`}
-          {kind === "Head of state" && r0?.path != null && ` · reached office by ${PATH[r0.path]}`}
+          {isHos && r0?.hosp && ` · ${r0.hosp}`}
+          {isHos && r0?.path != null && ` · reached office by ${PATH[r0.path]}`}
         </div>
       </li>
     );
   };
-  if (!hos.length && !hog.length) return <p className="text-sm text-gl-muted">No office holders recorded.</p>;
+  if (!gov.length && !hos.length) return <p className="text-sm text-gl-muted">No office holders recorded.</p>;
   return (
     <ul className="space-y-2 text-sm">
-      {hos.map((h) => <Item key={`s${h.y0}`} h={h} kind="Head of state" />)}
-      {hog.map((h) => <Item key={`g${h.y0}`} h={h} kind="Head of government" />)}
+      {gov.map((h) => {
+        const [name, k] = h.v!.split("|");
+        return <Item key={`g${h.y0}`} h={h} name={name} kind={k === "g" ? "Head of government" : "Head of state and government"} />;
+      })}
+      {hos.map((h) => <Item key={`s${h.y0}`} h={h} name={h.v!} kind="Head of state" />)}
     </ul>
   );
 }
