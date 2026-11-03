@@ -137,28 +137,36 @@ cd apps/country-profile && npm install && npm run dev
 
 ### Deployment
 
-The app is hosted at **<https://institutions.taimur.sh>** via an ngrok tunnel
-on the `cloud` SSH host. There is no CI — deploys are manual:
+The app is hosted at **<https://institutions.taimur.sh>** by nginx on the
+`cloud` SSH host, which serves `apps/country-profile/dist` directly (config:
+`/etc/nginx/sites-available/institutions.taimur.sh.conf`). There is no CI —
+deploys are manual:
 
 ```bash
 # 1. Push from laptop
 git push origin master
 
-# 2. Copy the data folders that are not in git (see .gitignore)
+# 2. Copy the data folders that are not in git (see .gitignore).
+#    publish_khan.sh copies the Khan axes page and its data into public/khan/,
+#    served at /khan/.
+analyses/polsett-proxies/publish_khan.sh
 cd apps/country-profile/public
-rsync -az --delete vdem-codebook research cloud:dev/institutional-complexity/apps/country-profile/public/
+rsync -az --delete vdem-codebook research khan cloud:dev/institutional-complexity/apps/country-profile/public/
 # public/polsett/llm/ is held back on purpose: without its index.json the
 # experimental LLM overlay on the PolSett explorer stays hidden.
 
-# 3. Pull + rebuild on the cloud host (ngrok auto-serves dist/)
+# 3. Pull + rebuild on the cloud host
 ssh cloud 'cd ~/dev/institutional-complexity/apps/country-profile \
   && git -C ~/dev/institutional-complexity pull --ff-only \
   && npm install --no-audit --no-fund \
   && npm run build'
 ```
 
-ngrok serves the `dist/` directory directly, so once the build completes the
-new bundle is live. Verify with `curl -I https://institutions.taimur.sh/`.
+nginx serves `dist/` directly, so the new bundle is live once the build
+completes. The SPA fallback is `try_files $uri /index.html`; `/khan/` has its
+own location block so that it resolves to `khan/index.html` rather than the
+app. Verify with `curl -I https://institutions.taimur.sh/` and
+`curl -I https://institutions.taimur.sh/khan/`.
 
 ## Files map
 

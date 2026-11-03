@@ -25,6 +25,7 @@ analyses/polsett-proxies/*_data.js
 analyses/polsett-proxies/khan_vars.js
 apps/country-profile/public/vdem-codebook/
 apps/country-profile/public/research/
+apps/country-profile/public/khan/
 apps/country-profile/public/polsett/llm/
 polsett-llm/esid/
 polsett-llm/**/*.json
