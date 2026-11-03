@@ -486,3 +486,7 @@ obvious next revision.
 - Of the periods PolSett codes as high horizontal power, 47% are bound by the
   armed lens. PolSett coders appear to discount armed challenges that our index
   counts in full.
+
+### Regime explorer (Figure 11 in khan-axes.html)
+
+`export_regimes.R` writes `regime_data.js` from the V-Dem v16 regime survey (`v2reg*`, 1900–2025, 183 countries, 1,340 regimes) together with heads of state and government, and the governing parties after each election from V-Party v2 (to 2019). `regimes.js` draws the page section. A regime is a run of years with one `v2regidnr`, so regimes that began and ended within one calendar year do not appear. Group sizes use the `_osp` versions of `v2regsupgroupssize` and `v2regoppgroupssize`, on the original five-band scale. The single-group roles (`v2regimpgroup`, `v2regimpoppgroup`, `v2regpower`, `v2regproreg`, `v2regantireg`) are the per-year values V-Dem reports, summarised over a regime by their mode.

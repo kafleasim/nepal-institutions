@@ -244,6 +244,81 @@ td.num { text-align: right; }
 .legend { display: flex; flex-wrap: wrap; gap: 6px 16px; font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .files { font-family: var(--sans); font-size: 0.875rem; color: var(--ink-3); display: grid; gap: 4px; }
+/* Regime explorer (regimes.js). Group families use the non-blue, non-red GL hues so
+   that blue and red keep one meaning in this section: support and opposition. */
+:root { --f1: #2AA584; --f2: #EA822D; --f3: #7554A3; --f4: #CDC86B; --f5: #AFB5BE; --rg-reg-a: #ECE8E0; --rg-reg-b: #DCD7CC; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --f1: #2E9E80; --f2: #E08A45; --f3: #9576C4; --f4: #B8B35E; --f5: #5F6773; --rg-reg-a: #2A2C31; --rg-reg-b: #363940; } }
+:root[data-theme="dark"] { --f1: #2E9E80; --f2: #E08A45; --f3: #9576C4; --f4: #B8B35E; --f5: #5F6773; --rg-reg-a: #2A2C31; --rg-reg-b: #363940; }
+.rg-f1 { background: var(--f1); fill: var(--f1); } .rg-f2 { background: var(--f2); fill: var(--f2); } .rg-f3 { background: var(--f3); fill: var(--f3); }
+.rg-f4 { background: var(--f4); fill: var(--f4); } .rg-f5 { background: var(--f5); fill: var(--f5); }
+svg .rg-cell { fill-opacity: 0.45; } svg .rg-cell-none { fill: var(--grid); }
+.rg-sw { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 7px; flex: none; }
+.rg-info { font-family: var(--sans); font-size: 0.6875rem; font-weight: 600; width: 16px; height: 16px; line-height: 14px; padding: 0;
+  border-radius: 50%; border: 1px solid var(--ink-4); background: var(--paper); color: var(--ink-3); cursor: help; vertical-align: 1px; }
+.rg-info:hover { border-color: var(--accent); color: var(--accent); }
+.rg-mode { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rg-h { font-family: var(--sans); font-size: 0.75rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-3); margin: 0 0 8px; }
+.rg-card > * { min-width: 0; }
+.rg-card { background: var(--paper); border-radius: 6px; padding: 16px; min-width: 0; display: grid; gap: 10px; align-content: start; }
+.rg-card > p.note { font-size: 0.8125rem; }
+.rg-card > p { margin: 0; font-size: 0.97rem; line-height: 1.55; color: var(--ink-2); }
+.rg-two { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+@media (max-width: 860px) { .rg-two { grid-template-columns: minmax(0, 1fr); } }
+/* size bars: label | track on the 0-4 band scale | value */
+.rg-size { display: grid; grid-template-columns: 150px minmax(0, 1fr) 150px; gap: 8px 12px; align-items: center; }
+.rg-size-lab { font-family: var(--sans); font-size: 0.875rem; font-weight: 600; color: var(--ink); }
+.rg-size-track { position: relative; height: 26px; background: var(--panel); border-radius: 3px; }
+.rg-size-track i { position: absolute; display: block; }
+.rg-size-tick { top: 0; bottom: 0; border-left: 1px solid var(--grid); }
+.rg-size-fill { left: 0; top: 4px; bottom: 4px; border-radius: 0 4px 4px 0; }
+.rg-size-fill.sup { background: var(--pos); } .rg-size-fill.opp { background: var(--neg); }
+.rg-size-ci { top: 50%; height: 0; border-top: 2px solid var(--ink); }
+.rg-size-ci::before, .rg-size-ci::after { content: ""; position: absolute; top: -6px; height: 10px; border-left: 2px solid var(--ink); }
+.rg-size-ci::before { left: 0; } .rg-size-ci::after { right: 0; }
+.rg-size-val { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); display: grid; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.rg-size-val b { color: var(--ink); font-size: 0.9375rem; }
+.rg-size-axis { position: relative; height: 18px; font-family: var(--sans); font-size: 0.75rem; color: var(--ink-3); }
+.rg-size-axis span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.rg-size-axis span:first-child { transform: none; } .rg-size-axis span:last-child { transform: translateX(-100%); }
+.rg-none { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); font-family: var(--sans); font-size: 0.75rem; color: var(--ink-4); }
+@media (max-width: 640px) { .rg-size { grid-template-columns: minmax(0, 1fr); gap: 4px; } .rg-size-axis span:not(:first-child):not(:last-child) { display: none; } }
+/* people and parties */
+.rg-people { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.rg-people li { font-size: 0.97rem; border-left: 2px solid var(--rule); padding-left: 10px; }
+.rg-yrs { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.rg-sub { font-family: var(--sans); font-size: 0.78rem; color: var(--ink-3); line-height: 1.4; }
+.rg-dim { color: var(--ink-4); }
+table.rg-ptab { min-width: 620px; font-family: var(--sans); font-size: 0.8125rem; }
+.rg-meter { display: inline-flex; gap: 2px; vertical-align: -1px; margin-right: 6px; }
+.rg-meter i { width: 12px; height: 9px; border-radius: 1px; background: var(--grid); display: block; }
+.rg-meter i.on { background: var(--ink-2); }
+.rg-mval { color: var(--ink-3); }
+/* roles */
+.rg-roles { display: grid; gap: 10px; }
+.rg-role { display: grid; gap: 2px; border-left: 2px solid var(--rule); padding-left: 10px; }
+.rg-role-k { font-family: var(--sans); font-size: 0.78rem; color: var(--ink-3); }
+.rg-role-v { font-size: 1rem; font-weight: 600; display: flex; align-items: center; }
+/* butterfly of groups: support bar grows left from the label column, opposition right */
+.rg-groups { display: grid; grid-template-columns: minmax(0, 1fr) minmax(190px, 300px) minmax(0, 1fr); column-gap: 10px; row-gap: 3px; }
+.rg-g-head { font-family: var(--sans); font-size: 0.8125rem; font-weight: 600; padding-bottom: 6px; }
+.rg-g-head.sup { color: var(--ink); text-align: right; } .rg-g-head.opp { grid-column: 3; color: var(--ink); }
+.rg-g-fam { grid-column: 1 / -1; font-family: var(--sans); font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-4); padding-top: 8px; text-align: center; }
+.rg-g-sup, .rg-g-opp { min-height: 26px; display: flex; align-items: center; gap: 8px; min-width: 0; }
+.rg-g-track { position: relative; flex: 1; height: 26px; min-width: 0; }
+.rg-g-bar { position: absolute; top: 50%; transform: translateY(-50%); display: block; height: 14px; }
+.rg-g-sup .rg-g-bar { right: 0; border-radius: 4px 0 0 4px; }
+.rg-g-opp .rg-g-bar { left: 0; border-radius: 0 4px 4px 0; }
+.rg-g-opp .rg-g-bar.opp { top: 4px; transform: none; height: 10px; } .rg-g-opp .rg-g-bar.act { top: 16px; transform: none; height: 6px; }
+.rg-g-bar.sup { background: var(--pos); }
+.rg-g-bar.opp { background: var(--neg); opacity: 0.45; } .rg-g-bar.act { background: var(--neg); }
+.rg-g-sup .rg-g-num { width: 3em; text-align: right; }
+.rg-g-opp .rg-g-num { width: 7.5em; }
+.rg-g-num { font-family: var(--sans); font-size: 0.75rem; color: var(--ink-3); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.rg-g-lab { font-family: var(--sans); font-size: 0.8125rem; color: var(--ink); display: flex; flex-wrap: wrap; align-items: center; gap: 3px 4px; padding: 3px 0; border-left: 1px solid var(--ink); border-right: 1px solid var(--ink); padding-inline: 8px; }
+.rg-g-lab > span:not(.rg-tag) { margin-right: 4px; }
+.rg-tag { font-size: 0.6875rem; padding: 0 5px; border-radius: 3px; border: 1px solid var(--ink-4); color: var(--ink-2); white-space: nowrap; line-height: 1.5; }
+.rg-tag-imp, .rg-tag-pro { border-color: var(--pos); } .rg-tag-impo, .rg-tag-anti { border-color: var(--neg); } .rg-tag-pow { border-color: var(--ink); font-weight: 600; }
+@media (max-width: 640px) { .rg-groups { grid-template-columns: minmax(0, 1fr) minmax(130px, 1.3fr) minmax(0, 1fr); } .rg-g-num { display: none; } }
 @media (prefers-reduced-motion: reduce) { #tip { transition: none; } }
 </style>
 </head>
@@ -441,6 +516,65 @@ td.num { text-align: right; }
     </figure>
   </section>
 
+  <section id="regimes">
+    <div class="prose">
+      <h2>Regimes, their supporters and their opponents</h2>
+      <p>V-Dem's regime survey divides each country's history into regimes, defined as the formal and informal rules for choosing leaders and keeping them in power. For each regime and year, country experts record which of fourteen social groups the regime depends on, which groups want it replaced and could under favourable conditions remove it, how large each set of groups is as a share of adults, and which single group holds each of five roles, among them the group the regime relies on most and the group most able to affect its survival. These items describe the coalition and the excluded factions in terms close to Khan's, and they are available for every country V-Dem covers.</p>
+      <p>Opposition here means opposition to the regime, not to the government. In a democracy, voters for the opposition party who accept the rules are not counted, so the opposition groups are anti-system groups. Select a country, then a regime from the top band of Figure 11. The panel below it opens with the size of the support and opposition groups and then sets out who they are.</p>
+    </div>
+    <figure>
+      <div class="fig-label">Figure 11 · Regimes, heads of state, and the size of support and opposition groups</div>
+      <div class="controls">
+        <label for="rg-search">Country</label>
+        <input type="search" id="rg-search" list="rg-list" placeholder="e.g. Uganda" autocomplete="off">
+        <datalist id="rg-list"></datalist>
+        <div class="chips" id="rg-range" role="group" aria-label="Time range"></div>
+      </div>
+      <div class="legend">
+        <span><i class="swatch" style="background:var(--pos)"></i>Regime support groups</span>
+        <span><i class="swatch" style="background:var(--neg)"></i>Regime opposition groups</span>
+        <span class="rg-dim">Lines are V-Dem's estimates on the original five-band scale; shading is the measurement-model interval.</span>
+      </div>
+      <div class="chart" id="rg-time"></div>
+      <figcaption>Top band: regimes as V-Dem names them; click one to open it below. Middle band: heads of state (hover for party and route to office). Chart: estimated size of the regime's support groups and opposition groups as a share of the adult population, with the selected regime shaded. Click a year to show that year alone. Regimes that began and ended within one calendar year do not appear in the country-year data.</figcaption>
+    </figure>
+    <div class="explorer" aria-live="polite">
+      <div class="ex-head">
+        <div class="ex-title" id="rg-title"></div>
+        <div class="ex-sub" id="rg-sub"></div>
+        <div class="rg-mode" id="rg-mode"></div>
+      </div>
+      <div class="rg-card">
+        <h3 class="rg-h">Size of the support and opposition groups</h3>
+        <div id="rg-size"></div>
+        <div id="rg-narr"></div>
+      </div>
+      <div class="rg-two">
+        <div class="rg-card">
+          <h3 class="rg-h">Who held office</h3>
+          <div id="rg-charge"></div>
+        </div>
+        <div class="rg-card">
+          <h3 class="rg-h">Single-group roles</h3>
+          <div id="rg-roles"></div>
+        </div>
+      </div>
+      <div class="rg-card">
+        <h3 class="rg-h">Governing party and its cohesion</h3>
+        <div id="rg-party"></div>
+      </div>
+      <div class="rg-card">
+        <h3 class="rg-h">Who the groups are</h3>
+        <div id="rg-groups"></div>
+        <p class="note">Bars give the share of country experts naming each group: as one the regime relies on (left), as one containing noteworthy opposition (right, upper bar), and as one actively mobilising against the regime in the year (right, lower bar). The last two are separate questions, so the active share can exceed the noteworthy share. Tags mark the group named for each single-group role. Colour squares mark the group family.</p>
+      </div>
+      <div class="rg-card">
+        <h3 class="rg-h">Roles over the regime's life</h3>
+        <div class="chart" id="rg-rolestrip"></div>
+      </div>
+    </div>
+  </section>
+
   <section id="decision">
     <div class="prose">
       <h2>An open decision: where personal command belongs</h2>
@@ -448,7 +582,7 @@ td.num { text-align: right; }
       <p>The proposed revision is to keep party discipline as the vertical index and move personal command into the unipolarity index. It has not been made yet, because it changes what both indices mean.</p>
     </div>
     <figure>
-      <div class="fig-label">Figure 11 · Our lenses against individual PolSett items</div>
+      <div class="fig-label">Figure 12 · Our lenses against individual PolSett items</div>
       <div class="chart" id="itemcor"></div>
       <figcaption>Correlations over PolSett country-periods. The outlined cell is personal command against policy concentration in the leader.</figcaption>
     </figure>
@@ -464,6 +598,7 @@ td.num { text-align: right; }
       <div><code>analyses/polsett-proxies/khan_build.R</code> assembles the country-year and country-period panels</div>
       <div><code>khan_indices.R</code> holds the specification, builds the indices and prints the diagnostics</div>
       <div><code>khan_puzzles.R</code> produces the case tables · <code>export_khan_page.R</code> and <code>export_khan_vars.R</code> write the data for this page</div>
+      <div><code>export_regimes.R</code> writes the regime data (V-Dem v16 regime survey and V-Party v2) · <code>regimes.js</code> draws Figure 11 and the regime panel</div>
       <div><code>README.md</code> has the written account (second-pass section)</div>
     </div>
   </section>
@@ -479,6 +614,7 @@ td.num { text-align: right; }
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
 <script src="khan_data.js"></script>
 <script src="khan_vars.js"></script>
+<script src="regime_data.js"></script>
 <script>
 (function () {
 "use strict";
@@ -1190,7 +1326,7 @@ function renderWorld() {
     .attr("class", d => "t-" + d.type).style("fill-opacity", d => d === sel ? 1 : 0.8)
     .style("stroke", d => d === sel ? "var(--ink)" : d.inPS ? "var(--ink-2)" : "var(--paper)").style("stroke-width", d => d === sel ? 2.5 : d.inPS ? 1.5 : 1)
     .style("cursor", "pointer")
-    .on("click", (ev, d) => { state.world = d.iso; wSearch.value = d.name; renderWorld(); })
+    .on("click", (ev, d) => { state.world = d.iso; wSearch.value = d.name; renderWorld(); if (window.REGIME_SELECT) window.REGIME_SELECT(d.iso); })
     .on("mousemove", (ev, d) => showTip(`<b>${esc(d.name)}</b>${d.inPS ? " · in PolSett" : ""}<br>${TYPE_NAME[d.type]}<br>H ${fmt(d.H)} · V ${fmt(d.V)} · U ${fmt(d.U)}<br><span class="dim">Horizontal set by ${LENS_LABEL[bindingLens(d, "H")] ? LENS_LABEL[bindingLens(d, "H")].toLowerCase() : "–"} lens</span>`, ev))
     .on("mouseleave", hideTip);
   pts.filter(d => WORLD_LABELS.includes(d.iso) || d === sel).forEach(d =>
@@ -1203,7 +1339,7 @@ function renderWorld() {
   }
 }
 
-/* ---------- Figure 11: item correlations ---------- */
+/* ---------- Figure 12: item correlations ---------- */
 function renderItemCor() {
   const host = document.getElementById("itemcor"); host.innerHTML = "";
   const C = D.itemcor, W = widthOf("itemcor"), left = 150, top = 118;
@@ -1238,5 +1374,6 @@ let rt; let lastW = window.innerWidth;
 window.addEventListener("resize", () => { if (window.innerWidth === lastW) return; lastW = window.innerWidth; clearTimeout(rt); rt = setTimeout(renderAll, 150); });
 })();
 </script>
+<script src="regimes.js"></script>
 </body>
 </html>
