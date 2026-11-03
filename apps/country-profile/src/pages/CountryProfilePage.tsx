@@ -16,6 +16,7 @@ import { PCTrajectoriesSection } from "../components/PCTrajectoriesSection";
 import { RelatedIndicatorsSection } from "../components/RelatedIndicatorsSection";
 import { PolSettTypologySection } from "../components/PolSettTypologySection";
 import { PolSettExplorer } from "../components/PolSettExplorer";
+import { RegimesSection } from "../components/RegimesSection";
 import { SectionNav, type ChapterSpec } from "../components/SectionNav";
 import { useFingerprints } from "../lib/useFingerprints";
 import { derivePeers } from "../lib/derivePeers";
@@ -24,6 +25,7 @@ const CHAPTERS: ChapterSpec[] = [
   { id: "peers", label: "Peers" },
   { id: "growth-breaks", label: "Growth breaks" },
   { id: "political-settlement", label: "Political settlement" },
+  { id: "regimes", label: "Regimes" },
   { id: "winning-coalition", label: "Winning coalition" },
   { id: "state-capacity", label: "State capacity" },
   { id: "pillars", label: "Pillars of Prosperity" },
@@ -210,6 +212,10 @@ export function CountryProfilePage() {
           growthRecord={growth[focus.iso3] ?? null}
           defaultCollapsed
         />
+      </section>
+
+      <section id="regimes" className="scroll-mt-20">
+        <RegimesSection focus={focus} />
       </section>
 
       <section id="winning-coalition" className="scroll-mt-20">

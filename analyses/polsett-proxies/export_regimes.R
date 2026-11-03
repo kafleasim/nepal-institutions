@@ -111,3 +111,15 @@ writeLines(paste0("window.REGIMES = ", toJSON(out, auto_unbox = TRUE, na = "null
                                                dataframe = "rows"), ";"), "regime_data.js")
 message("Wrote regime_data.js (", round(file.size("regime_data.js") / 1024), " KB): ", length(countries), " countries, ",
         sum(map_int(countries, ~ nrow(.x$regimes))), " regimes")
+
+# ---- per-country files for the country-profile app (/regimes/<ISO>.json) ----
+# Same structure as one entry of window.REGIMES$countries; the codebook text goes
+# in regimes/meta.json. The folder is gitignored and deployed by rsync.
+app_dir <- "../../apps/country-profile/public/regimes"
+dir.create(app_dir, showWarnings = FALSE, recursive = TRUE)
+for (iso in names(countries))
+  writeLines(toJSON(countries[[iso]], auto_unbox = TRUE, na = "null", null = "null", digits = NA, dataframe = "rows"),
+             file.path(app_dir, paste0(iso, ".json")))
+writeLines(toJSON(list(built = out$built, years = out$years, docs = docs), auto_unbox = TRUE, na = "null", null = "null"),
+           file.path(app_dir, "meta.json"))
+message("Wrote ", length(countries), " country files to ", normalizePath(app_dir))

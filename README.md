@@ -148,10 +148,11 @@ git push origin master
 
 # 2. Copy the data folders that are not in git (see .gitignore).
 #    publish_khan.sh copies the Khan axes page and its data into public/khan/,
-#    served at /khan/.
+#    served at /khan/. analyses/polsett-proxies/export_regimes.R writes
+#    public/regimes/ (the Regimes section of the country profile).
 analyses/polsett-proxies/publish_khan.sh
 cd apps/country-profile/public
-rsync -az --delete vdem-codebook research khan cloud:dev/institutional-complexity/apps/country-profile/public/
+rsync -az --delete vdem-codebook research khan regimes cloud:dev/institutional-complexity/apps/country-profile/public/
 # public/polsett/llm/ is held back on purpose: without its index.json the
 # experimental LLM overlay on the PolSett explorer stays hidden.
 
