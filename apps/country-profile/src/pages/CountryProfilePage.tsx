@@ -57,6 +57,11 @@ export function CountryProfilePage() {
       fetch("/countries.json").then((r) => r.json() as Promise<Country[]>),
       fetch("/growth_series.json").then((r) => r.json() as Promise<GrowthIndex>),
     ]).then(([c, g]) => {
+      // Series too short for break detection are exported with breaks = {}
+      // rather than null; the charts expect null.
+      for (const rec of Object.values(g)) {
+        if (rec.breaks && !Array.isArray(rec.breaks.years)) rec.breaks = null;
+      }
       setCountries(c);
       setGrowth(g);
     });

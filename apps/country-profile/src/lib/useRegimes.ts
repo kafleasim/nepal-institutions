@@ -86,7 +86,12 @@ function decode(raw: Raw): RegimeCountry {
     for (const k of CARRY_KEYS) r[k] = cols[k][i] ?? null;
     rows.push(r as RegimeYear);
   }
-  return { name: raw.name, y0: raw.y0, regimes: raw.regimes, parties: raw.parties ?? [], rows };
+  // A one-element list can arrive as a bare number from older exports.
+  const parties = (raw.parties ?? []).map((p) => ({
+    ...p,
+    groups: Array.isArray(p.groups) ? p.groups : typeof p.groups === "number" ? [p.groups] : [],
+  }));
+  return { name: raw.name, y0: raw.y0, regimes: raw.regimes, parties, rows };
 }
 
 const cache = new Map<string, RegimeCountry | null>();

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { Component, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Country } from "../types";
 import { GL } from "../lib/glTokens";
 import {
@@ -171,7 +171,37 @@ function summarise(c: RegimeCountry, reg: Regime, year: number | null): Summary 
 }
 
 /* ---------- main section ---------- */
+// A failure in this section should not take down the whole country profile.
+class SectionBoundary extends Component<{ iso: string; children: ReactNode }, { failed: string | null }> {
+  state = { failed: null as string | null };
+  static getDerivedStateFromError() {
+    return { failed: "error" };
+  }
+  componentDidUpdate(prev: { iso: string }) {
+    if (prev.iso !== this.props.iso && this.state.failed) this.setState({ failed: null });
+  }
+  render() {
+    if (this.state.failed) {
+      return (
+        <section className="mt-12">
+          <h2 className="text-xl font-semibold">Regimes, their supporters and their opponents</h2>
+          <p className="mt-2 text-sm text-gl-muted">This section could not be drawn for this country.</p>
+        </section>
+      );
+    }
+    return this.props.children;
+  }
+}
+
 export function RegimesSection({ focus }: Props) {
+  return (
+    <SectionBoundary iso={focus.iso3}>
+      <RegimesInner focus={focus} />
+    </SectionBoundary>
+  );
+}
+
+function RegimesInner({ focus }: Props) {
   const { data, meta } = useRegimes(focus.iso3);
   const [regKey, setRegKey] = useState<string | null>(null);
   const [year, setYear] = useState<number | null>(null);

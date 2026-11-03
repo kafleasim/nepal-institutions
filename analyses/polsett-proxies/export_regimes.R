@@ -88,7 +88,7 @@ for (iso in unique(gov$country_text_id)) {
     name = coalesce(g$v2paenname[i], g$v2paorname[i]), short = g$v2pashname[i],
     vote = r2(g$v2pavote[i]), seat = r2(g$v2paseatshare[i]),
     disa = r2(g$v2padisa_osp[i]), ind = r2(g$v2paind_osp[i]), act = r2(g$v2paactcom_osp[i]), loc = r2(g$v2palocoff_osp[i]),
-    groups = which(grp[i, ] >= 0.5) - 1L
+    groups = I(which(grp[i, ] >= 0.5) - 1L)
   ))
 }
 
