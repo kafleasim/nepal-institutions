@@ -20,7 +20,7 @@ cols <- c("country_name", "country_text_id", "year", "v2reginfo", "v2regidnr", "
           "v2regsupgroupssize_osp", "v2regsupgroupssize_osp_codelow", "v2regsupgroupssize_osp_codehigh",
           "v2regoppgroupssize_osp", "v2regoppgroupssize_osp_codelow", "v2regoppgroupssize_osp_codehigh",
           "v2regimpgroup", "v2regimpoppgroup", "v2regpower", "v2regproreg", "v2regantireg",
-          "v2regsuploc", "v2regopploc", "v2exnamhos", "v2exparhos", "v2exnamhog", "v2expathhs", "v2x_polyarchy",
+          "v2regsuploc", "v2regopploc", "v2regsupgroups_nr", "v2regoppgroups_nr", "v2regoppgroupsact_nr", "v2exnamhos", "v2exparhos", "v2exnamhog", "v2expathhs", "v2x_polyarchy",
           paste0("v2regsupgroups_", G), paste0("v2regoppgroups_", G), paste0("v2regoppgroupsact_", G))
 d <- v %>% filter(year >= 1900) %>% select(all_of(cols)) %>% collect() %>% arrange(country_text_id, year)
 
@@ -71,6 +71,7 @@ for (iso in unique(d$country_text_id)) {
     sloc = int(x$v2regsuploc), oloc = int(x$v2regopploc),
     hos = str(x$v2exnamhos), hosp = str(x$v2exparhos), hog = str(x$v2exnamhog), path = int(x$v2expathhs),
     poly = r2(x$v2x_polyarchy),
+    sn = int(x$v2regsupgroups_nr), on = int(x$v2regoppgroups_nr), an = int(x$v2regoppgroupsact_nr),
     sg = shares(x, "v2regsupgroups_"), og = shares(x, "v2regoppgroups_"), oa = shares(x, "v2regoppgroupsact_")
   )
 }

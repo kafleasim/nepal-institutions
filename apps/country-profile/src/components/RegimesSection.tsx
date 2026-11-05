@@ -344,6 +344,12 @@ function RegimesInner({ focus }: Props) {
                 <RoleStrip data={data} reg={reg} year={year} show={show} hide={hide} />
               </Card>
             )}
+
+            {reg.y1 > reg.y0 && (
+              <Card title="One group over the regime's life">
+                <GroupLines data={data} reg={reg} year={year} show={show} hide={hide} />
+              </Card>
+            )}
           </div>
         </>
       )}
@@ -814,6 +820,114 @@ function RoleStrip({ data, reg, year, show, hide }: { data: RegimeCountry; reg: 
         )}
         {ticks.map((t) => <text key={t} x={x(t + 0.5)} y={H - 4} textAnchor="middle" fontSize={11} fill={GL.muted}>{t}</text>)}
       </svg>
+    </div>
+  );
+}
+
+// One group's share of experts naming it as a supporter, as containing
+// noteworthy opposition, and as actively mobilising against the regime, by year.
+// The x-axis matches RoleStrip so the two read as one panel.
+const LINES = [
+  { k: "sg", n: "sn", name: "Supports the regime", color: SUP, dash: undefined },
+  { k: "og", n: "on", name: "Noteworthy opposition", color: OPP, dash: undefined },
+  { k: "oa", n: "an", name: "Actively mobilising against it", color: OPP, dash: "5 3" },
+] as const;
+
+function GroupLines({ data, reg, year, show, hide }: { data: RegimeCountry; reg: Regime; year: number | null; show: ShowFn; hide: () => void }) {
+  const [ref, W] = useWidth();
+  const rows = data.rows.filter((r) => r.y >= reg.y0 && r.y <= reg.y1);
+  const [g, setG] = useState<number>(() => modal(rows, "imp") ?? 10);
+  const [hover, setHover] = useState<number | null>(null);
+  useEffect(() => setG(modal(rows, "imp") ?? 10), [reg.id, reg.y0]); // eslint-disable-line react-hooks/exhaustive-deps
+  const m = { l: 200, r: 8 }, top = 16, ch = 170, H = top + ch + 24;
+  const x = (y: number) => m.l + ((y - reg.y0) / (reg.y1 + 1 - reg.y0)) * (W - m.l - m.r);
+  const yv = (v: number) => top + ch - (v / 100) * ch;
+  const span = reg.y1 - reg.y0 + 1;
+  const step = span <= 12 ? 2 : span <= 30 ? 5 : 10;
+  const ticks: number[] = [];
+  for (let t = Math.ceil(reg.y0 / step) * step; t <= reg.y1; t += step) ticks.push(t);
+  const val = (r: RegimeYear, k: "sg" | "og" | "oa") => r[k]?.[g] ?? null;
+  // Annual codings drawn as steps, one flat segment per year.
+  const path = (k: "sg" | "og" | "oa") => {
+    let d = "";
+    let prev: number | null = null;
+    for (const r of rows) {
+      const v = val(r, k);
+      if (v == null) { prev = null; continue; }
+      d += prev == null ? `M${x(r.y).toFixed(1)},${yv(v).toFixed(1)}` : `V${yv(v).toFixed(1)}`;
+      d += `H${x(r.y + 1).toFixed(1)}`;
+      prev = v;
+    }
+    return d;
+  };
+  const coded = rows.some((r) => r.sg);
+  const govChanges = runs(rows, govHead).slice(1).map((h) => h.y0);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex flex-wrap gap-1.5 text-xs">
+        {FAMILIES.flatMap((f) => f.g).map((i) => (
+          <button key={i} type="button" onClick={() => setG(i)} aria-pressed={g === i}
+            className={g === i
+              ? "flex items-center gap-1.5 rounded-full bg-gl-text px-2.5 py-0.5 font-medium text-white"
+              : "flex items-center gap-1.5 rounded-full border border-gl-border px-2.5 py-0.5 text-gl-muted hover:text-gl-text"}>
+            <span className="inline-block h-2 w-2 rounded-sm" style={{ background: FAM_COLOR[i] }} />
+            {GROUP[i]}
+          </button>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+        {LINES.map((l) => (
+          <span key={l.k} className="flex items-center gap-1.5">
+            <svg width={20} height={6}><line x1={0} x2={20} y1={3} y2={3} stroke={l.color} strokeWidth={2} strokeDasharray={l.dash} /></svg>
+            {l.name}
+          </span>
+        ))}
+      </div>
+      {!coded ? <p className="text-sm text-gl-muted">The groups are not coded for this regime.</p> : (
+        <div ref={ref} className="w-full">
+          <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className="block" role="img"
+            aria-label={`${GROUP[g]}: share of experts naming the group as a supporter, as opposition, and as active opposition, by year`}>
+            <text x={m.l - 8} y={top + 4} textAnchor="end" fontSize={12} fontWeight={600} fill={GL.text}>{GROUP[g]}</text>
+            <text x={m.l - 8} y={top + 20} textAnchor="end" fontSize={11} fill={GL.muted}>share of experts naming it</text>
+            {[0, 25, 50, 75, 100].map((v) => (
+              <g key={v}>
+                <line x1={m.l} x2={W - m.r} y1={yv(v)} y2={yv(v)} stroke={v === 0 ? GL.text : GL.border} />
+                {v > 0 && <text x={m.l + 4} y={yv(v) - 3} fontSize={11} fill={GL.muted}>{v}%</text>}
+              </g>
+            ))}
+            {govChanges.map((y0) => <line key={y0} x1={x(y0)} x2={x(y0)} y1={top} y2={top + ch} stroke={GL.border} strokeDasharray="2 3" />)}
+            {LINES.map((l) => <path key={l.k} d={path(l.k)} fill="none" stroke={l.color} strokeWidth={2} strokeDasharray={l.dash} />)}
+            {hover != null && <line x1={x(hover + 0.5)} x2={x(hover + 0.5)} y1={top} y2={top + ch} stroke={GL.muted} />}
+            {year != null && <rect x={x(year)} width={x(year + 1) - x(year)} y={top} height={ch} fill="none" stroke={GL.text} strokeWidth={2} />}
+            {ticks.map((t) => <text key={t} x={x(t + 0.5)} y={H - 4} textAnchor="middle" fontSize={11} fill={GL.muted}>{t}</text>)}
+            <rect x={m.l} width={W - m.l - m.r} y={top} height={ch} fill="transparent"
+              onMouseMove={(e) => {
+                const px = e.clientX - e.currentTarget.getBoundingClientRect().left + m.l;
+                const yr = Math.floor(reg.y0 + ((px - m.l) / (W - m.l - m.r)) * span);
+                const r = rows.find((q) => q.y === yr);
+                if (!r) return;
+                setHover(r.y);
+                show(e, (
+                  <>
+                    <b>{r.y}</b> · {GROUP[g]}{govHead(r) && <><br /><span className="opacity-75">{govHead(r)}</span></>}
+                    {LINES.map((l) => {
+                      const v = val(r, l.k), n = r[l.n];
+                      return <span key={l.k}><br />{l.name}: {v == null ? "–" : `${v}%`}{v != null && n ? <span className="opacity-75"> ({Math.round((v / 100) * n)} of {n} experts)</span> : null}</span>;
+                    })}
+                  </>
+                ));
+              }}
+              onMouseLeave={() => { setHover(null); hide(); }} />
+          </svg>
+        </div>
+      )}
+      <p className="text-xs text-gl-muted">
+        Lines give the share of country experts who name the group in each year, not how strongly the group backs or
+        opposes the regime. Few experts code each country, so one expert moves a line by 10 to 20 points; the
+        tooltip gives the count. Dotted verticals mark changes of head of government. The group the regime relied
+        on most is selected first.
+      </p>
     </div>
   );
 }

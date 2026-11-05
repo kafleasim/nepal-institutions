@@ -85,7 +85,7 @@ function country(iso) {
     y, rid: c.rid[i], int: c.int[i], sup: c.sup[i], supl: c.supl[i], suph: c.suph[i],
     opp: c.opp[i], oppl: c.oppl[i], opph: c.opph[i], imp: c.imp[i], impo: c.impo[i], pow: c.pow[i],
     pro: c.pro[i], anti: c.anti[i], sloc: c.sloc[i], oloc: c.oloc[i], hos: c.hos[i], hosp: c.hosp[i],
-    hog: c.hog[i], path: c.path[i], poly: c.poly[i], sg: c.sg[i], og: c.og[i], oa: c.oa[i]
+    hog: c.hog[i], path: c.path[i], poly: c.poly[i], sg: c.sg[i], og: c.og[i], oa: c.oa[i], sn: c.sn[i], on: c.on[i], an: c.an[i]
   }));
   c.parties = c.parties || [];
   cache[iso] = c; return c;
@@ -402,6 +402,61 @@ function renderRoleStrip(c, reg) {
   xt.forEach(t => svg.append("text").attr("x", x(t + 0.5)).attr("y", H - 6).attr("text-anchor", "middle").text(t));
 }
 
+// One group's share of experts naming it as a supporter, as containing
+// noteworthy opposition, and as actively mobilising against the regime, by year.
+// The x-axis matches the role strip so the two read as one panel.
+const LINES = [["sg", "sn", "Supports the regime", "var(--pos)", null], ["og", "on", "Noteworthy opposition", "var(--neg)", null],
+  ["oa", "an", "Actively mobilising against it", "var(--neg)", "5 3"]];
+function renderGroupLines(c, reg) {
+  const host = document.getElementById("rg-grouplines"); host.innerHTML = "";
+  const rows = rowsOf(c, reg), g = st.group;
+  if (rows.length < 2) { host.parentElement.hidden = true; return; }
+  host.parentElement.hidden = false;
+  const pick = document.getElementById("rg-glpick");
+  pick.innerHTML = FAMILIES.flatMap(f => f.g).map(i =>
+    `<button type="button" class="chip" data-g="${i}" aria-pressed="${i === g}"><i class="rg-${FAM_OF[i]}"></i>${GROUP[i]}</button>`).join("");
+  pick.onclick = ev => { const b = ev.target.closest("[data-g]"); if (b) { st.group = +b.dataset.g; renderGroupLines(c, reg); } };
+  if (!rows.some(r => r.sg)) { host.innerHTML = `<p class="note">The groups are not coded for this regime.</p>`; return; }
+  const W = widthOf("rg-grouplines"), m = { l: 200, r: 8 }, top = 16, ch = 170, H = top + ch + 24;
+  const x = d3.scaleLinear().domain([reg.y0, reg.y1 + 1]).range([m.l, W - m.r]);
+  const y = d3.scaleLinear().domain([0, 100]).range([top + ch, top]);
+  const svg = d3.select(host).append("svg").attr("viewBox", `0 0 ${W} ${H}`).attr("role", "img")
+    .attr("aria-label", `${GROUP[g]}: share of experts naming the group as a supporter, as opposition, and as active opposition, by year`);
+  svg.append("text").attr("x", m.l - 8).attr("y", top + 4).attr("text-anchor", "end").style("font-weight", 600).text(GROUP[g]);
+  svg.append("text").attr("x", m.l - 8).attr("y", top + 20).attr("text-anchor", "end").style("font-size", "11px").style("fill", "var(--ink-3)").text("share of experts naming it");
+  [0, 25, 50, 75, 100].forEach(v => {
+    svg.append("line").attr("x1", m.l).attr("x2", W - m.r).attr("y1", y(v)).attr("y2", y(v)).style("stroke", v === 0 ? "var(--ink)" : "var(--grid)");
+    if (v) svg.append("text").attr("x", m.l + 4).attr("y", y(v) - 3).style("font-size", "11px").style("fill", "var(--ink-3)").text(v + "%");
+  });
+  runs(rows, r => govHead(r) || null).slice(1).forEach(h => svg.append("line").attr("x1", x(h.y0)).attr("x2", x(h.y0))
+    .attr("y1", top).attr("y2", top + ch).style("stroke", "var(--grid)").style("stroke-dasharray", "2 3"));
+  const val = (r, k) => r[k] ? r[k][g] : null;
+  LINES.forEach(([k, , , color, dash]) => {
+    let d = "", prev = null;
+    rows.forEach(r => {
+      const v = val(r, k);
+      if (v == null) { prev = null; return; }
+      d += (prev == null ? `M${x(r.y)},${y(v)}` : `V${y(v)}`) + `H${x(r.y + 1)}`; prev = v;
+    });
+    svg.append("path").attr("d", d).style("fill", "none").style("stroke", color).style("stroke-width", 2).style("stroke-dasharray", dash);
+  });
+  if (st.year != null) svg.append("rect").attr("x", x(st.year)).attr("width", x(st.year + 1) - x(st.year)).attr("y", top).attr("height", ch).style("fill", "none").style("stroke", "var(--ink)").style("stroke-width", 2);
+  const xt = x.ticks(Math.max(2, Math.floor((W - m.l) / 70))).filter(t => Number.isInteger(t) && t <= reg.y1);
+  xt.forEach(t => svg.append("text").attr("x", x(t + 0.5)).attr("y", H - 6).attr("text-anchor", "middle").text(t));
+  const cross = svg.append("line").attr("y1", top).attr("y2", top + ch).style("stroke", "var(--ink-3)").style("opacity", 0);
+  svg.append("rect").attr("x", m.l).attr("width", W - m.r - m.l).attr("y", top).attr("height", ch).style("fill", "transparent")
+    .on("mousemove", ev => {
+      const yr = Math.floor(x.invert(d3.pointer(ev)[0])), r = rows.find(q => q.y === yr);
+      if (!r) return;
+      cross.attr("x1", x(yr + 0.5)).attr("x2", x(yr + 0.5)).style("opacity", 1);
+      showTip(`<b>${yr}</b> · ${GROUP[g]}${govHead(r) ? `<br><span style="opacity:.75">${esc(govHead(r))}</span>` : ""}` + LINES.map(([k, nk, name]) => {
+        const v = val(r, k), n = r[nk];
+        return `<br>${name}: ${v == null ? "–" : v + "%"}${v != null && n ? ` <span style="opacity:.75">(${Math.round(v / 100 * n)} of ${n} experts)</span>` : ""}`;
+      }).join(""), ev);
+    })
+    .on("mouseleave", () => { cross.style("opacity", 0); hideTip(); });
+}
+
 function renderDetail() {
   const c = country(st.iso), reg = st.reg;
   const s = summary(c, reg, st.year);
@@ -424,6 +479,8 @@ function renderDetail() {
   document.getElementById("rg-roles").innerHTML = rolesHtml(c, reg, s);
   document.getElementById("rg-groups").innerHTML = s.coded.length ? groupsHtml(s) : `<p class="note">Not coded for this ${st.year == null ? "regime" : "year"}.</p>`;
   renderRoleStrip(c, reg);
+  if (st.glReg !== reg) { st.glReg = reg; st.group = modal(rowsOf(c, reg), "imp") ?? 10; }
+  renderGroupLines(c, reg);
 }
 
 function renderAll() { renderTime(); renderDetail(); }

@@ -50,6 +50,9 @@ export type RegimeYear = {
   hosp: string | null;
   hog: string | null;
   path: number | null;
+  sn: number | null; // experts answering the support-group question
+  on: number | null;
+  an: number | null;
   sg: number[] | null;
   og: number[] | null;
   oa: number[] | null;
@@ -69,7 +72,7 @@ export type RegimeMeta = { built: string; years: [number, number]; docs: Record<
 type Raw = Record<string, unknown> & { name: string; y0: number; regimes: Regime[]; parties?: GovParty[] };
 
 const NUM_KEYS = ["rid", "int", "sup", "supl", "suph", "opp", "oppl", "opph", "imp", "impo", "pow", "pro", "anti",
-  "sloc", "oloc", "path"] as const;
+  "sloc", "oloc", "path", "sn", "on", "an"] as const;
 const CARRY_KEYS = ["hos", "hosp", "hog", "sg", "og", "oa"] as const;
 
 function decode(raw: Raw): RegimeCountry {
