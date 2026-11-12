@@ -16,14 +16,14 @@ const router = createBrowserRouter([
   {
     element: <AppShell />,
     children: [
-      { path: "/", element: <Navigate to="/country/PAK" replace /> },
+      { path: "/", element: <Navigate to="/country/NPL" replace /> },
       { path: "/country", element: <CountryProfilePage /> },
       { path: "/country/:iso", element: <CountryProfilePage /> },
       { path: "/country-space", element: <CountrySpacePage /> },
-      { path: "*", element: <Navigate to="/country/PAK" replace /> },
+      { path: "*", element: <Navigate to="/country/NPL" replace /> },
     ],
   },
-]);
+], { basename: import.meta.env.BASE_URL.replace(/\/$/, "") || "/" });
 
 export function App() {
   return <RouterProvider router={router} />;

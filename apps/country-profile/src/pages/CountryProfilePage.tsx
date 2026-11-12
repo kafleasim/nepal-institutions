@@ -33,7 +33,7 @@ const CHAPTERS: ChapterSpec[] = [
   { id: "vdem", label: "Varieties of Democracy" },
 ];
 
-const DEFAULT_ISO = "PAK";
+const DEFAULT_ISO = "NPL";
 const DEFAULT_N_PEERS = 5;
 const TOP_K = 25;
 

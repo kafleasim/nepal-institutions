@@ -3,6 +3,8 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
+  // Sub-path hosting (GitHub Pages serves at /<repo>/). Local dev keeps "/".
+  base: process.env.VITE_BASE ?? "/",
   plugins: [react(), tailwindcss()],
   server: {
     port: 5173,
