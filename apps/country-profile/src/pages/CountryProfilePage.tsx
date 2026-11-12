@@ -18,6 +18,7 @@ import { PolSettTypologySection } from "../components/PolSettTypologySection";
 import { PolSettExplorer } from "../components/PolSettExplorer";
 import { RegimesSection } from "../components/RegimesSection";
 import { InstitutionsSection } from "../components/InstitutionsSection";
+import { RegimeContext } from "../components/NepalPeriods";
 import { SectionNav, type ChapterSpec } from "../components/SectionNav";
 import { useFingerprints } from "../lib/useFingerprints";
 import { derivePeers } from "../lib/derivePeers";
@@ -223,6 +224,7 @@ export function CountryProfilePage() {
 
       <section id="regimes" className="scroll-mt-20">
         <RegimesSection focus={focus} />
+        <RegimeContext focus={focus} />
       </section>
 
       <section id="institutions" className="scroll-mt-20">

@@ -2,6 +2,8 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Country } from "../types";
 import { GL } from "../lib/glTokens";
 import { useRegimes, type Regime, type RegimeCountry, type RegimeYear } from "../lib/useRegimes";
+import { periodColor, periodSpan, periodsLastYear, usePeriods, type Period } from "../lib/usePeriods";
+import { PeriodBounds, PeriodStrip, scrollToPeriod } from "./NepalPeriods";
 
 // Nepal fork: selected V-Dem institutional indicators over time, drawn against V-Dem's regime periods
 // (same regime / head-of-government strips as the Regimes section), with benchmark countries.
@@ -108,6 +110,7 @@ function TipLayer({ tip }: { tip: Tip }) {
 export function InstitutionsSection({ focus }: Props) {
   const doc = useDoc();
   const { data: reg } = useRegimes(focus.iso3);
+  const periods = usePeriods(focus.iso3)?.periods ?? null;
   const [tag, setTag] = useState("v2x_accountability");
   const [compare, setCompare] = useState<string>("none");
   const [from, setFrom] = useState(1990);
@@ -137,7 +140,7 @@ export function InstitutionsSection({ focus }: Props) {
           Selected V-Dem indicators of civil society, accountability, corruption and clientelism, plotted year by year
           against the regime periods and heads of government from V-Dem's regime survey. The solid line is the yearly
           estimate; the shaded area is its uncertainty ({doc.bands.country}). Dashed segments show the average score
-          within each regime. Benchmarks can be overlaid: for countries the band is again V-Dem's interval; for the
+          within each regime.{periods?.length ? " The coloured \"Political period\" band and dashed vertical lines mark the turning points described under the Regimes section; click a period to read its context." : ""} Benchmarks can be overlaid: for countries the band is again V-Dem's interval; for the
           world average it is the {doc.bands.aggregate.toLowerCase()}.
         </p>
       </div>
@@ -191,8 +194,10 @@ export function InstitutionsSection({ focus }: Props) {
       </div>
 
       <Legend focus={focusE} shown={shown} doc={doc} />
-      <Chart doc={doc} focusId={focus.iso3} shown={shown} meta={meta} reg={reg ?? null} from={from} show={show} hide={hide} />
-      {reg && <RegimeTable doc={doc} focusId={focus.iso3} benchIds={benchIds} meta={meta} reg={reg} from={from} />}
+      <Chart doc={doc} focusId={focus.iso3} shown={shown} meta={meta} reg={reg ?? null} from={from} show={show} hide={hide} periods={periods} />
+      {Boolean(reg || periods?.length) && (
+        <RegimeTable doc={doc} focusId={focus.iso3} benchIds={benchIds} meta={meta} reg={reg ?? null} from={from} periods={periods} />
+      )}
       <p className="text-xs text-gl-muted">
         Source: {doc.source}; regime periods from V-Dem's regime survey. Exported {doc.built}.
       </p>
@@ -222,15 +227,17 @@ function Swatch({ color, label }: { color: string; label: string }) {
   );
 }
 
-function Chart({ doc, focusId, shown, meta, reg, from: fromPref, show, hide }: {
+function Chart({ doc, focusId, shown, meta, reg, from: fromPref, show, hide, periods }: {
   doc: Doc; focusId: string; shown: string[]; meta: VarMeta; reg: RegimeCountry | null; from: number;
   show: (ev: { clientX: number; clientY: number }, body: ReactNode) => void; hide: () => void;
+  periods: Period[] | null;
 }) {
   const [ref, W] = useWidth();
   const [hover, setHover] = useState<number | null>(null);
   const unit = meta.scale === "unit";
   const from = Math.max(fromPref, doc.y0);
-  const to = doc.y1;
+  // Extend past V-Dem's last year so later political periods stay visible (no data drawn there).
+  const to = Math.max(doc.y1, periodsLastYear(periods));
   const idx = (y: number) => y - doc.y0;
   const ids = [focusId, ...shown];
   const ser = (id: string) => doc.series[id].vars[meta.tag];
@@ -242,7 +249,8 @@ function Chart({ doc, focusId, shown, meta, reg, from: fromPref, show, hide }: {
 
   const m = { l: 140, r: 12 };
   const regH = hasReg ? 32 : 0, hosH = hasReg ? 22 : 0, gap = hasReg ? 6 : 0;
-  const chartT = hasReg ? regH + hosH + gap * 2 + 6 : 8, chartH = 240, H = chartT + chartH + 26;
+  const perOff = periods?.length ? 30 : 0; // political-period band on top
+  const chartT = hasReg ? regH + hosH + gap * 2 + 6 : 8, chartH = 240, H = perOff + chartT + chartH + 26;
 
   // y domain
   const [ylo, yhi] = useMemo(() => {
@@ -302,6 +310,10 @@ function Chart({ doc, focusId, shown, meta, reg, from: fromPref, show, hide }: {
     <div ref={ref} className="w-full rounded border border-gl-border bg-white p-2">
       <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className="block" role="img"
         aria-label={`${doc.series[focusId].name}: ${meta.name} over time, by regime`}>
+        {periods?.length ? (
+          <PeriodStrip periods={periods} x={x} from={from} to={to} top={0} h={24} labelRight={m.l - 8} show={show} hide={hide} />
+        ) : null}
+        <g transform={`translate(0,${perOff})`}>
         {hasReg && (
           <>
             <g fontSize={12} fill={GL.text}>
@@ -368,6 +380,10 @@ function Chart({ doc, focusId, shown, meta, reg, from: fromPref, show, hide }: {
             stroke={FOCUS_COLOR} strokeWidth={1.5} strokeDasharray="5 4" />;
         })}
 
+        {periods?.length ? <PeriodBounds periods={periods} x={x} from={from} to={to} y1={-perOff} y2={chartT + chartH} /> : null}
+        {to > doc.y1 && (
+          <text x={x(doc.y1 + 1) + 4} y={chartT + 14} fontSize={10} fill={GL.muted}>No V-Dem data after {doc.y1}</text>
+        )}
         {hover != null && <line x1={x(hover + 0.5)} x2={x(hover + 0.5)} y1={chartT} y2={chartT + chartH} stroke={GL.muted} />}
         <rect x={m.l} width={W - m.l - m.r} y={chartT} height={chartH} fill="transparent"
           onMouseMove={(e) => {
@@ -376,9 +392,11 @@ function Chart({ doc, focusId, shown, meta, reg, from: fromPref, show, hide }: {
             if (yr < from || yr > to) return;
             setHover(yr);
             const rg = regOfYear(yr), row = rowOfYear(yr);
+            const pd = periods?.find((p) => { const [a, b] = periodSpan(p, to); return yr + 0.5 >= a && yr + 0.5 < b; });
             show(e, (
               <>
-                <b>{yr}</b>{rg && ` · ${rg.name}`}{row && govHead(row) && <><br />{govHead(row)}</>}
+                <b>{yr}</b>{rg && ` · ${rg.name}`}{pd && <><br /><span style={{ color: "#fff", opacity: 0.85 }}>Period: {pd.label}</span></>}
+                {row && govHead(row) && <><br />{govHead(row)}</>}
                 {ids.map((id) => {
                   const s = ser(id), i = idx(yr);
                   return (
@@ -391,50 +409,93 @@ function Chart({ doc, focusId, shown, meta, reg, from: fromPref, show, hide }: {
             ));
           }}
           onMouseLeave={() => { setHover(null); hide(); }} />
+        </g>
       </svg>
     </div>
   );
 }
 
-function RegimeTable({ doc, focusId, benchIds, meta, reg, from }: {
-  doc: Doc; focusId: string; benchIds: string[]; meta: VarMeta; reg: RegimeCountry; from: number;
+type Row = { key: string; label: string; dates: string; y0: number | null; y1: number | null; color?: string; periodId?: string };
+
+function RegimeTable({ doc, focusId, benchIds, meta, reg, from, periods }: {
+  doc: Doc; focusId: string; benchIds: string[]; meta: VarMeta; reg: RegimeCountry | null; from: number;
+  periods: Period[] | null;
 }) {
+  const [by, setBy] = useState<"period" | "regime">(periods?.length ? "period" : "regime");
   const unit = meta.scale === "unit";
   const ids = [focusId, ...benchIds];
-  const regs = reg.regimes.filter((r) => r.y1 >= from && r.y0 <= doc.y1);
   const avg = (id: string, a: number, b: number) => {
     const s = doc.series[id].vars[meta.tag];
     const v: (number | null)[] = [];
     for (let y = Math.max(a, doc.y0); y <= Math.min(b, doc.y1); y++) v.push(s.v[y - doc.y0]);
     return mean(v);
   };
+
+  // A V-Dem year counts toward the period that contains its mid-point (1 July).
+  const periodRows: Row[] = (periods ?? []).map((p) => {
+    const [a, b] = periodSpan(p, doc.y1 + 1);
+    let y0: number | null = null, y1: number | null = null;
+    for (let y = doc.y0; y <= doc.y1; y++) if (y + 0.5 >= a && y + 0.5 < b) { y0 ??= y; y1 = y; }
+    return { key: p.id, label: p.label, dates: `${p.startLabel} – ${p.endLabel}`, y0, y1, color: periodColor(p), periodId: p.id };
+  }).filter((r) => r.y1 == null || r.y1 >= from);
+  const regimeRows: Row[] = (reg?.regimes ?? []).filter((r) => r.y1 >= from && r.y0 <= doc.y1)
+    .map((r) => ({ key: `${r.id}-${r.y0}`, label: r.name, dates: yrs(r.y0, r.y1), y0: r.y0, y1: Math.min(r.y1, doc.y1) }));
+  const rows = by === "period" ? periodRows : regimeRows;
+  const short = meta.name.replace(/ \(reversed.*\)$/, "").toLowerCase();
+
   return (
     <div className="overflow-x-auto rounded border border-gl-border bg-white">
-      <table className="w-full text-sm">
-        <caption className="px-3 pt-2 text-left text-xs font-semibold uppercase tracking-wide text-gl-muted">
-          Mean {meta.name.replace(/ \(reversed.*\)$/, "").toLowerCase()} within each {doc.series[focusId].name} regime (benchmarks over the same years)
-        </caption>
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 pt-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-gl-muted">
+          Mean {short} within each {by === "period" ? "political period" : "V-Dem regime"} (benchmarks over the same years)
+        </p>
+        {periods?.length && reg ? (
+          <div className="flex gap-1 text-xs">
+            {(["period", "regime"] as const).map((k) => (
+              <button key={k} type="button" onClick={() => setBy(k)}
+                className={`rounded border px-2 py-0.5 ${by === k ? "border-gl-text bg-gl-text text-white" : "border-gl-border bg-white hover:bg-gl-bg"}`}>
+                {k === "period" ? "By political period" : "By V-Dem regime"}
+              </button>
+            ))}
+          </div>
+        ) : null}
+      </div>
+      <table className="mt-1 w-full text-sm">
         <thead>
           <tr className="border-b border-gl-border text-left text-xs text-gl-muted">
-            <th className="px-3 py-2 font-semibold">Regime</th>
-            <th className="px-3 py-2 font-semibold">Years</th>
+            <th className="px-3 py-2 font-semibold">{by === "period" ? "Political period" : "Regime"}</th>
+            <th className="px-3 py-2 font-semibold">Dates</th>
+            <th className="px-3 py-2 font-semibold">V-Dem years used</th>
             {ids.map((id) => <th key={id} className="px-3 py-2 text-right font-semibold">{doc.series[id].name}</th>)}
           </tr>
         </thead>
         <tbody>
-          {regs.map((r) => (
-            <tr key={`${r.id}-${r.y0}`} className="border-b border-gl-border last:border-0">
-              <td className="px-3 py-1.5">{r.name}</td>
-              <td className="px-3 py-1.5 tabular-nums text-gl-muted">{yrs(r.y0, r.y1)}</td>
+          {rows.map((r) => (
+            <tr key={r.key} className="border-b border-gl-border last:border-0">
+              <td className="px-3 py-1.5">
+                {r.color && <span className="mr-2 inline-block h-2.5 w-2.5 rounded-sm align-middle" style={{ background: r.color }} />}
+                {r.periodId ? (
+                  <button type="button" className="text-left underline decoration-gl-border underline-offset-2 hover:decoration-gl-text"
+                    onClick={() => scrollToPeriod(r.periodId!)}>{r.label}</button>
+                ) : r.label}
+              </td>
+              <td className="px-3 py-1.5 text-gl-muted">{r.dates}</td>
+              <td className="px-3 py-1.5 tabular-nums text-gl-muted">{r.y0 == null || r.y1 == null ? "none yet" : yrs(r.y0, r.y1)}</td>
               {ids.map((id) => (
                 <td key={id} className={`px-3 py-1.5 text-right tabular-nums ${id === focusId ? "font-semibold" : ""}`}>
-                  {fmt(avg(id, r.y0, r.y1), unit)}
+                  {r.y0 == null || r.y1 == null ? "–" : fmt(avg(id, r.y0, r.y1), unit)}
                 </td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+      {by === "period" && (
+        <p className="px-3 py-2 text-xs text-gl-muted">
+          V-Dem scores are annual, so each year is assigned to the period that contains its mid-point; periods shorter
+          than a year, or after {doc.y1}, have no V-Dem year of their own yet.
+        </p>
+      )}
     </div>
   );
 }

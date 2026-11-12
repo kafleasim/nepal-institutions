@@ -8,6 +8,9 @@ import {
   type RegimeMeta,
   type RegimeYear,
 } from "../lib/useRegimes";
+// Nepal fork: political-period band (see NepalPeriods.tsx). No-op for countries without periods.
+import { usePeriods, periodsLastYear, type Period } from "../lib/usePeriods";
+import { PeriodBounds, PeriodStrip } from "./NepalPeriods";
 
 // V-Dem's regime survey: for each regime (a run of years with one v2regidnr),
 // the size of the groups backing and opposing it, who those groups are, who
@@ -206,6 +209,7 @@ export function RegimesSection({ focus }: Props) {
 
 function RegimesInner({ focus }: Props) {
   const { data, meta } = useRegimes(focus.iso3);
+  const periods = usePeriods(focus.iso3)?.periods ?? null;
   const [regKey, setRegKey] = useState<string | null>(null);
   const [year, setYear] = useState<number | null>(null);
   const [from, setFrom] = useState(1946);
@@ -273,7 +277,7 @@ function RegimesInner({ focus }: Props) {
             </span>
           </div>
 
-          <TimeChart data={data} reg={reg} year={year} from={from} onPick={pick} show={show} hide={hide} />
+          <TimeChart data={data} reg={reg} year={year} from={from} onPick={pick} show={show} hide={hide} periods={periods} />
           <p className="text-xs text-gl-muted">
             Top band: regimes as V-Dem names them; click one to open it below. Middle band: heads of government (the head of state where one person holds both offices). Chart:
             estimated size of the regime's support and opposition groups as a share of adults; click a year to show
@@ -399,18 +403,22 @@ function Card({ title, children }: { title: string; children: ReactNode }) {
 }
 
 /* ---------- timeline ---------- */
-function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
+function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide, periods }: {
   data: RegimeCountry; reg: Regime; year: number | null; from: number;
   onPick: (r: Regime, y?: number | null) => void; show: ShowFn; hide: () => void;
+  periods?: Period[] | null;
 }) {
   const [ref, W] = useWidth();
   const [hover, setHover] = useState<number | null>(null);
   const from = Math.max(fromPref, data.y0);
-  const to = data.y0 + data.rows.length - 1;
+  // Nepal fork: extend the axis so periods after V-Dem's last year (e.g. 2026) stay visible.
+  const to = Math.max(data.y0 + data.rows.length - 1, periodsLastYear(periods));
   const rows = data.rows.filter((r) => r.y >= from);
   const regs = data.regimes.filter((r) => r.y1 >= from);
   const m = { l: 140, r: 12 };
-  const regH = 32, hosH = 22, gap = 6, chartT = regH + hosH + gap * 2 + 6, chartH = 180, H = chartT + chartH + 26;
+  const regH = 32, hosH = 22, gap = 6, chartT = regH + hosH + gap * 2 + 6, chartH = 180;
+  const perOff = periods?.length ? 24 + gap : 0; // Nepal fork: room for the political-period band
+  const H = perOff + chartT + chartH + 26;
   const x = (y: number) => m.l + ((y - from) / (to + 1 - from)) * (W - m.l - m.r);
   const xInv = (px: number) => from + ((px - m.l) / (W - m.l - m.r)) * (to + 1 - from);
   const y = (v: number) => chartT + chartH - (v / 4) * (chartH - 8);
@@ -452,6 +460,10 @@ function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
     <div ref={ref} className="w-full">
       <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} className="block" role="img"
         aria-label={`${data.name}: regimes, heads of government, and the size of regime support and opposition groups`}>
+        {periods?.length ? (
+          <PeriodStrip periods={periods} x={x} from={from} to={to} top={0} h={24} labelRight={m.l - 8} show={show} hide={hide} />
+        ) : null}
+        <g transform={`translate(0,${perOff})`}>
         <g fontSize={12} fill={GL.text}>
           <text x={m.l - 8} y={regH / 2 + 4} textAnchor="end" fontWeight={600}>Regime</text>
           <text x={m.l - 8} y={regH + gap + hosH / 2 + 4} textAnchor="end" fontWeight={600}>Head of government</text>
@@ -503,6 +515,7 @@ function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
         <path d={area("oppl", "opph")} fill={OPP} fillOpacity={0.12} />
         <path d={line("sup")} fill="none" stroke={SUP} strokeWidth={2} />
         <path d={line("opp")} fill="none" stroke={OPP} strokeWidth={2} />
+        {periods?.length ? <PeriodBounds periods={periods} x={x} from={from} to={to} y1={-perOff} y2={chartT + chartH} /> : null}
         {hover != null && <line x1={x(hover + 0.5)} x2={x(hover + 0.5)} y1={chartT} y2={chartT + chartH} stroke={GL.muted} />}
         {year != null && year >= from && <line x1={x(year + 0.5)} x2={x(year + 0.5)} y1={chartT} y2={chartT + chartH} stroke={GL.text} strokeWidth={2} />}
         <rect x={m.l} width={W - m.l - m.r} y={chartT} height={chartH} fill="transparent" className="cursor-pointer"
@@ -535,6 +548,7 @@ function TimeChart({ data, reg, year, from: fromPref, onPick, show, hide }: {
             if (r && rg) onPick(rg, r.y);
           }}
         />
+        </g>
       </svg>
     </div>
   );

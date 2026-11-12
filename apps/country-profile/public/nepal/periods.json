@@ -1,0 +1,84 @@
+{
+  "NPL": {
+    "credit": "Periodisation and notes: Growth Lab Nepal team (draft for review).",
+    "periods": [
+      {
+        "id": "insurgency",
+        "label": "Maoist insurgency",
+        "start": "1996-02-13",
+        "end": "2006-11-21",
+        "startLabel": "13 Feb 1996",
+        "endLabel": "21 Nov 2006",
+        "color": "purple",
+        "summary": "The CPN (Maoist), today's CPN (Maoist Centre), launched a \"People's War\" in rural areas to abolish the monarchy and establish a people's republic. Framed as a war against the feudal order and for the rights of historically excluded groups, the decade-long conflict planted the seeds of modern, republican Nepal.",
+        "dynamics": "A three-way contest between the palace and army, the parliamentary parties, and the Maoists, who came to control much of the countryside."
+      },
+      {
+        "id": "peace",
+        "label": "Peace process and Constituent Assemblies",
+        "start": "2006-11-21",
+        "end": "2015-09-20",
+        "startLabel": "21 Nov 2006",
+        "endLabel": "20 Sep 2015",
+        "color": "blue",
+        "summary": "The Comprehensive Peace Accord between the Government of Nepal and Maoist leader Prachanda ended the civil war and brought the Maoists into mainstream politics. The first Constituent Assembly (2008), in which the Maoists were the largest party, abolished the monarchy; a second Assembly (2013) completed the constitution.",
+        "dynamics": "Power shifted from the palace to the parties; the Maoists, Nepali Congress and CPN-UML bargained over the new state while governments changed frequently."
+      },
+      {
+        "id": "constitution",
+        "label": "New constitution and federalisation",
+        "start": "2015-09-20",
+        "end": "2017-05-14",
+        "startLabel": "20 Sep 2015",
+        "endLabel": "May 2017",
+        "color": "orange",
+        "summary": "President Dr. Ram Baran Yadav promulgated the Constitution of Nepal (2015), replacing the Interim Constitution of 2007 and making Nepal a federal democratic republic with seven provinces. This marks the start of the era of federalisation.",
+        "dynamics": "The three large parties fast-tracked the constitution after the April 2015 earthquake; Madhesh-based parties contested the federal boundaries, and the 2015–16 border blockade followed."
+      },
+      {
+        "id": "federal",
+        "label": "First federal governments",
+        "start": "2017-05-14",
+        "end": "2025-09-08",
+        "startLabel": "May 2017",
+        "endLabel": "8 Sep 2025",
+        "color": "green",
+        "summary": "The first local, provincial and federal elections under the 2015 constitution were held in 2017, and the communist alliance (CPN-UML and Maoist Centre) won. Executive power was devolved to provincial and local governments under the idea of \"Ghar Ghar ma Singha Durbar\": bringing the seat of government to every doorstep.",
+        "dynamics": "Despite a near two-thirds majority for the left alliance in 2018, power kept rotating among K.P. Sharma Oli, Sher Bahadur Deuba and Pushpa Kamal Dahal through shifting coalitions."
+      },
+      {
+        "id": "genz",
+        "label": "Gen Z protests and interim government",
+        "start": "2025-09-08",
+        "end": "2026-05-01",
+        "startLabel": "8 Sep 2025",
+        "endLabel": "May 2026",
+        "color": "highlight",
+        "summary": "Youth-led protests against corruption and a social-media ban turned deadly; Prime Minister K.P. Sharma Oli resigned, government buildings were set on fire, and dozens were killed in clashes with security forces. Former Chief Justice Sushila Karki was sworn in as interim Prime Minister, pledging to address the protesters' demands and to serve at most six months, with elections set for March 2026.",
+        "dynamics": "Street mobilisation by a new generation, rather than party bargaining, forced a change of government for the first time since 2006."
+      },
+      {
+        "id": "rsp",
+        "label": "RSP-led government",
+        "start": "2026-05-01",
+        "end": null,
+        "startLabel": "May 2026",
+        "endLabel": "present",
+        "color": "yellow",
+        "summary": "After the 2026 elections the Rastriya Swatantra Party (RSP) came to power, displacing the three parties that had dominated government since 2008. This marks a new era in Nepal's politics.",
+        "dynamics": "The first government since 2008 led by none of the Nepali Congress, CPN-UML or Maoist Centre."
+      }
+    ],
+    "regimeNotes": {
+      "5810": "Hereditary Rana prime ministers ruled while the Shah kings were figureheads; one family monopolised office and state revenue and kept Nepal isolated. The 1950–51 revolution, in which the Nepali Congress and King Tribhuvan joined forces with Indian mediation, ended Rana rule.",
+      "5811": "A fragile transition in which the king arbitrated between the Nepali Congress, Rana remnants and smaller parties through short-lived appointed governments, while elections were repeatedly postponed. The palace emerged as the pivot of power.",
+      "5812": "Nepal's first general election gave the Nepali Congress a two-thirds majority and B.P. Koirala became the first elected prime minister. The constitution reserved emergency powers to the king, which King Mahendra used to dismiss the government and jail its leaders.",
+      "5813": "After the royal coup the king ruled directly, banned political parties and imprisoned Congress leaders, relying on the army and bureaucracy while designing a party-less system.",
+      "5814": "The 1962 constitution created the party-less Panchayat system of tiered councils under the king's control, with loyal elites, the army and the bureaucracy as its base. It survived a 1980 referendum but fell to the 1990 People's Movement led by the Nepali Congress and a united left front.",
+      "5816": "Multiparty parliamentary democracy under a constitutional monarch, with the Nepali Congress and CPN-UML alternating in short-lived governments. Unstable coalitions, patronage and the exclusion of marginalised groups fed the Maoist insurgency from 1996; the 2001 royal massacre brought King Gyanendra to the throne.",
+      "5817": "King Gyanendra dismissed the elected government in 2002 and took direct power in 2005, relying on the army against the Maoists. This drove the parliamentary parties and the Maoists into the 2005 12-point understanding and the 2006 People's Movement.",
+      "5818": "Mass protests in April 2006 forced the king to reinstate parliament, which stripped him of most powers. The Seven Party Alliance and the Maoists signed the Comprehensive Peace Accord, adopted the 2007 Interim Constitution and prepared Constituent Assembly elections.",
+      "5819": "The first Constituent Assembly abolished the monarchy on 28 May 2008. V-Dem treats everything since as one regime, but power has rotated among the Nepali Congress, CPN-UML and Maoist Centre through shifting coalitions, with no prime minister completing a full term; the political periods below split this era into its main phases."
+    }
+  }
+}
