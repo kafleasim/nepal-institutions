@@ -1,11 +1,20 @@
 # nepal-institutions
 
-Private working copy of `taimur38/institutional-complexity` (Taimur, Growth Lab), owned by Asim (kafleasim).
+Working copy of `taimur38/institutional-complexity` (Taimur, Growth Lab), owned by Asim (kafleasim).
 Purpose: adapt the country-profile site (live original: https://institutions.taimur.sh/country/NPL) for the
 Nepal engagement — first task: **characterize Nepal's governments after 2008** (details to come from Asim).
 
 ## Remotes
-- `origin` → https://github.com/kafleasim/nepal-institutions (private). Push here.
+- `origin` → https://github.com/kafleasim/nepal-institutions. Push here.
+  **Currently PUBLIC** (since 2026-11-12, so GitHub Pages works on the free plan). Asim applied for GitHub Pro
+  (Student Pack, ~3 days); plan is to switch back to private once Pro is active. Until then, never commit
+  confidential Growth Lab material (internal data, drafts, client notes) — anything pushed is publicly visible.
+
+## Live site (GitHub Pages)
+- https://kafleasim.github.io/nepal-institutions/country/NPL — rebuilt by `.github/workflows/pages.yml` on every
+  push to `master` that touches `apps/country-profile/` (~1 min). Check with `gh run list -R kafleasim/nepal-institutions`.
+- Sub-path hosting is handled by `VITE_BASE` (vite.config.ts), `src/basePath.ts` (prefixes root-relative fetches),
+  and the router `basename` in `src/App.tsx`. New code can keep using root-relative URLs like `/vdem/NPL.json`.
 - `upstream` → taimur38/institutional-complexity (fetch only; push is DISABLED). To pull Taimur's updates:
   `git fetch upstream && git merge upstream/master` — review conflicts with Asim before merging.
 
