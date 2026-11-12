@@ -31,6 +31,8 @@ jobs:
           cache: npm
           cache-dependency-path: apps/country-profile/package-lock.json
       - run: npm ci
+      # Data folders upstream keeps out of git (regimes, vdem-codebook, research). Committed files win.
+      - run: node scripts/fetch-upstream-data.mjs
       - run: npm run build
         env:
           VITE_BASE: /${{ github.event.repository.name }}/
