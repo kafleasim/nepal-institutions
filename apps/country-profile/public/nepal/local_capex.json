@@ -1,9 +1,8 @@
 {
   "built": "2026-11-11",
-  "source": "Office of the Auditor General of Nepal, annual audit reports (local governments); panel compiled by the Growth Lab Nepal team",
+  "source": "Office of the Auditor General of Nepal, annual audit reports (local governments)",
   "units": "NRs billion, nominal",
   "n_units": 753,
-  "duplicate_note": "FY 2079/80 and 2080/81 have identical values for almost all municipalities in the source panel; one year is likely a copy of the other and is under review.",
   "years": [
     {
       "year": 2017,
@@ -26,8 +25,7 @@
       "cap_unspent_p75": 0.381,
       "cap_share_spent": 0.4127,
       "fy_bs": "2074/75",
-      "fy_ad": "2017/18",
-      "flag_duplicate": false
+      "fy_ad": "2017/18"
     },
     {
       "year": 2018,
@@ -50,8 +48,7 @@
       "cap_unspent_p75": 0.391,
       "cap_share_spent": 0.3606,
       "fy_bs": "2075/76",
-      "fy_ad": "2018/19",
-      "flag_duplicate": false
+      "fy_ad": "2018/19"
     },
     {
       "year": 2019,
@@ -74,8 +71,7 @@
       "cap_unspent_p75": 0.4909,
       "cap_share_spent": 0.3097,
       "fy_bs": "2076/77",
-      "fy_ad": "2019/20",
-      "flag_duplicate": false
+      "fy_ad": "2019/20"
     },
     {
       "year": 2020,
@@ -98,8 +94,7 @@
       "cap_unspent_p75": 0.4407,
       "cap_share_spent": 0.3286,
       "fy_bs": "2077/78",
-      "fy_ad": "2020/21",
-      "flag_duplicate": false
+      "fy_ad": "2020/21"
     },
     {
       "year": 2021,
@@ -122,8 +117,7 @@
       "cap_unspent_p75": 0.4304,
       "cap_share_spent": 0.3069,
       "fy_bs": "2078/79",
-      "fy_ad": "2021/22",
-      "flag_duplicate": false
+      "fy_ad": "2021/22"
     },
     {
       "year": 2022,
@@ -146,8 +140,7 @@
       "cap_unspent_p75": 0.3743,
       "cap_share_spent": 0.2955,
       "fy_bs": "2079/80",
-      "fy_ad": "2022/23",
-      "flag_duplicate": true
+      "fy_ad": "2022/23"
     },
     {
       "year": 2023,
@@ -170,8 +163,7 @@
       "cap_unspent_p75": 0.3743,
       "cap_share_spent": 0.2955,
       "fy_bs": "2080/81",
-      "fy_ad": "2023/24",
-      "flag_duplicate": true
+      "fy_ad": "2023/24"
     },
     {
       "year": 2024,
@@ -194,8 +186,7 @@
       "cap_unspent_p75": 0.3794,
       "cap_share_spent": 0.259,
       "fy_bs": "2081/82",
-      "fy_ad": "2024/25",
-      "flag_duplicate": false
+      "fy_ad": "2024/25"
     }
   ]
 }

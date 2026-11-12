@@ -17,10 +17,7 @@ export function AppShell() {
             <NavLink to="/country" className={navLinkClass}>
               Country profile
             </NavLink>
-            <NavLink to="/country-space" className={navLinkClass}>
-              Country space
-            </NavLink>
-            {/* Nepal fork */}
+            {/* Nepal fork: Country space removed from the nav; Capital expenditure added */}
             <NavLink to="/capital-expenditure" className={navLinkClass}>
               Capital expenditure
             </NavLink>

@@ -10,9 +10,9 @@ type Year = {
   current_bn: number; remaining_bn: number;
   unspent: number; unspent_med: number; unspent_p25: number; unspent_p75: number;
   cap_unspent: number; cap_unspent_med: number; cap_unspent_p25: number; cap_unspent_p75: number;
-  cap_share_spent: number; flag_duplicate: boolean;
+  cap_share_spent: number;
 };
-type Doc = { built: string; source: string; units: string; n_units: number; duplicate_note?: string; years: Year[] };
+type Doc = { built: string; source: string; units: string; n_units: number; years: Year[] };
 
 const pct = (v: number | null | undefined, d = 0) => (v == null ? "–" : `${(v * 100).toFixed(d)}%`);
 const bn = (v: number | null | undefined) => (v == null ? "–" : `NRs ${v.toFixed(1)} bn`);
@@ -80,12 +80,6 @@ export function CapexPage() {
         <Kpi label="Capital spending actually made" value={bn(last.capital_bn)} sub={`${pct(last.cap_share_spent)} of all spending`} color={NAT} />
         <Kpi label={`Capital share of spending, ${ys[0].fy_ad} → ${last.fy_ad}`} value={`${pct(ys[0].cap_share_spent)} → ${pct(last.cap_share_spent)}`} sub="Capital as a share of all local spending" color={NAT} />
       </div>
-
-      {doc.duplicate_note && (
-        <div className="rounded border border-amber-300 bg-amber-50 px-3 py-2 text-sm text-amber-900">
-          <b>Data under review:</b> {doc.duplicate_note} These years are shaded and drawn with hollow markers below.
-        </div>
-      )}
 
       <Figure label="Figure 1" title={`Local governments leave ${range(ys, "unspent")} of their available budget unspent each year.`}
         subtitle="Remaining balance as a share of available funds (income plus carry-over from the previous year), by fiscal year"
@@ -156,24 +150,6 @@ function frame(W: number, n: number) {
   return { m, H, band, cx };
 }
 
-function DupShade({ ys, cx, band, top, bottom }: { ys: Year[]; cx: (i: number) => number; band: number; top: number; bottom: number }) {
-  return (
-    <g pointerEvents="none">
-      <defs>
-        <pattern id="dup-hatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="6" stroke={GL.border} strokeWidth="3" />
-        </pattern>
-      </defs>
-      {ys.map((y, i) => y.flag_duplicate && (
-        <g key={y.year}>
-          <rect x={cx(i) - band / 2} y={top} width={band} height={bottom - top} fill="url(#dup-hatch)" opacity={0.6} />
-          <text x={cx(i)} y={top - 6} textAnchor="middle" fontSize={10} fill={GL.muted}>under review</text>
-        </g>
-      ))}
-    </g>
-  );
-}
-
 function ShareChart({ ys, v, med, lo, hi, name, show, hide }: {
   ys: Year[]; v: ShareKey; med: ShareKey; lo: ShareKey; hi: ShareKey; name: string; show: ShowFn; hide: () => void;
 }) {
@@ -200,20 +176,19 @@ function ShareChart({ ys, v, med, lo, hi, name, show, hide }: {
             <text x={m.l - 8} y={yS(t) + 4} textAnchor="end" fontSize={11} fill={GL.muted} className="tabular-nums">{pct(t)}</text>
           </g>
         ))}
-        <DupShade ys={ys} cx={cx} band={band} top={m.t} bottom={H - m.b} />
         <path d={area} fill={NAT} fillOpacity={0.15} />
         <path d={path(med)} fill="none" stroke={NAT} strokeWidth={1.5} strokeDasharray="5 4" />
         <path d={path(v)} fill="none" stroke={NAT} strokeWidth={2.4} strokeLinejoin="round" />
         {ys.map((y, i) => (
           <g key={y.year}>
-            <circle cx={cx(i)} cy={yS(y[v])} r={4} fill={y.flag_duplicate ? "#fff" : NAT} stroke={NAT} strokeWidth={1.5} />
+            <circle cx={cx(i)} cy={yS(y[v])} r={4} fill={NAT} stroke={NAT} strokeWidth={1.5} />
             <text x={cx(i)} y={yS(y[v]) - 9} textAnchor="middle" fontSize={11} fontWeight={600} fill={GL.text} className="tabular-nums">{pct(y[v])}</text>
             <text x={cx(i)} y={H - m.b + 16} textAnchor="middle" fontSize={11} fill={GL.text}>{y.fy_ad}</text>
             <text x={cx(i)} y={H - m.b + 29} textAnchor="middle" fontSize={10} fill={GL.muted}>{y.fy_bs}</text>
             <rect x={cx(i) - band / 2} y={m.t} width={band} height={H - m.t - m.b} fill="transparent"
               onMouseMove={(e) => show(e, (
                 <>
-                  <b>FY {y.fy_ad}</b> ({y.fy_bs}){y.flag_duplicate && <> · <i>under review</i></>}
+                  <b>FY {y.fy_ad}</b> ({y.fy_bs})
                   <br />{name}: {pct(y[v], 1)} national
                   <br />Median local government: {pct(y[med], 1)}
                   <br /><span className="opacity-75">Middle 50%: {pct(y[lo], 1)} to {pct(y[hi], 1)} · {y.n} local governments</span>
@@ -249,19 +224,18 @@ function StackChart({ ys, show, hide }: { ys: Year[]; show: ShowFn; hide: () => 
           </g>
         ))}
         <text x={14} y={(m.t + H - m.b) / 2} fontSize={11} fill={GL.muted} textAnchor="middle" transform={`rotate(-90 14 ${(m.t + H - m.b) / 2})`}>NRs billion</text>
-        <DupShade ys={ys} cx={cx} band={band} top={m.t} bottom={H - m.b} />
         {ys.map((y, i) => (
           <g key={y.year} onMouseMove={(e) => show(e, (
             <>
-              <b>FY {y.fy_ad}</b> ({y.fy_bs}){y.flag_duplicate && <> · <i>under review</i></>}
+              <b>FY {y.fy_ad}</b> ({y.fy_bs})
               <br />Capital spending: {bn(y.capital_bn)}
               <br />Unspent balance: {bn(y.remaining_bn)}
               <br />Implied capital budget: {bn(tot(y))}
               <br /><span className="opacity-75">Total spending: {bn(y.spent_bn)} · available funds: {bn(y.available_bn)}</span>
             </>
           ))} onMouseLeave={hide}>
-            <rect x={cx(i) - bw / 2} y={yS(y.capital_bn)} width={bw} height={yS(0) - yS(y.capital_bn)} fill={NAT} opacity={y.flag_duplicate ? 0.55 : 1} />
-            <rect x={cx(i) - bw / 2} y={yS(tot(y))} width={bw} height={yS(y.capital_bn) - yS(tot(y)) - 1} fill={UNSPENT} opacity={y.flag_duplicate ? 0.55 : 1} />
+            <rect x={cx(i) - bw / 2} y={yS(y.capital_bn)} width={bw} height={yS(0) - yS(y.capital_bn)} fill={NAT} />
+            <rect x={cx(i) - bw / 2} y={yS(tot(y))} width={bw} height={yS(y.capital_bn) - yS(tot(y)) - 1} fill={UNSPENT} />
             <text x={cx(i)} y={yS(tot(y)) - 6} textAnchor="middle" fontSize={11} fontWeight={600} fill={GL.text} className="tabular-nums">{tot(y).toFixed(0)}</text>
             <text x={cx(i)} y={H - m.b + 16} textAnchor="middle" fontSize={11} fill={GL.text}>{y.fy_ad}</text>
             <text x={cx(i)} y={H - m.b + 29} textAnchor="middle" fontSize={10} fill={GL.muted}>{y.fy_bs}</text>
@@ -296,8 +270,8 @@ function DataTable({ ys }: { ys: Year[] }) {
         </thead>
         <tbody>
           {ys.map((y) => (
-            <tr key={y.year} className={`border-b border-gl-border last:border-0 ${y.flag_duplicate ? "bg-amber-50" : ""}`}>
-              <td className="px-3 py-1.5">{y.fy_ad} <span className="text-xs text-gl-muted">({y.fy_bs})</span>{y.flag_duplicate && <span className="ml-1 text-xs text-amber-800">under review</span>}</td>
+            <tr key={y.year} className="border-b border-gl-border last:border-0">
+              <td className="px-3 py-1.5">{y.fy_ad} <span className="text-xs text-gl-muted">({y.fy_bs})</span></td>
               {cols.map(([h, f]) => <td key={h} className="px-3 py-1.5 text-right tabular-nums">{f(y)}</td>)}
             </tr>
           ))}

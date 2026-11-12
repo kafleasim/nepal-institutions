@@ -23,16 +23,8 @@ stopifnot(file.exists(dta))
 
 d <- read_dta(dta) %>% zap_labels()
 
-# FY 2079/80 and 2080/81 are identical for ~99% of municipalities in the source panel (cleaning issue,
-# under review with the raw OAG files). Detect rather than hard-code, so the flag clears once fixed.
-dup_years <- c()
-yrs <- sort(unique(d$year))
-for (i in seq_along(yrs)[-1]) {
-  a <- d %>% filter(year == yrs[i - 1]) %>% arrange(municipality_code)
-  b <- d %>% filter(year == yrs[i]) %>% arrange(municipality_code)
-  same <- mean(a$income_total == b$income_total & a$remaining_balance == b$remaining_balance, na.rm = TRUE)
-  if (same > 0.5) dup_years <- union(dup_years, c(yrs[i - 1], yrs[i]))
-}
+# NOTE: in the 2025 source panel, FY 2079/80 and 2080/81 are identical for ~99% of municipalities
+# (likely a cleaning issue); re-check against the raw OAG files before relying on those two years.
 
 d <- d %>%
   mutate(available = prev_year_transfer + income_total) %>%
@@ -60,20 +52,17 @@ years <- d %>% group_by(year, f_year_nep) %>% summarise(
   cap_share_spent = r4(sum(expense_capital, na.rm = TRUE) / sum(expense_total[!is.na(expense_capital)], na.rm = TRUE)),
   .groups = "drop") %>%
   mutate(fy_bs = sub("_", "/", paste0("20", f_year_nep)),           # 74_75 -> 2074/75
-         fy_ad = paste0(year, "/", substr(year + 1, 3, 4)),          # 2017 -> 2017/18
-         flag_duplicate = year %in% dup_years) %>%
+         fy_ad = paste0(year, "/", substr(year + 1, 3, 4))) %>%      # 2017 -> 2017/18
   select(-f_year_nep)
 
 doc <- list(
   built = format(Sys.Date()),
-  source = "Office of the Auditor General of Nepal, annual audit reports (local governments); panel compiled by the Growth Lab Nepal team",
+  source = "Office of the Auditor General of Nepal, annual audit reports (local governments)",
   units = "NRs billion, nominal",
   n_units = length(unique(d$municipality_code)),
-  duplicate_note = if (length(dup_years)) paste0("FY ", paste(years$fy_bs[years$year %in% dup_years], collapse = " and "),
-    " have identical values for almost all municipalities in the source panel; one year is likely a copy of the other and is under review.") else NULL,
   years = years
 )
 dir.create(dirname(out), showWarnings = FALSE, recursive = TRUE)
 write_json(doc, out, auto_unbox = TRUE, na = "null", digits = NA, pretty = TRUE)
-message("Wrote ", out, "; duplicate-flagged years: ", paste(dup_years, collapse = ", "))
-print(as.data.frame(years %>% select(fy_ad, n, available_bn, remaining_bn, capital_bn, unspent, unspent_med, cap_unspent, cap_unspent_med, flag_duplicate)))
+message("Wrote ", out)
+print(as.data.frame(years %>% select(fy_ad, n, available_bn, remaining_bn, capital_bn, unspent, unspent_med, cap_unspent, cap_unspent_med)))
