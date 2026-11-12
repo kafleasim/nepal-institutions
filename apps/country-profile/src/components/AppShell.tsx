@@ -20,6 +20,10 @@ export function AppShell() {
             <NavLink to="/country-space" className={navLinkClass}>
               Country space
             </NavLink>
+            {/* Nepal fork */}
+            <NavLink to="/capital-expenditure" className={navLinkClass}>
+              Capital expenditure
+            </NavLink>
           </nav>
         </div>
       </header>
