@@ -42,3 +42,8 @@ npm run dev     # http://localhost:5173/country/NPL
   upstream code so future upstream merges stay easy (prefer new files/components over editing shared ones).
 - Nepal periods: 2008 Constituent Assembly / end of monarchy, 2015 constitution, 2017 elections (federal,
   7 provinces), 2022 elections; frequent coalition changes — PM-level periodization will matter.
+
+## Capital expenditure page (`/capex`, `src/capex/`)
+- Local governments: `public/nepal/local_capex.json` from `apps/country-profile/scripts/export_local_capex.R` (OAG audits).
+- Federal: `public/nepal/federal_capex.json` from `2_do/06_redbook_execution.py` in the Growth Lab Workstreams repo
+  (`Nepal's political Economy/1_data/5_output/web/`); copy it here after rerunning. Public MoF Red Book data only.

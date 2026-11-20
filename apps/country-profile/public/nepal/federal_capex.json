@@ -1,0 +1,580 @@
+{
+ "built": "2026-11-20",
+ "source": "Ministry of Finance, Nepal, Red Books (Annual Estimates), FY 2069/70-2083/84",
+ "units": "NRs billion, nominal",
+ "years": [
+  {
+   "fy_bs": "2067/68",
+   "fy_ad": "2010/11",
+   "period": "Peace process and Constituent Assemblies",
+   "budget": null,
+   "revised": null,
+   "actual": 47.3277,
+   "exec_budget": null,
+   "exec_revised": null,
+   "planning_gap": null,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  },
+  {
+   "fy_bs": "2068/69",
+   "fy_ad": "2011/12",
+   "period": "Peace process and Constituent Assemblies",
+   "budget": null,
+   "revised": 51.3907,
+   "actual": 51.3907,
+   "exec_budget": null,
+   "exec_revised": 1.0,
+   "planning_gap": null,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  },
+  {
+   "fy_bs": "2069/70",
+   "fy_ad": "2012/13",
+   "period": "Peace process and Constituent Assemblies",
+   "budget": 66.1346,
+   "revised": 53.5697,
+   "actual": 54.5984,
+   "exec_budget": 0.8256,
+   "exec_revised": 1.0192,
+   "planning_gap": 0.19,
+   "impl_gap": -0.0156,
+   "gon_exec": 0.8819,
+   "foreign_exec": 0.6762
+  },
+  {
+   "fy_bs": "2070/71",
+   "fy_ad": "2013/14",
+   "period": "Peace process and Constituent Assemblies",
+   "budget": 85.0997,
+   "revised": 63.8703,
+   "actual": 66.6947,
+   "exec_budget": 0.7837,
+   "exec_revised": 1.0442,
+   "planning_gap": 0.2495,
+   "impl_gap": -0.0332,
+   "gon_exec": 0.8737,
+   "foreign_exec": 0.611
+  },
+  {
+   "fy_bs": "2071/72",
+   "fy_ad": "2014/15",
+   "period": "Peace process and Constituent Assemblies",
+   "budget": 116.755,
+   "revised": 86.5813,
+   "actual": 88.7547,
+   "exec_budget": 0.7602,
+   "exec_revised": 1.0251,
+   "planning_gap": 0.2584,
+   "impl_gap": -0.0186,
+   "gon_exec": 0.9583,
+   "foreign_exec": 0.4429
+  },
+  {
+   "fy_bs": "2072/73",
+   "fy_ad": "2015/16",
+   "period": "New constitution",
+   "budget": 208.8772,
+   "revised": 159.0892,
+   "actual": 122.3504,
+   "exec_budget": 0.5858,
+   "exec_revised": 0.7691,
+   "planning_gap": 0.2384,
+   "impl_gap": 0.1759,
+   "gon_exec": 0.7801,
+   "foreign_exec": 0.2695
+  },
+  {
+   "fy_bs": "2073/74",
+   "fy_ad": "2016/17",
+   "period": "New constitution",
+   "budget": 311.9463,
+   "revised": 262.0349,
+   "actual": null,
+   "exec_budget": null,
+   "exec_revised": null,
+   "planning_gap": 0.16,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  },
+  {
+   "fy_bs": "2074/75",
+   "fy_ad": "2017/18",
+   "period": "First federal governments",
+   "budget": 335.176,
+   "revised": null,
+   "actual": null,
+   "exec_budget": null,
+   "exec_revised": null,
+   "planning_gap": null,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  },
+  {
+   "fy_bs": "2076/77",
+   "fy_ad": "2019/20",
+   "period": "First federal governments",
+   "budget": null,
+   "revised": null,
+   "actual": 189.1401,
+   "exec_budget": null,
+   "exec_revised": null,
+   "planning_gap": null,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  },
+  {
+   "fy_bs": "2077/78",
+   "fy_ad": "2020/21",
+   "period": "First federal governments",
+   "budget": null,
+   "revised": 228.8954,
+   "actual": 228.8361,
+   "exec_budget": null,
+   "exec_revised": 0.9997,
+   "planning_gap": null,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  },
+  {
+   "fy_bs": "2078/79",
+   "fy_ad": "2021/22",
+   "period": "First federal governments",
+   "budget": 378.0977,
+   "revised": 300.093,
+   "actual": 216.213,
+   "exec_budget": 0.5718,
+   "exec_revised": 0.7205,
+   "planning_gap": 0.2063,
+   "impl_gap": 0.2218,
+   "gon_exec": 0.6787,
+   "foreign_exec": 0.4343
+  },
+  {
+   "fy_bs": "2079/80",
+   "fy_ad": "2022/23",
+   "period": "First federal governments",
+   "budget": 380.3845,
+   "revised": 258.3453,
+   "actual": 234.6248,
+   "exec_budget": 0.6168,
+   "exec_revised": 0.9082,
+   "planning_gap": 0.3208,
+   "impl_gap": 0.0624,
+   "gon_exec": 0.6907,
+   "foreign_exec": 0.4743
+  },
+  {
+   "fy_bs": "2080/81",
+   "fy_ad": "2023/24",
+   "period": "First federal governments",
+   "budget": 302.0744,
+   "revised": 215.3066,
+   "actual": 192.0303,
+   "exec_budget": 0.6357,
+   "exec_revised": 0.8919,
+   "planning_gap": 0.2872,
+   "impl_gap": 0.0771,
+   "gon_exec": 0.6906,
+   "foreign_exec": 0.5071
+  },
+  {
+   "fy_bs": "2081/82",
+   "fy_ad": "2024/25",
+   "period": "First federal governments",
+   "budget": 352.354,
+   "revised": 293.9036,
+   "actual": 223.9778,
+   "exec_budget": 0.6357,
+   "exec_revised": 0.7621,
+   "planning_gap": 0.1659,
+   "impl_gap": 0.1985,
+   "gon_exec": 0.6379,
+   "foreign_exec": 0.6302
+  },
+  {
+   "fy_bs": "2082/83",
+   "fy_ad": "2025/26",
+   "period": "Gen Z protests, interim",
+   "budget": 407.888,
+   "revised": 251.399,
+   "actual": null,
+   "exec_budget": null,
+   "exec_revised": null,
+   "planning_gap": 0.3837,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  },
+  {
+   "fy_bs": "2083/84",
+   "fy_ad": "2026/27",
+   "period": "RSP-led",
+   "budget": 431.1063,
+   "revised": null,
+   "actual": null,
+   "exec_budget": null,
+   "exec_revised": null,
+   "planning_gap": null,
+   "impl_gap": null,
+   "gon_exec": null,
+   "foreign_exec": null
+  }
+ ],
+ "periods": [
+  {
+   "period": "Peace process and Constituent Assemblies",
+   "years": "2012/13, 2013/14, 2014/15",
+   "budget": 267.9894,
+   "actual": 210.0479,
+   "exec_budget": 0.7838,
+   "planning_gap": 0.2387,
+   "impl_gap": -0.0225
+  },
+  {
+   "period": "New constitution",
+   "years": "2015/16",
+   "budget": 208.8772,
+   "actual": 122.3504,
+   "exec_budget": 0.5858,
+   "planning_gap": 0.2384,
+   "impl_gap": 0.1759
+  },
+  {
+   "period": "First federal governments",
+   "years": "2021/22, 2022/23, 2023/24, 2024/25",
+   "budget": 1412.9106,
+   "actual": 866.8459,
+   "exec_budget": 0.6135,
+   "planning_gap": 0.2444,
+   "impl_gap": 0.1421
+  }
+ ],
+ "sectors": [
+  {
+   "sector": "Infrastructure and transport",
+   "budget": 564.3444,
+   "revised": 433.3323,
+   "actual": 393.0436,
+   "exec_budget": 0.6965,
+   "exec_revised": 0.907,
+   "unspent_bn": 171.3008
+  },
+  {
+   "sector": "Urban development",
+   "budget": 169.2489,
+   "revised": 147.6746,
+   "actual": 117.9485,
+   "exec_budget": 0.6969,
+   "exec_revised": 0.7987,
+   "unspent_bn": 51.3004
+  },
+  {
+   "sector": "Finance and planning",
+   "budget": 45.1809,
+   "revised": 24.031,
+   "actual": 8.2844,
+   "exec_budget": 0.1834,
+   "exec_revised": 0.3447,
+   "unspent_bn": 36.8965
+  },
+  {
+   "sector": "Energy water and irrigation",
+   "budget": 135.5316,
+   "revised": 109.3806,
+   "actual": 109.8072,
+   "exec_budget": 0.8102,
+   "exec_revised": 1.0039,
+   "unspent_bn": 25.7244
+  },
+  {
+   "sector": "Water supply and sanitation",
+   "budget": 69.6135,
+   "revised": 56.5068,
+   "actual": 49.2516,
+   "exec_budget": 0.7075,
+   "exec_revised": 0.8716,
+   "unspent_bn": 20.3619
+  },
+  {
+   "sector": "Federal affairs and administration",
+   "budget": 27.8923,
+   "revised": 11.299,
+   "actual": 8.211,
+   "exec_budget": 0.2944,
+   "exec_revised": 0.7267,
+   "unspent_bn": 19.6813
+  },
+  {
+   "sector": "Reconstruction and peace",
+   "budget": 31.4141,
+   "revised": 20.5674,
+   "actual": 13.966,
+   "exec_budget": 0.4446,
+   "exec_revised": 0.679,
+   "unspent_bn": 17.4481
+  },
+  {
+   "sector": "Industry and commerce",
+   "budget": 16.4214,
+   "revised": 12.2697,
+   "actual": 4.3571,
+   "exec_budget": 0.2653,
+   "exec_revised": 0.3551,
+   "unspent_bn": 12.0643
+  },
+  {
+   "sector": "Education",
+   "budget": 20.0361,
+   "revised": 13.6532,
+   "actual": 8.069,
+   "exec_budget": 0.4027,
+   "exec_revised": 0.591,
+   "unspent_bn": 11.9671
+  },
+  {
+   "sector": "Agriculture",
+   "budget": 15.1375,
+   "revised": 11.6251,
+   "actual": 8.6967,
+   "exec_budget": 0.5745,
+   "exec_revised": 0.7481,
+   "unspent_bn": 6.4408
+  },
+  {
+   "sector": "Communication and IT",
+   "budget": 9.1554,
+   "revised": 7.2243,
+   "actual": 4.0859,
+   "exec_budget": 0.4463,
+   "exec_revised": 0.5656,
+   "unspent_bn": 5.0695
+  },
+  {
+   "sector": "Defence",
+   "budget": 26.8927,
+   "revised": 23.5827,
+   "actual": 21.8636,
+   "exec_budget": 0.813,
+   "exec_revised": 0.9271,
+   "unspent_bn": 5.0291
+  },
+  {
+   "sector": "Forests and environment",
+   "budget": 15.8861,
+   "revised": 11.7618,
+   "actual": 11.5805,
+   "exec_budget": 0.729,
+   "exec_revised": 0.9846,
+   "unspent_bn": 4.3056
+  },
+  {
+   "sector": "Home affairs and security",
+   "budget": 38.0366,
+   "revised": 32.1653,
+   "actual": 33.8349,
+   "exec_budget": 0.8895,
+   "exec_revised": 1.0519,
+   "unspent_bn": 4.2017
+  },
+  {
+   "sector": "Tourism culture and aviation",
+   "budget": 11.481,
+   "revised": 9.9244,
+   "actual": 7.6138,
+   "exec_budget": 0.6632,
+   "exec_revised": 0.7672,
+   "unspent_bn": 3.8672
+  },
+  {
+   "sector": "Health",
+   "budget": 51.5414,
+   "revised": 45.9566,
+   "actual": 48.4265,
+   "exec_budget": 0.9396,
+   "exec_revised": 1.0537,
+   "unspent_bn": 3.1149
+  },
+  {
+   "sector": "Youth and sports",
+   "budget": 3.4779,
+   "revised": 2.7383,
+   "actual": 1.1969,
+   "exec_budget": 0.3441,
+   "exec_revised": 0.4371,
+   "unspent_bn": 2.281
+  },
+  {
+   "sector": "Foreign affairs",
+   "budget": 3.334,
+   "revised": 2.9084,
+   "actual": 1.0966,
+   "exec_budget": 0.3289,
+   "exec_revised": 0.377,
+   "unspent_bn": 2.2374
+  },
+  {
+   "sector": "Land cooperatives and poverty",
+   "budget": 4.8047,
+   "revised": 3.6673,
+   "actual": 2.7847,
+   "exec_budget": 0.5796,
+   "exec_revised": 0.7593,
+   "unspent_bn": 2.02
+  },
+  {
+   "sector": "Executive and constitutional bodies",
+   "budget": 4.3709,
+   "revised": 4.0719,
+   "actual": 2.7794,
+   "exec_budget": 0.6359,
+   "exec_revised": 0.6826,
+   "unspent_bn": 1.5915
+  },
+  {
+   "sector": "Women children and social welfare",
+   "budget": 1.5055,
+   "revised": 1.1356,
+   "actual": 0.3775,
+   "exec_budget": 0.2507,
+   "exec_revised": 0.3324,
+   "unspent_bn": 1.128
+  },
+  {
+   "sector": "Law and justice",
+   "budget": 8.7958,
+   "revised": 7.6938,
+   "actual": 7.8397,
+   "exec_budget": 0.8913,
+   "exec_revised": 1.019,
+   "unspent_bn": 0.9561
+  },
+  {
+   "sector": "Labour and employment",
+   "budget": 0.6789,
+   "revised": 0.5126,
+   "actual": 0.2318,
+   "exec_budget": 0.3414,
+   "exec_revised": 0.4522,
+   "unspent_bn": 0.4471
+  }
+ ],
+ "mof_lump_sum_budget": 138.1,
+ "programmes": [
+  {
+   "programme_code": "30500108",
+   "programme_en": "Millennium Challenge Account Nepal",
+   "sector": "Finance and planning",
+   "budget": 38.5756,
+   "actual": 3.506,
+   "exec_budget": 0.0909,
+   "unspent_bn": 35.0696
+  },
+  {
+   "programme_code": "33700101",
+   "programme_en": "Kathmandu-Terai/Madhesh Fast Track",
+   "sector": "Infrastructure and transport",
+   "budget": 83.7531,
+   "actual": 54.916,
+   "exec_budget": 0.6557,
+   "unspent_bn": 28.8371
+  },
+  {
+   "programme_code": "33701167",
+   "programme_en": "Regional Trade Route Expansion Project",
+   "sector": "Infrastructure and transport",
+   "budget": 34.4628,
+   "actual": 12.7341,
+   "exec_budget": 0.3695,
+   "unspent_bn": 21.7287
+  },
+  {
+   "programme_code": "39200011",
+   "programme_en": "National Reconstruction Authority",
+   "sector": "Reconstruction and peace",
+   "budget": 31.4141,
+   "actual": 13.966,
+   "exec_budget": 0.4446,
+   "unspent_bn": 17.4481
+  },
+  {
+   "programme_code": "33701140",
+   "programme_en": "SASEC Road Improvement Project",
+   "sector": "Infrastructure and transport",
+   "budget": 26.652,
+   "actual": 10.9065,
+   "exec_budget": 0.4092,
+   "unspent_bn": 15.7455
+  },
+  {
+   "programme_code": "33701145",
+   "programme_en": "SASEC Highway Improvement Project",
+   "sector": "Infrastructure and transport",
+   "budget": 26.0385,
+   "actual": 11.1655,
+   "exec_budget": 0.4288,
+   "unspent_bn": 14.873
+  },
+  {
+   "programme_code": "33701111",
+   "programme_en": "Road Improvement Project",
+   "sector": "Infrastructure and transport",
+   "budget": 25.853,
+   "actual": 12.8952,
+   "exec_budget": 0.4988,
+   "unspent_bn": 12.9578
+  },
+  {
+   "programme_code": "33701139",
+   "programme_en": "Nagdhunga Tunnel Construction Project",
+   "sector": "Infrastructure and transport",
+   "budget": 24.9293,
+   "actual": 12.9596,
+   "exec_budget": 0.5199,
+   "unspent_bn": 11.9697
+  },
+  {
+   "programme_code": "35000011",
+   "programme_en": "Ministry of Education, Science and Technology",
+   "sector": "Education",
+   "budget": 19.2172,
+   "actual": 7.6911,
+   "exec_budget": 0.4002,
+   "unspent_bn": 11.5261
+  },
+  {
+   "programme_code": "34701011",
+   "programme_en": "Department of Urban Development and Building Construction",
+   "sector": "Urban development",
+   "budget": 18.7059,
+   "actual": 8.4353,
+   "exec_budget": 0.4509,
+   "unspent_bn": 10.2706
+  },
+  {
+   "programme_code": "33701171",
+   "programme_en": "Kakarbhitta-Inaruwa, Pathlaiya-Narayanghat section",
+   "sector": "Infrastructure and transport",
+   "budget": 20.1557,
+   "actual": 10.0386,
+   "exec_budget": 0.4981,
+   "unspent_bn": 10.1171
+  },
+  {
+   "programme_code": "33701178",
+   "programme_en": "South-East Asia Transport and Trade Connectivity Enhancement Programme",
+   "sector": "Infrastructure and transport",
+   "budget": 11.8202,
+   "actual": 3.0913,
+   "exec_budget": 0.2615,
+   "unspent_bn": 8.7289
+  }
+ ]
+}
