@@ -17,7 +17,7 @@ export type FedDoc = {
   built: string; source: string; units: string; years: FedYear[]; sectors: Sector[]; mof_lump_sum_budget: number; programmes: Prog[];
   periods: { period: string; years: string; budget: number; actual: number; exec_budget: number; planning_gap: number; impl_gap: number }[];
 };
-export type LocalPoint = { fy_ad: string; fy_bs: string; cap_spent_share: number };
+export type LocalPoint = { fy_ad: string; fy_bs: string; cap_spent_share: number; flow?: number | null };
 
 const pct = (v: number | null | undefined, d = 0) => (v == null ? "–" : `${(v * 100).toFixed(d)}%`);
 const bn = (v: number | null | undefined) => (v == null ? "–" : `NRs ${v.toFixed(0)} bn`);
@@ -25,7 +25,7 @@ const FED = GL.highlight, LOCAL = GL.blue, MUTE = "#AFB5BE", MUTE_DARK = "#5F677
 
 type ShowFn = (ev: { clientX: number; clientY: number }, body: ReactNode) => void;
 
-function useWidth() {
+export function useWidth() {
   const ref = useRef<HTMLDivElement>(null);
   const [w, setW] = useState(800);
   useEffect(() => {
@@ -46,10 +46,10 @@ export function useFederal() {
   return doc;
 }
 
-type Series = { name: string; color: string; values: (number | null)[]; width?: number; dash?: string; labels?: boolean };
+export type Series = { name: string; color: string; values: (number | null)[]; width?: number; dash?: string; labels?: boolean };
 
 /** Year-axis line chart; null values break the line (missing Red Books). */
-function LineChart({ xs, sub, series, fmt, max, show, hide, aria }: {
+export function LineChart({ xs, sub, series, fmt, max, show, hide, aria }: {
   xs: string[]; sub?: string[]; series: Series[]; fmt: (v: number) => string; max: number; show: ShowFn; hide: () => void; aria: string;
 }) {
   const [ref, W] = useWidth();
@@ -121,12 +121,14 @@ export function CompareChart({ fed, local, show, hide }: { fed: FedDoc; local: L
   const lastAd = [...fed.years.filter((y) => y.exec_budget != null).map((y) => y.fy_ad), ...local.map((l) => l.fy_ad)].sort().pop()!;
   const ys = fed.years.slice(first).filter((y) => y.fy_ad <= lastAd);
   const lmap = new Map(local.map((l) => [l.fy_ad, l.cap_spent_share]));
+  const fmap = new Map(local.map((l) => [l.fy_ad, l.flow ?? null]));
   return (
     <LineChart xs={ys.map((y) => y.fy_ad)} sub={ys.map((y) => y.fy_bs)} max={1.1} fmt={(v) => pct(v)} show={show} hide={hide}
       aria="Share of capital budget spent, federal and local governments"
       series={[
         { name: "Federal: actual ÷ revised estimate", color: MUTE, values: ys.map((y) => y.exec_revised), width: 1.5, dash: "5 4" },
-        { name: "Local governments: capital spent ÷ (capital spent + unspent balance)", color: LOCAL, values: ys.map((y) => lmap.get(y.fy_ad) ?? null), width: 2.4, labels: true },
+        { name: "Local: capital spent ÷ (capital spent + whole unspent balance, incl. earlier years)", color: LOCAL, values: ys.map((y) => lmap.get(y.fy_ad) ?? null), width: 1.5, dash: "5 4" },
+        { name: "Local: capital spent ÷ (capital spent + this year's new under-spend)", color: LOCAL, values: ys.map((y) => fmap.get(y.fy_ad) ?? null), width: 2.4, labels: true },
         { name: "Federal: actual ÷ original budget", color: FED, values: ys.map((y) => y.exec_budget), width: 2.4, labels: true },
       ]} />
   );

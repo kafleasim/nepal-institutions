@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { GL } from "../lib/glTokens";
+import { Figure } from "./ui";
+import { LocalDrivers, useDrivers } from "./LocalDrivers";
 import { CompareChart, FederalLevels, GapBars, ProgrammeTable, SectorBars, useFederal } from "./FederalCapex";
 
 // Nepal fork: capital budget execution, federal (Red Books, FY 2012/13 onward) and local (OAG audits, FY 2017/18 onward).
@@ -52,6 +54,7 @@ export function CapexPage() {
   const [doc, setDoc] = useState<Doc | null | undefined>(undefined);
   const [tip, setTip] = useState<Tip>(null);
   const fed = useFederal();
+  const drv = useDrivers();
   useEffect(() => {
     fetch("/nepal/local_capex.json").then((r) => (r.ok ? r.json() : null)).then(setDoc).catch(() => setDoc(null));
   }, []);
@@ -69,18 +72,20 @@ export function CapexPage() {
         <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gl-blue">Nepal · Federal and local governments</p>
         <h1 className="mt-1 text-2xl font-semibold">Capital expenditure: how much of the budget goes unspent?</h1>
         <p className="mt-2 max-w-3xl text-sm text-gl-muted">
-          Both tiers of government that build most of Nepal's public capital leave a large part of their capital budget
-          unspent. The federal government spent about 60–64% of its original capital budget in FY 2021/22–2024/25,
-          down from about 80% before federalism; local governments spent a similar share of the capital funds they had.
+          The federal government spent about 60–64% of its original capital budget in FY 2021/22–2024/25, down from
+          about 80% before federalism. Local governments spend most of the new money they receive each year, but built
+          up an idle balance of over NRs 100 billion during their first term. Below: where the federal shortfall
+          sits, and what does and does not explain local under-spending.
         </p>
       </header>
 
       {fed && (
         <>
-          <Figure label="Figure 1" title="Federal and local governments each spend roughly 60–65% of their capital budget."
-            subtitle="Share of the capital budget spent, by fiscal year. Federal: Red Books (budget in book t, actual in book t+2). Local: audited accounts of 753 local governments."
+          <Figure label="Figure 1" title="The federal government spends about 60–64% of its capital budget; local governments spend most of each year's new money."
+            subtitle="Share of capital spent, by fiscal year. Federal: actual ÷ approved budget (Red Books). Local: audited accounts of 753 local governments, against the whole unspent balance (dashed) or only this year's new under-spend (solid). Local approved budgets are not in the audit data."
             source={`${fed.source}; ${doc.source}. The two measures differ in denominator (see notes).`}>
-            <CompareChart fed={fed} local={ys.map((y) => ({ fy_ad: y.fy_ad, fy_bs: y.fy_bs, cap_spent_share: 1 - y.cap_unspent }))} show={show} hide={hide} />
+            <CompareChart fed={fed} local={ys.map((y) => ({ fy_ad: y.fy_ad, fy_bs: y.fy_bs, cap_spent_share: 1 - y.cap_unspent,
+              flow: drv?.national.find((n) => n.fy_ad === y.fy_ad)?.exec_flow ?? null }))} show={show} hide={hide} />
           </Figure>
 
           <h2 className="pt-2 text-xl font-semibold">Federal government</h2>
@@ -163,6 +168,8 @@ export function CapexPage() {
 
       <DataTable ys={ys} />
 
+      {drv && <LocalDrivers doc={drv} show={show} hide={hide} />}
+
       <section className="space-y-2 text-sm">
         <h2 className="text-lg font-semibold">Method and caveats</h2>
         <ul className="list-disc space-y-1 pl-5 text-gl-muted">
@@ -173,9 +180,11 @@ export function CapexPage() {
           <li><b>Federal execution</b> = actual capital expenditure ÷ original capital budget (the capital split of each programme). Each Red Book prints the budget for its year, the revised estimate for the year before and actual spending for two years before, so the budget for FY t comes from book t and the actual from book t+2. Federal figures exclude fiscal transfers to provinces and local governments. Red Books for FY 2073/74–2077/78 actuals are missing or not machine-readable (no MoF upload for FY 2075/76; scanned or legacy-font books for FY 2076/77–2077/78), hence the gaps.</li>
           <li><b>Federal vs local</b>: the federal measure divides by the approved budget; the local measure divides by capital spent plus the unspent balance, i.e. funds actually available. Local approved budgets are typically larger than funds received, so local execution against the approved budget would be lower. Read Figure 1 as a comparison of orders of magnitude, not of exact levels.</li>
           <li><b>Federal sectors</b>: Ministry of Finance lump-sum lines (contingency, "miscellaneous") are budgeted centrally and moved to line ministries during the year; they are excluded from the sector chart. Foreign-aid payments made directly to contractors are often recorded late, which may understate execution of donor-financed projects.</li>
+          <li><b>Two local measures.</b> Each year's unspent balance is carried into the next year (the opening balance matches the previous closing balance). The whole-balance measure (Figures 1, 6, 8 dashed) counts money left over from earlier years as unspent again each year; the flow measure counts only the year's new under-spend (income − spending, floored at zero). Both assume unspent money is capital.</li>
+          <li><b>Drivers (Figures 10–11).</b> Panel of local governments FY 2074/75–2081/82 from the audit reports, merged with the 2017 and 2022 local election results (mayor/chair winner, party, winning margin; re-election from a candidate panel matched across elections). Alignment = share of the fiscal year in which the prime minister came from the mayor's party (UML and Maoist Centre counted together while merged as the NCP, May 2018–March 2021). {drv?.duplicate_note} Own-revenue data start in FY 2076/77. Party and margin are not randomly assigned: the estimates show associations, not causal effects; the within-local-government alignment and re-election estimates are closer to causal but still descriptive.</li>
           <li>Coverage begins in FY 2017/18 because local governments under the 2015 constitution were first elected in 2017.</li>
         </ul>
-        <p className="text-xs text-gl-muted">Local data exported {doc.built}{fed ? `; federal data exported ${fed.built}` : ""}.</p>
+        <p className="text-xs text-gl-muted">Local data exported {doc.built}{fed ? `; federal data exported ${fed.built}` : ""}{drv ? `; drivers analysis ${drv.built}` : ""}.</p>
       </section>
       <TipLayer tip={tip} />
     </div>
@@ -192,17 +201,6 @@ function Kpi({ label, value, sub, color }: { label: string; value: string; sub: 
   );
 }
 
-function Figure({ label, title, subtitle, source, children }: { label: string; title: string; subtitle: string; source: string; children: ReactNode }) {
-  return (
-    <figure className="rounded border border-gl-border bg-white p-4">
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-gl-blue">{label}</p>
-      <h2 className="mt-1 text-lg font-semibold">{title}</h2>
-      <p className="text-sm text-gl-muted">{subtitle}</p>
-      <div className="mt-3">{children}</div>
-      <figcaption className="mt-2 text-xs italic text-gl-muted">Source: {source}</figcaption>
-    </figure>
-  );
-}
 
 type ShareKey = "unspent" | "unspent_med" | "unspent_p25" | "unspent_p75" | "cap_unspent" | "cap_unspent_med" | "cap_unspent_p25" | "cap_unspent_p75";
 

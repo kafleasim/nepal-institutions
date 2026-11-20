@@ -1,0 +1,726 @@
+{
+  "built": "2026-11-20",
+  "source": "Office of the Auditor General, audit reports of local governments FY 2074/75-2081/82; Election Commission, local election results 2017 and 2022",
+  "n_units": 753,
+  "n_obs": 5158,
+  "duplicate_note": "FY 2079/80 and 2080/81 are identical for 100% of local governments in the compiled audit panel; FY 2080/81 is dropped.",
+  "national": [
+    {
+      "year": 2017,
+      "fy_bs": "2074/75",
+      "fy_ad": "2017/18",
+      "income_bn": 298.6964,
+      "spent_bn": 267.8643,
+      "capital_bn": 110.5493,
+      "carryover_bn": 13.1477,
+      "balance_bn": 43.9798,
+      "net_bn": 30.8321,
+      "exec_stock": 0.7154,
+      "exec_flow": 0.7786
+    },
+    {
+      "year": 2018,
+      "fy_bs": "2075/76",
+      "fy_ad": "2018/19",
+      "income_bn": 379.5218,
+      "spent_bn": 358.7083,
+      "capital_bn": 128.8186,
+      "carryover_bn": 46.2336,
+      "balance_bn": 67.047,
+      "net_bn": 20.8134,
+      "exec_stock": 0.6575,
+      "exec_flow": 0.8314
+    },
+    {
+      "year": 2019,
+      "fy_bs": "2076/77",
+      "fy_ad": "2019/20",
+      "income_bn": 421.8374,
+      "spent_bn": 392.117,
+      "capital_bn": 121.4547,
+      "carryover_bn": 59.6294,
+      "balance_bn": 89.3497,
+      "net_bn": 29.7203,
+      "exec_stock": 0.5758,
+      "exec_flow": 0.7768
+    },
+    {
+      "year": 2020,
+      "fy_bs": "2077/78",
+      "fy_ad": "2020/21",
+      "income_bn": 505.7114,
+      "spent_bn": 487.8818,
+      "capital_bn": 160.3259,
+      "carryover_bn": 91.7738,
+      "balance_bn": 109.6035,
+      "net_bn": 17.8296,
+      "exec_stock": 0.5928,
+      "exec_flow": 0.854
+    },
+    {
+      "year": 2021,
+      "fy_bs": "2078/79",
+      "fy_ad": "2021/22",
+      "income_bn": 558.8406,
+      "spent_bn": 543.2251,
+      "capital_bn": 166.7382,
+      "carryover_bn": 100.1878,
+      "balance_bn": 115.8033,
+      "net_bn": 15.6155,
+      "exec_stock": 0.5884,
+      "exec_flow": 0.8657
+    },
+    {
+      "year": 2022,
+      "fy_bs": "2079/80",
+      "fy_ad": "2022/23",
+      "income_bn": 559.2416,
+      "spent_bn": 577.8003,
+      "capital_bn": 170.7311,
+      "carryover_bn": 112.6996,
+      "balance_bn": 94.1409,
+      "net_bn": -18.5587,
+      "exec_stock": 0.6442,
+      "exec_flow": 0.9628
+    },
+    {
+      "year": 2024,
+      "fy_bs": "2081/82",
+      "fy_ad": "2024/25",
+      "income_bn": 547.2508,
+      "spent_bn": 560.5689,
+      "capital_bn": 145.1904,
+      "carryover_bn": 94.515,
+      "balance_bn": 81.1969,
+      "net_bn": -13.3181,
+      "exec_stock": 0.641,
+      "exec_flow": 0.9613
+    }
+  ],
+  "decomposition": [
+    {
+      "step": "Common shocks (year)",
+      "share": 0.0239
+    },
+    {
+      "step": "Province",
+      "share": 0.0788
+    },
+    {
+      "step": "District (place)",
+      "share": 0.1254
+    },
+    {
+      "step": "Local government (institution)",
+      "share": 0.2497
+    },
+    {
+      "step": "Year-to-year noise",
+      "share": 0.5223
+    }
+  ],
+  "decomposition_flow": [
+    {
+      "step": "Common shocks (year)",
+      "share": 0.1843
+    },
+    {
+      "step": "Province",
+      "share": 0.0235
+    },
+    {
+      "step": "District (place)",
+      "share": 0.0282
+    },
+    {
+      "step": "Local government (institution)",
+      "share": 0.0921
+    },
+    {
+      "step": "Year-to-year noise",
+      "share": 0.6719
+    }
+  ],
+  "persistence": 0.505,
+  "change_17_19": {
+    "n": 685,
+    "share_fell": 0.6467,
+    "share_fell_10pp": 0.4423,
+    "median_change": -0.0665,
+    "r2_district": 0.1793,
+    "r2_province": 0.0288,
+    "hist": [
+      {
+        "lo": -0.6,
+        "hi": -0.55,
+        "n": 7
+      },
+      {
+        "lo": -0.55,
+        "hi": -0.5,
+        "n": 3
+      },
+      {
+        "lo": -0.5,
+        "hi": -0.45,
+        "n": 6
+      },
+      {
+        "lo": -0.45,
+        "hi": -0.4,
+        "n": 15
+      },
+      {
+        "lo": -0.4,
+        "hi": -0.35,
+        "n": 16
+      },
+      {
+        "lo": -0.35,
+        "hi": -0.3,
+        "n": 36
+      },
+      {
+        "lo": -0.3,
+        "hi": -0.25,
+        "n": 32
+      },
+      {
+        "lo": -0.25,
+        "hi": -0.2,
+        "n": 53
+      },
+      {
+        "lo": -0.2,
+        "hi": -0.15,
+        "n": 61
+      },
+      {
+        "lo": -0.15,
+        "hi": -0.1,
+        "n": 74
+      },
+      {
+        "lo": -0.1,
+        "hi": -0.05,
+        "n": 62
+      },
+      {
+        "lo": -0.05,
+        "hi": 0,
+        "n": 78
+      },
+      {
+        "lo": 0,
+        "hi": 0.05,
+        "n": 68
+      },
+      {
+        "lo": 0.05,
+        "hi": 0.1,
+        "n": 56
+      },
+      {
+        "lo": 0.1,
+        "hi": 0.15,
+        "n": 35
+      },
+      {
+        "lo": 0.15,
+        "hi": 0.2,
+        "n": 22
+      },
+      {
+        "lo": 0.2,
+        "hi": 0.25,
+        "n": 15
+      },
+      {
+        "lo": 0.25,
+        "hi": 0.3,
+        "n": 10
+      },
+      {
+        "lo": 0.3,
+        "hi": 0.35,
+        "n": 6
+      },
+      {
+        "lo": 0.35,
+        "hi": 0.4,
+        "n": 5
+      },
+      {
+        "lo": 0.4,
+        "hi": 0.45,
+        "n": 6
+      },
+      {
+        "lo": 0.45,
+        "hi": 0.5,
+        "n": 6
+      },
+      {
+        "lo": 0.5,
+        "hi": 0.55,
+        "n": 5
+      },
+      {
+        "lo": 0.55,
+        "hi": 0.6,
+        "n": 8
+      }
+    ]
+  },
+  "by_province": [
+    {
+      "province": 1,
+      "fy_ad": "2017/18",
+      "exec": 0.746
+    },
+    {
+      "province": 1,
+      "fy_ad": "2018/19",
+      "exec": 0.7403
+    },
+    {
+      "province": 1,
+      "fy_ad": "2019/20",
+      "exec": 0.6606
+    },
+    {
+      "province": 1,
+      "fy_ad": "2020/21",
+      "exec": 0.6474
+    },
+    {
+      "province": 1,
+      "fy_ad": "2021/22",
+      "exec": 0.679
+    },
+    {
+      "province": 1,
+      "fy_ad": "2022/23",
+      "exec": 0.7342
+    },
+    {
+      "province": 1,
+      "fy_ad": "2024/25",
+      "exec": 0.7086
+    },
+    {
+      "province": 2,
+      "fy_ad": "2017/18",
+      "exec": 0.5887
+    },
+    {
+      "province": 2,
+      "fy_ad": "2018/19",
+      "exec": 0.6057
+    },
+    {
+      "province": 2,
+      "fy_ad": "2019/20",
+      "exec": 0.5071
+    },
+    {
+      "province": 2,
+      "fy_ad": "2020/21",
+      "exec": 0.6092
+    },
+    {
+      "province": 2,
+      "fy_ad": "2021/22",
+      "exec": 0.5871
+    },
+    {
+      "province": 2,
+      "fy_ad": "2022/23",
+      "exec": 0.6263
+    },
+    {
+      "province": 2,
+      "fy_ad": "2024/25",
+      "exec": 0.6049
+    },
+    {
+      "province": 3,
+      "fy_ad": "2017/18",
+      "exec": 0.6838
+    },
+    {
+      "province": 3,
+      "fy_ad": "2018/19",
+      "exec": 0.5385
+    },
+    {
+      "province": 3,
+      "fy_ad": "2019/20",
+      "exec": 0.4764
+    },
+    {
+      "province": 3,
+      "fy_ad": "2020/21",
+      "exec": 0.4669
+    },
+    {
+      "province": 3,
+      "fy_ad": "2021/22",
+      "exec": 0.4763
+    },
+    {
+      "province": 3,
+      "fy_ad": "2022/23",
+      "exec": 0.5415
+    },
+    {
+      "province": 3,
+      "fy_ad": "2024/25",
+      "exec": 0.5688
+    },
+    {
+      "province": 4,
+      "fy_ad": "2017/18",
+      "exec": 0.7815
+    },
+    {
+      "province": 4,
+      "fy_ad": "2018/19",
+      "exec": 0.7512
+    },
+    {
+      "province": 4,
+      "fy_ad": "2019/20",
+      "exec": 0.604
+    },
+    {
+      "province": 4,
+      "fy_ad": "2020/21",
+      "exec": 0.5885
+    },
+    {
+      "province": 4,
+      "fy_ad": "2021/22",
+      "exec": 0.5778
+    },
+    {
+      "province": 4,
+      "fy_ad": "2022/23",
+      "exec": 0.6899
+    },
+    {
+      "province": 4,
+      "fy_ad": "2024/25",
+      "exec": 0.6949
+    },
+    {
+      "province": 5,
+      "fy_ad": "2017/18",
+      "exec": 0.7556
+    },
+    {
+      "province": 5,
+      "fy_ad": "2018/19",
+      "exec": 0.7111
+    },
+    {
+      "province": 5,
+      "fy_ad": "2019/20",
+      "exec": 0.6238
+    },
+    {
+      "province": 5,
+      "fy_ad": "2020/21",
+      "exec": 0.6442
+    },
+    {
+      "province": 5,
+      "fy_ad": "2021/22",
+      "exec": 0.6483
+    },
+    {
+      "province": 5,
+      "fy_ad": "2022/23",
+      "exec": 0.694
+    },
+    {
+      "province": 5,
+      "fy_ad": "2024/25",
+      "exec": 0.6744
+    },
+    {
+      "province": 6,
+      "fy_ad": "2017/18",
+      "exec": 0.7763
+    },
+    {
+      "province": 6,
+      "fy_ad": "2018/19",
+      "exec": 0.7372
+    },
+    {
+      "province": 6,
+      "fy_ad": "2019/20",
+      "exec": 0.6556
+    },
+    {
+      "province": 6,
+      "fy_ad": "2020/21",
+      "exec": 0.7364
+    },
+    {
+      "province": 6,
+      "fy_ad": "2021/22",
+      "exec": 0.7178
+    },
+    {
+      "province": 6,
+      "fy_ad": "2022/23",
+      "exec": 0.7279
+    },
+    {
+      "province": 6,
+      "fy_ad": "2024/25",
+      "exec": 0.7407
+    },
+    {
+      "province": 7,
+      "fy_ad": "2017/18",
+      "exec": 0.7613
+    },
+    {
+      "province": 7,
+      "fy_ad": "2018/19",
+      "exec": 0.7526
+    },
+    {
+      "province": 7,
+      "fy_ad": "2019/20",
+      "exec": 0.7103
+    },
+    {
+      "province": 7,
+      "fy_ad": "2020/21",
+      "exec": 0.7227
+    },
+    {
+      "province": 7,
+      "fy_ad": "2021/22",
+      "exec": 0.6683
+    },
+    {
+      "province": 7,
+      "fy_ad": "2022/23",
+      "exec": 0.6967
+    },
+    {
+      "province": 7,
+      "fy_ad": "2024/25",
+      "exec": 0.6821
+    }
+  ],
+  "correlates": {
+    "model": "Capital execution on characteristics, FY 2076/77-2081/82 (excl. 2080/81), year and district fixed effects, SE clustered by local government",
+    "n": 3662,
+    "terms": [
+      {
+        "term": "log_income",
+        "est": -0.003,
+        "lo": -0.0346,
+        "hi": 0.0286,
+        "p": 0.8507
+      },
+      {
+        "term": "own_rev_share",
+        "est": -0.2064,
+        "lo": -0.3412,
+        "hi": -0.0716,
+        "p": 0.0027
+      },
+      {
+        "term": "type3::Metropolitan / sub-metropolitan city",
+        "est": -0.0284,
+        "lo": -0.0948,
+        "hi": 0.038,
+        "p": 0.4018
+      },
+      {
+        "term": "type3::Municipality",
+        "est": -0.0001,
+        "lo": -0.0224,
+        "hi": 0.0221,
+        "p": 0.9895
+      },
+      {
+        "term": "party::Madhesh-based",
+        "est": -0.0091,
+        "lo": -0.04,
+        "hi": 0.0219,
+        "p": 0.5645
+      },
+      {
+        "term": "party::Maoist Centre",
+        "est": 0.0064,
+        "lo": -0.0121,
+        "hi": 0.0249,
+        "p": 0.4992
+      },
+      {
+        "term": "party::Other",
+        "est": -0.0288,
+        "lo": -0.072,
+        "hi": 0.0144,
+        "p": 0.1911
+      },
+      {
+        "term": "party::UML",
+        "est": -0.0095,
+        "lo": -0.0239,
+        "hi": 0.0049,
+        "p": 0.1961
+      },
+      {
+        "term": "party::Unified Socialist",
+        "est": 0.015,
+        "lo": -0.0366,
+        "hi": 0.0666,
+        "p": 0.5687
+      },
+      {
+        "term": "margin",
+        "est": 0.041,
+        "lo": -0.0317,
+        "hi": 0.1137,
+        "p": 0.2685
+      }
+    ]
+  },
+  "alignment": {
+    "model": "Within local government: share of the fiscal year the prime minister is from the mayor's party; local-government and year fixed effects",
+    "n": 5158,
+    "terms": [
+      {
+        "term": "aligned",
+        "est": -0.0034,
+        "lo": -0.0125,
+        "hi": 0.0058,
+        "p": 0.4714
+      }
+    ],
+    "robust_drop_both": [
+      {
+        "term": "aligned",
+        "est": -0.0036,
+        "lo": -0.0136,
+        "hi": 0.0064,
+        "p": 0.4809
+      }
+    ],
+    "robust_flow": [
+      {
+        "term": "aligned",
+        "est": -0.005,
+        "lo": -0.0153,
+        "hi": 0.0053,
+        "p": 0.3416
+      }
+    ]
+  },
+  "reelection": {
+    "model": "Change after 2022 where the 2017 mayor was re-elected vs replaced; local-government and year fixed effects",
+    "n": 5158,
+    "terms": [
+      {
+        "term": "term2::TRUE:reelected",
+        "est": 0.0068,
+        "lo": -0.0138,
+        "hi": 0.0273,
+        "p": 0.5184
+      }
+    ]
+  },
+  "party": [
+    {
+      "term": "2017 mayors (FY 2074/75-2078/79)",
+      "party": "NC",
+      "local_govts": 266,
+      "median_exec": 0.7055,
+      "exec": 0.6471
+    },
+    {
+      "term": "2017 mayors (FY 2074/75-2078/79)",
+      "party": "Madhesh-based",
+      "local_govts": 67,
+      "median_exec": 0.6247,
+      "exec": 0.598
+    },
+    {
+      "term": "2017 mayors (FY 2074/75-2078/79)",
+      "party": "Maoist Centre",
+      "local_govts": 106,
+      "median_exec": 0.7327,
+      "exec": 0.6701
+    },
+    {
+      "term": "2017 mayors (FY 2074/75-2078/79)",
+      "party": "Other",
+      "local_govts": 20,
+      "median_exec": 0.6852,
+      "exec": 0.6139
+    },
+    {
+      "term": "2017 mayors (FY 2074/75-2078/79)",
+      "party": "UML",
+      "local_govts": 294,
+      "median_exec": 0.7007,
+      "exec": 0.5864
+    },
+    {
+      "term": "2022 mayors (FY 2079/80+)",
+      "party": "NC",
+      "local_govts": 329,
+      "median_exec": 0.7285,
+      "exec": 0.6821
+    },
+    {
+      "term": "2022 mayors (FY 2079/80+)",
+      "party": "Madhesh-based",
+      "local_govts": 46,
+      "median_exec": 0.6421,
+      "exec": 0.6251
+    },
+    {
+      "term": "2022 mayors (FY 2079/80+)",
+      "party": "Maoist Centre",
+      "local_govts": 121,
+      "median_exec": 0.7681,
+      "exec": 0.7134
+    },
+    {
+      "term": "2022 mayors (FY 2079/80+)",
+      "party": "Other",
+      "local_govts": 31,
+      "median_exec": 0.6594,
+      "exec": 0.3899
+    },
+    {
+      "term": "2022 mayors (FY 2079/80+)",
+      "party": "UML",
+      "local_govts": 206,
+      "median_exec": 0.7311,
+      "exec": 0.6567
+    },
+    {
+      "term": "2022 mayors (FY 2079/80+)",
+      "party": "Unified Socialist",
+      "local_govts": 20,
+      "median_exec": 0.7425,
+      "exec": 0.716
+    }
+  ],
+  "labels": {
+    "log_income": "Budget size (log annual income)",
+    "own_rev_share": "Own-revenue share of income",
+    "margin": "Mayor's winning margin"
+  }
+}
